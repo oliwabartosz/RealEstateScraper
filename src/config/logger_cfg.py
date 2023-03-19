@@ -48,3 +48,4 @@ class Logger:
 # LOGGERS
 logger1 = Logger.setup(name='scrapper', file_name='./data/logs/scrapper.log')
 logger1.info('Logger initialized.')
+logger2 = Logger.setup(name='input', file_name='./data/logs/input.log')

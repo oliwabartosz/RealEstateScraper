@@ -14,7 +14,7 @@ def get_images_old(offer_id) -> dict:
     if how_many_images > 0:
         logger_cfg.logger1.info(f'Preparing list of images to download for {offer_id}')
         for i in range(how_many_images):
-            # i = str([i + 1]) @TODO - test without it, if it works delete the line
+            # i = str([i + 1]) @TODO - MEDIUM: test without it, if it works delete the line
             image_link = selenium_cfg.driver.find_element("xpath", images_number_xpath + str([i + 1])) \
                 .get_attribute('href')
             offer_images_links.append(image_link)
@@ -27,5 +27,5 @@ def get_images_old(offer_id) -> dict:
 
 
 def save_images_links_to_file():
-    # @TODO - save_images_links_to_file():
+    # @TODO - MEDIUM: save_images_links_to_file():
     pass

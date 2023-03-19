@@ -7,7 +7,6 @@ from src.config import selectors
 def locate_searchbar():
     searchbar = selenium_cfg.wait.until(EC.element_to_be_clickable(
         (By.XPATH, selectors.XPATH_SEARCHBAR)))
-    # searchbar = selenium_cfg.driver.find_element("xpath", selectors.XPATH_SEARCHBAR) @TODO -> delete?
     searchbar.click()
     searchbar.clear()
     return searchbar

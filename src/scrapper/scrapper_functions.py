@@ -61,10 +61,24 @@ def quit_browser() -> None:
 
 
 def get_offers_list_from_file() -> list:
+    # @TODO - HIGH: check if offer exists in offers or skipped jsons
     try:
         offers = open('./data/input/input.txt', 'r').read().split()
-        logger_cfg.logger1.info(f"{len(offers)} will be downloaded.")
+        logger_cfg.logger1.info(f"{len(offers)} offers will be downloaded.")
+
+        statuses_of_offers = file_handler.load_file(file_handler.FILE_PATH_STATUSES)
+
+        offers_to_remove = []
+        for offer in offers:
+            if file_handler.check_if_offer_was_downloaded(statuses_of_offers, offer):
+                offers_to_remove.append(offer)
+
+        offers_removed = list(filter(lambda x: x in offers_to_remove, offers))
+        offers = list(filter(lambda x: x not in offers_to_remove, offers))
+        logger_cfg.logger2.info(f"{len(offers_removed)} offers removed from input. Reason: They were in statuses.json.")
+
         return offers
+
     except FileNotFoundError:
         logger_cfg.logger1.warning("Are you sure that input.txt exists?")
         try:
@@ -79,8 +93,10 @@ def get_offers_list_from_file() -> list:
         exit(1)
 
 
-def input_to_searchbar(offer_id: str) -> None:
+def input_to_searchbar(offer_id: str) -> bool:
     searchbar = scrapper_functions_aux.locate_searchbar()
+
+    logger_cfg.logger1.info(f"{offer_id} will be downloaded.")
 
     for char in offer_id:
         searchbar.send_keys(char)
@@ -91,13 +107,17 @@ def input_to_searchbar(offer_id: str) -> None:
         logger_cfg.logger1.info(f'The offer {offer_id} not found. Skipping it.')
         searchbar.clear()
         searchbar.send_keys(Keys.ESCAPE)
+        file_handler.save_offer_to_file({"skipped": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
+                                        file_name_str='statuses.json')
+        return False
     else:
         searchbar.send_keys(Keys.RETURN)
         searchbar.clear()
         sleep(selenium_cfg.SLEEP_TIME)
+        return True
 
 
-def get_offers_data(offer_id: str) -> dict:
+def get_offers_data(offer_id: str):
     offer_data = {}
 
     keys_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_KEYS)
@@ -115,8 +135,10 @@ def get_offers_data(offer_id: str) -> dict:
     logger_cfg.logger1.info(f"Got data from {len(keys_elements)} tables.")
 
     # Saving data
-    api_handler.send_offer_to_api(offer_data)
-    file_handler.save_offer_to_file(offer_data)
+    api_handler.send_offer_to_api(offer_data)  # @TODO - LOW: api handler
+    file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
+                                    file_name_str='statuses.json')
+    file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
 
 
 def get_offers_data_old(offer_id) -> dict:
