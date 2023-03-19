@@ -20,20 +20,22 @@ def _prepare_file_if_not_exists():
 
 
 def save_offer_to_file(offer_data: str):
-    offers_data = load_file()
-    if _check_if_offer_was_downloaded(offer_data):
-        offers_data.append(offer_data)
+    offer_id = offer_data["Numer oferty"]
+    offers_data_from_file = load_file()
+    if not _check_if_offer_was_downloaded(offers_data_from_file, offer_id):
+        offers_data_from_file.append(offer_data)
 
         with open(FILE_PATH, mode='w', encoding='utf-8') as file:
-            json.dump(offers_data, file)
+            json.dump(offers_data_from_file, file)
 
         logger_cfg.logger1.info("File saved to ./data/output/offers.json.")
     else:
-        logger_cfg.logger1.info("Has been downloaded previously. Skipping.")
+        logger_cfg.logger1.info(f"{offer_id} has been downloaded previously. Skipping.")
 
 
-def _check_if_offer_was_downloaded(offers_data: list, offer: str) -> bool:
-    return any(offer in d for d in offers_data)
+def _check_if_offer_was_downloaded(offers_data: list, offer_id: str) -> bool:
+    return any(offer_id in d.values() for d in offers_data)
+    # return any(offer in tuple(d.items()) for d in offers_data)
 
 
 def delete_offer_file():

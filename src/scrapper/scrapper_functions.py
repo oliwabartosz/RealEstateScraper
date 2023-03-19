@@ -110,7 +110,6 @@ def get_offers_data(offer_id: str) -> dict:
 
     # Getting the data
     for key, value in zip(keys_elements, values_elements):
-        print(key, value)
         offer_data[key.text] = value.text
 
     logger_cfg.logger1.info(f"Got data from {len(keys_elements)} tables.")
