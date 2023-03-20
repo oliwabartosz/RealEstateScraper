@@ -1,4 +1,5 @@
 import json
+import re
 import scrapper_functions_aux
 from src.config import selenium_cfg
 from src.config import logger_cfg
@@ -75,7 +76,7 @@ def get_offers_list_from_file() -> list:
 
         offers_removed = list(filter(lambda x: x in offers_to_remove, offers))
         offers = list(filter(lambda x: x not in offers_to_remove, offers))
-        logger_cfg.logger2.info(f"{len(offers_removed)} offers removed from input. Reason: They were in statuses.json.")
+        logger_cfg.logger2.info(f"{len(offers_removed)} offers removed from input - based on statuses.json.")
 
         return offers
 
@@ -140,34 +141,41 @@ def get_offers_data(offer_id: str):
                                     file_name_str='statuses.json')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
 
+def get_chunks_from_description(offer_type: str, offer_id: str) -> dict:
+    # Load data
+    template_fields_from_json = file_handler.load_file(file_handler.FILE_PATH_TEMPLATES)
+    offers_data = file_handler.load_file(file_handler.FILE_PATH_OFFERS)
 
-def get_offers_data_old(offer_id) -> dict:
-    offer_data = {}
+    # Extract the pl
+    description_fields = template_fields_from_json.get(offer_type)
+    offer_data = [d for d in offers_data if d.get('Numer oferty') == offer_id][0]
 
-    labels_xpath = '(//*[@class =\'x-grid3-cell-inner x-grid3-col-0\'])'
-    values_xpath = '(//*[@class =\'x-grid3-cell-inner x-grid3-col-1\'])'
-    offer_number_xpath = '(//*[@id=\'idlabel\'])'
+    description_without_nlines = dict((key, offer_data[key]) for key in ["Numer oferty", "Opis"] if key in offer_data)
 
-    # Checks how many iterations by XPATH is needed
-    how_many_labels = len(selenium_cfg.driver.find_elements("xpath", selectors.XPATH_KEYS))
-    how_many_values = len(selenium_cfg.driver.find_elements("xpath", selectors.XPATH_VALUES))
-    logger_cfg.logger1.info(f'The offer has {how_many_labels} labels & {how_many_values} values.')
+    description_without_nlines['Opis'] = description_without_nlines['Opis'].replace('\n', '')
+    regex_builder = '(.{{0,60}}{0}.{{0,60}})'
+    chunks = {}
 
-    # offer_id evaluation
-    offer_number_value = selenium_cfg.driver.find_element("xpath", offer_number_xpath).text
-    offer_data.update({'Numer oferty': offer_number_value,
-                       'Numer oferty pożądany': offer_id, })
+    for description_field in description_fields:
+        field_regex = re.compile(regex_builder.format(description_field), re.S | re.M)
+        description_finds = re.findall(field_regex, description_without_nlines['Opis'])
+        if description_finds:
+            chunks[description_field] = '\n'.join(description_finds)
+            chunks[description_field] = chunks[description_field].replace(description_field,
+                                                                          f"<u>{description_field}</u>")
+        else:
+            chunks[description_field] = ''
 
-    # Getting the data
-    for i in range(how_many_labels):
-        # i = str([i+1])  # Iteration of Xpath begins from 1, while in python from 0
-        offer_label = selenium_cfg.driver.find_element("xpath", labels_xpath + str([i + 1])).text
-        offer_value = selenium_cfg.driver.find_element("xpath", values_xpath + str([i + 1])).text
-        offer_data.update({offer_label: offer_value})
+    offer_data.update(chunks)
+    # Replace the data
+    for i, d in enumerate(offers_data):
+        if d['Numer oferty'] == offer_id:
+            # Update the dictionary with your new dictionary
+            offers_data[i] = offer_data
+            break
 
-    logger_cfg.logger1.info('Got data from tables.')
-    return offer_data
-
+    logger_cfg.logger1.info('Got chunks of data from description. Offer updated.')
+    file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
 
 def get_images_links(offer_id) -> dict:
     offer_images_dict = {}

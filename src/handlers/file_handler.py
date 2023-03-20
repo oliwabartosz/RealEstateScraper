@@ -4,7 +4,7 @@ from src.config import logger_cfg
 
 FILE_PATH_OFFERS = './data/output/offers.json'
 FILE_PATH_STATUSES = './data/output/statuses.json'
-
+FILE_PATH_TEMPLATES = './src/scrapper/templates/templates.json'
 
 def load_file(file_path):
     _prepare_file_if_not_exists(file_path)
