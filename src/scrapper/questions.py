@@ -1,4 +1,6 @@
 from src.config import logger_cfg
+
+
 def type_of_offers():
     answer = input("Please provide offers type that you want to download.\nType F for flats, H for houses, "
                    "P for plots: ").lower()
@@ -16,5 +18,3 @@ def type_of_offers():
         case _:
             print("No information or information invalid. Cannot process further operations without this information.")
             exit(1)
-
-
