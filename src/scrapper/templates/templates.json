@@ -1,0 +1,22 @@
+{
+    "flats": ["balkon", "francu", "taras", "wind", "piwnic", "komórk", "strych", "gospodarcze", "postojow",
+    "parking", "przynależn", "garaż", "możliwość", "ogró", "ogrod", "działka", "ocieplony",
+    "moderniz", "odrestaur", "odnow", "ociepl", "remon", "elewac", "dozór", "dozor", "monitoring",
+    "monit", "ochron", "alarm", "strzeż", "portier", "wspólnot", "spółdziel",
+    "kuchni", "aneks", "widna", "ciemna", "prześwit", "z oknem", "z jadalni", "oficyn", "linia",
+    "linii", "opłat", "bezczynsz", "czynsz", "poziom", "ul.", "al.", " zł", " zl", "pln",
+    "ul.", "al.", "ul.", "al."],
+
+    "houses": ["postojow", "parking", "przynależn", "garaż", "możliwość", "działk", "własno", "spóldziel",
+    "wieczyst", "wspólnot", "użytkowani", "ocieplony", "moderniz", "odrestaur", "odnow", "ociepl", "remon", 
+    "elewac", "dozór", "dozor", "monitoring", "monit", "ochron", "alarm", "strzeż", "portier","kuchni", 
+    "aneks", "widna", "ciemna", "prześwit", "z oknem", "z jadalni", "ul.", "al.", "toalet", "ubikac", "łazienk",
+    "szerego", "jednorodzin", "wolnostoj", "wolno", "wielorodzin", "bliźnia", "zabudow"],
+
+    "plots": ["szerego", "jednorodzin", "wolnostoj", "wolno", "wielorodzin", "bliźnia", "komerc", "handl", "usług",
+    "magazyn", "produkc", "przemysł", "inwestycyjn", "towarzysząc", "nieuciążli", "prąd", "energia", "elektrycz", "ZK",
+    "gaz", "woda", "wody", "wodociąg","kanaliza", "uzbroj", "szambo", "gruntow","w drodze", "granicy", "działce", "dom", 
+    "budynek", "rozbiór", "utwardzon", "asfalt", "brukow", "żużel", "żużlowa", "jumbo", "ażuro", "jomb", "yomb", "poln",
+    "użytkowani", "wieczyste", "służebność", "ogrodz", "siatka", "x", "prostokąt", "kwadrat", "trójkąt", "trapez",
+    "podłuż", "regularny", "kształt", "zagospodarowani", "MPZP", "przestrzenn", "studium", "warunk", "zabudow", "pozwoleni"]
+}
