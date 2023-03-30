@@ -6,6 +6,7 @@ FILE_PATH_OFFERS = './data/output/offers.json'
 FILE_PATH_STATUSES = './data/output/statuses.json'
 FILE_PATH_TEMPLATES = './src/scrapper/templates/templates.json'
 
+
 def load_file(file_path):
     _prepare_file_if_not_exists(file_path)
 
@@ -61,5 +62,5 @@ def statuses_summary():
         elif "downloaded" in item[0]:
             downloaded_count += 1
 
-    logger_cfg.logger1.info(f"Summary: Total downloaded offers: {downloaded_count}; total skipped offers: {skipped_count}")
-
+    logger_cfg.logger1.info(
+        f"Summary: Total downloaded offers: {downloaded_count}; total skipped offers: {skipped_count}")

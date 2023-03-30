@@ -1,6 +1,6 @@
-from config import selenium_cfg
-from config import logger_cfg
-from config import selectors
+from src.config import selenium_cfg
+from src.config import logger_cfg
+from src.config import selectors
 
 
 

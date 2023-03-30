@@ -13,8 +13,8 @@ from time import sleep
 
 
 def get_login_data() -> tuple:
-    with open('./data/input/login.json') as login_file:
-        data = json.load(login_file)
+    with open('./data/input/config.json') as config_file:
+        data = json.load(config_file)
 
     website_url = data['website']
     login_data = data['login']
@@ -103,7 +103,7 @@ def input_to_searchbar(offer_id: str) -> bool:
         searchbar.send_keys(char)
         sleep(.9)
     sleep(selenium_cfg.SLEEP_TIME)  # sometimes wrong offers hit, so sleep should help
-
+    #@ TODO - now skipped.json has format: [{"downloaded": "31710212OMS"}], SHOULD BE: "31710212OMS":"downloaded"
     if scrapper_functions_aux.check_if_offer_exists():
         logger_cfg.logger1.info(f'The offer {offer_id} not found. Skipping it.')
         searchbar.clear()
@@ -119,13 +119,20 @@ def input_to_searchbar(offer_id: str) -> bool:
 
 
 def get_offers_data(offer_id: str):
+    if "/" in offer_id:
+        offer_id = offer_id.replace("/", "")
+
     offer_data = {}
 
     keys_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_KEYS)
     values_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_VALUES)
 
     # Offer ID evaluation
+
     offer_number_value = selenium_cfg.driver.find_element("xpath", selectors.XPATH_OFFER_ID).text
+    if "/" in offer_number_value:
+        offer_number_value = offer_number_value.replace("/", "")
+
     offer_data['Numer oferty'] = offer_number_value
     offer_data['Numer oferty pożądany'] = offer_id
 
@@ -136,12 +143,16 @@ def get_offers_data(offer_id: str):
     logger_cfg.logger1.info(f"Got data from {len(keys_elements)} tables.")
 
     # Saving data
-    api_handler.send_offer_to_api(offer_data)  # @TODO - LOW: api handler
+    #api_handler.send_offer_to_api(offer_data)  # @TODO - LOW: api handler
     file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
                                     file_name_str='statuses.json')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
 
-def get_chunks_from_description(offer_type: str, offer_id: str) -> dict:
+
+def get_chunks_from_description(offer_type: str, offer_id: str):
+    if "/" in offer_id:
+        offer_id = offer_id.replace("/", "")
+
     # Load data
     template_fields_from_json = file_handler.load_file(file_handler.FILE_PATH_TEMPLATES)
     offers_data = file_handler.load_file(file_handler.FILE_PATH_OFFERS)
@@ -176,6 +187,7 @@ def get_chunks_from_description(offer_type: str, offer_id: str) -> dict:
 
     logger_cfg.logger1.info('Got chunks of data from description. Offer updated.')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
+
 
 def get_images_links(offer_id) -> dict:
     offer_images_dict = {}
