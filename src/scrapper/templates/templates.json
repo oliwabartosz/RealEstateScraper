@@ -4,8 +4,7 @@
     "moderniz", "odrestaur", "odnow", "ociepl", "remon", "elewac", "dozór", "dozor", "monitoring",
     "monit", "ochron", "alarm", "strzeż", "portier", "wspólnot", "spółdziel",
     "kuchni", "aneks", "widna", "ciemna", "prześwit", "z oknem", "z jadalni", "oficyn", "linia",
-    "linii", "opłat", "bezczynsz", "czynsz", "poziom", "ul.", "al.", " zł", " zl", "pln",
-    "ul.", "al.", "ul.", "al."],
+    "linii", "opłat", "bezczynsz", "czynsz", "poziom"],
 
     "houses": ["postojow", "parking", "przynależn", "garaż", "możliwość", "działk", "własno", "spóldziel",
     "wieczyst", "wspólnot", "użytkowani", "ocieplony", "moderniz", "odrestaur", "odnow", "ociepl", "remon", 
