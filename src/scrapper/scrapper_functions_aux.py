@@ -18,16 +18,21 @@ def check_if_offer_exists() -> bool:
     return bool(selenium_cfg.driver.find_elements("xpath", selectors.XPATH_OFFER_NOT_EXISTS))
 
 
+def check_if_offer_was_downloaded(offers_data: list, offer_id: str) -> bool:
+    # @TODO - LOW: should be it for general purpose (file handler and api handler)?
+    return any(offer_id in d.keys() for d in offers_data)
+
+
 def _load_dictionary(offers_type):
     match offers_type:
         case 'flats':
-            dictionary = file_handler.load_file(file_handler.FILE_PATH_FLATS_DICTIONARY)
+            dictionary = file_handler.load_json_file(file_handler.FILE_PATH_FLATS_DICTIONARY)
             return dictionary
         case 'houses':
-            dictionary = file_handler.load_file(file_handler.FILE_PATH_HOUSES_DICTIONARY)
+            dictionary = file_handler.load_json_file(file_handler.FILE_PATH_HOUSES_DICTIONARY)
             return 'houses'
         case 'plots':
-            dictionary = file_handler.load_file(file_handler.FILE_PATH_PLOTS_DICTIONARY)
+            dictionary = file_handler.load_json_file(file_handler.FILE_PATH_PLOTS_DICTIONARY)
             return 'plots'
         case _:
             print("No information or information invalid. Cannot process further operations without this information.")
@@ -46,14 +51,14 @@ def clear_data_from_unnecessary_keys(offers_type, offer_data) -> dict:
 
 def clear_data_values_from_unnecessary_things(offer_data) -> dict:
     headers_parenthesis = {'Data aktualizacji'}
-    headers_PLN = {'Cena', 'Cena za m2', 'Czynsz administracyjny', 'Cena za parking podziemny (miejsce)',
+    headers_pln = {'Cena', 'Cena za m2', 'Czynsz administracyjny', 'Cena za parking podziemny (miejsce)',
                    'Cena za parking naziemny (miejsce)', 'Cena ofertowa', 'Cena za (m2/a/ha)'}
 
     for header in headers_parenthesis:
         if header in offer_data:
             offer_data[header] = re.sub(r'\s*\([^)]*\)', '', offer_data[header])
 
-    for header in headers_PLN:
+    for header in headers_pln:
         if header in offer_data:
             offer_data[header] = offer_data[header].replace("PLN", "").replace(" ", "")
 
@@ -67,7 +72,7 @@ def translate_keys(offers_type, offer_data) -> dict:
 
 def make_chunks_from_description(offers_type, offers_data):
     # Load templates
-    template_fields_from_json = file_handler.load_file(file_handler.FILE_PATH_TEMPLATES)
+    template_fields_from_json = file_handler.load_json_file(file_handler.FILE_PATH_TEMPLATES)
     description_fields = template_fields_from_json.get(offers_type)
 
     # Get rid of \n in a description

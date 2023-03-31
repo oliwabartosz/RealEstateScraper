@@ -10,6 +10,7 @@ from selenium.webdriver import Keys
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
+import traceback
 
 
 def get_login_data() -> tuple:
@@ -62,20 +63,26 @@ def quit_browser() -> None:
 
 
 def get_offers_list_from_file() -> list:
-    # @TODO - HIGH: check if offer exists in offers or skipped jsons
+    # Open data
+
     try:
-        offers = open('./data/input/input.txt', 'r').read().split()
+        # offers = open('./data/input/input.txt', 'r').read().split()
+        offers = file_handler.load_txt_file(file_handler.FILE_PATH_INPUT, split=True)
         logger_cfg.logger1.info(f"{len(offers)} offers will be downloaded.")
 
-        statuses_of_offers = file_handler.load_file(file_handler.FILE_PATH_STATUSES)
+        # Load statuses
+        statuses_of_offers = file_handler.load_json_file(file_handler.FILE_PATH_STATUSES)
 
+        # Check if offers have statuses like downloaded or skipped
         offers_to_remove = []
         for offer in offers:
-            if file_handler.check_if_offer_was_downloaded(statuses_of_offers, offer):
+            if scrapper_functions_aux.check_if_offer_was_downloaded(statuses_of_offers, offer):
                 offers_to_remove.append(offer)
 
+        # Remove offers from input if were downloaded or skipped
         offers_removed = list(filter(lambda x: x in offers_to_remove, offers))
         offers = list(filter(lambda x: x not in offers_to_remove, offers))
+
         logger_cfg.logger2.info(f"{len(offers_removed)} offers removed from input - based on statuses.json.")
 
         return offers
@@ -88,9 +95,11 @@ def get_offers_list_from_file() -> list:
         except TimeoutException:
             quit_browser()
             exit(1)
-    except:
+    except Exception as e:
         logger_cfg.logger1.warning('Something went wrong.')
         quit_browser()
+        print(e)
+        traceback.print_exc()
         exit(1)
 
 
@@ -103,12 +112,12 @@ def input_to_searchbar(offer_id: str) -> bool:
         searchbar.send_keys(char)
         sleep(.9)
     sleep(selenium_cfg.SLEEP_TIME)  # sometimes wrong offers hit, so sleep should help
-    #@ TODO - now skipped.json has format: [{"downloaded": "31710212OMS"}], SHOULD BE: "31710212OMS":"downloaded"
+
     if scrapper_functions_aux.check_if_offer_exists():
         logger_cfg.logger1.info(f'The offer {offer_id} not found. Skipping it.')
         searchbar.clear()
         searchbar.send_keys(Keys.ESCAPE)
-        file_handler.save_offer_to_file({"skipped": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
+        file_handler.save_offer_to_file({offer_id: "skipped"}, file_name=file_handler.FILE_PATH_STATUSES,
                                         file_name_str='statuses.json')
         return False
     else:
@@ -155,7 +164,7 @@ def get_offers_data(offers_type: str, offer_id: str):
     offer_data = scrapper_functions_aux.translate_keys(offers_type, offer_data)
 
     # Saving data
-    #api_handler.send_offer_to_api(offer_data)  # @TODO - LOW: api handler
+    # api_handler.send_offer_to_api(offer_data)  # @TODO - LOW: api handler
     file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
                                     file_name_str='statuses.json')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
@@ -179,3 +188,20 @@ def get_images_links(offer_id) -> dict:
     })
 
     return offer_images_dict
+
+
+def statuses_summary():
+    data = file_handler.load_json_file(file_handler.FILE_PATH_STATUSES)
+    unique_data = list(set(tuple(d.items()) for d in data))
+
+    skipped_count = 0
+    downloaded_count = 0
+
+    for item in unique_data:
+        if "skipped" in item[0]:
+            skipped_count += 1
+        elif "downloaded" in item[0]:
+            downloaded_count += 1
+
+    logger_cfg.logger1.info(
+        f"Summary: Total downloaded offers: {downloaded_count}; total skipped offers: {skipped_count}")
