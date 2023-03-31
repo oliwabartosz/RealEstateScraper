@@ -118,7 +118,7 @@ def input_to_searchbar(offer_id: str) -> bool:
         return True
 
 
-def get_offers_data(offer_id: str):
+def get_offers_data(offers_type: str, offer_id: str):
     if "/" in offer_id:
         offer_id = offer_id.replace("/", "")
 
@@ -142,50 +142,22 @@ def get_offers_data(offer_id: str):
 
     logger_cfg.logger1.info(f"Got data from {len(keys_elements)} tables.")
 
+    # Clear data from junk (by keys)
+    offer_data = scrapper_functions_aux.clear_data_from_unnecessary_keys(offers_type, offer_data)
+
+    # Clear values from junk (PLNs, whitespaces, etc.)
+    offer_data = scrapper_functions_aux.clear_data_values_from_unnecessary_things(offer_data)
+
+    # Create chunks of data
+    offer_data = scrapper_functions_aux.make_chunks_from_description(offers_type, offer_data)
+
+    # Translate data
+    offer_data = scrapper_functions_aux.translate_keys(offers_type, offer_data)
+
     # Saving data
     #api_handler.send_offer_to_api(offer_data)  # @TODO - LOW: api handler
     file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
                                     file_name_str='statuses.json')
-    file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
-
-
-def get_chunks_from_description(offer_type: str, offer_id: str):
-    if "/" in offer_id:
-        offer_id = offer_id.replace("/", "")
-
-    # Load data
-    template_fields_from_json = file_handler.load_file(file_handler.FILE_PATH_TEMPLATES)
-    offers_data = file_handler.load_file(file_handler.FILE_PATH_OFFERS)
-
-    # Extract the pl
-    description_fields = template_fields_from_json.get(offer_type)
-    offer_data = [d for d in offers_data if d.get('Numer oferty') == offer_id][0]
-
-    description_without_nlines = dict((key, offer_data[key]) for key in ["Numer oferty", "Opis"] if key in offer_data)
-
-    description_without_nlines['Opis'] = description_without_nlines['Opis'].replace('\n', '')
-    regex_builder = '(.{{0,60}}{0}.{{0,60}})'
-    chunks = {}
-
-    for description_field in description_fields:
-        field_regex = re.compile(regex_builder.format(description_field), re.S | re.M)
-        description_finds = re.findall(field_regex, description_without_nlines['Opis'])
-        if description_finds:
-            chunks[description_field] = '\n'.join(description_finds)
-            chunks[description_field] = chunks[description_field].replace(description_field,
-                                                                          f"<u>{description_field}</u>")
-        else:
-            chunks[description_field] = ''
-
-    offer_data.update(chunks)
-    # Replace the data
-    for i, d in enumerate(offers_data):
-        if d['Numer oferty'] == offer_id:
-            # Update the dictionary with your new dictionary
-            offers_data[i] = offer_data
-            break
-
-    logger_cfg.logger1.info('Got chunks of data from description. Offer updated.')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
 
 

@@ -4,7 +4,10 @@ from src.config import logger_cfg
 
 FILE_PATH_OFFERS = './data/output/offers.json'
 FILE_PATH_STATUSES = './data/output/statuses.json'
-FILE_PATH_TEMPLATES = './src/scrapper/templates/templates.json'
+FILE_PATH_TEMPLATES = './src/scrapper/templates/chunks_templates.json'
+FILE_PATH_FLATS_DICTIONARY = './src/scrapper/templates/flats_dictionary.json'
+FILE_PATH_HOUSES_DICTIONARY = './src/scrapper/templates/houses_dictionary.json'
+FILE_PATH_PLOTS_DICTIONARY = './src/scrapper/templates/plots_dictionary.json'
 
 
 def load_file(file_path):

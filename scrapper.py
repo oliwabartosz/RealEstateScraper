@@ -4,6 +4,9 @@ from src.scrapper import scrapper_functions
 from src.scrapper import questions
 from src.handlers import file_handler
 
+import traceback
+from tqdm import tqdm
+
 if __name__ == "__main__":
     # Initial questions
     offers_type = questions.type_of_offers()
@@ -19,10 +22,16 @@ if __name__ == "__main__":
     scrapper_functions.login()
 
     # @TODO - LOW: tqdm
-    for offer in offers_to_download:
+    for offer in tqdm(offers_to_download):
+        #@ TODO if input_to_searchbar -> change name for something more accurate
         if scrapper_functions.input_to_searchbar(offer):
-            scrapper_functions.get_offers_data(offer)
-            scrapper_functions.get_chunks_from_description(offers_type, offer)
+            try:
+                scrapper_functions.get_offers_data(offers_type, offer)
+            except Exception as e:
+                print(e)
+                scrapper_functions.logout()
+                traceback.print_exc()
+                exit(1)
 
     scrapper_functions.logout()
     file_handler.statuses_summary()
