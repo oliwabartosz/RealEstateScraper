@@ -4,8 +4,8 @@ from src.config import logger_cfg
 
 FILE_PATH_INPUT = './data/input/input.txt'
 FILE_PATH_OFFERS = './data/output/offers.json'
-FILE_PATH_IMAGES = './data/output/images.json'
 FILE_PATH_STATUSES = './data/output/statuses.json'
+FILE_PATH_IMAGES = './data/output/images.json'
 FILE_PATH_TEMPLATES = './src/scrapper/templates/chunks_templates.json'
 FILE_PATH_FLATS_DICTIONARY = './src/scrapper/templates/flats_dictionary.json'
 FILE_PATH_HOUSES_DICTIONARY = './src/scrapper/templates/houses_dictionary.json'
@@ -13,8 +13,8 @@ FILE_PATH_PLOTS_DICTIONARY = './src/scrapper/templates/plots_dictionary.json'
 
 
 def load_json_file(file_path):
-    # if file_path == FILE_PATH_OFFERS or file_path == FILE_PATH_STATUSES:
-    #     _prepare_file_if_not_exists(file_path)
+    if file_path == FILE_PATH_OFFERS or file_path == FILE_PATH_STATUSES:
+        _prepare_file_if_not_exists(file_path)
 
     with open(file_path, mode='r', encoding='utf-8') as file:
         data = json.load(file)
@@ -45,5 +45,6 @@ def save_offer_to_file(offer_data: dict, file_name, file_name_str: str):
 
 
 def save_images_links_to_file(images_dict):
+    _prepare_file_if_not_exists(FILE_PATH_IMAGES)
     with open(FILE_PATH_IMAGES, mode='w', encoding='utf-8') as file:
         json.dump(images_dict, file)
