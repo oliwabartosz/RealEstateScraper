@@ -1,9 +1,18 @@
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
+from selenium.common.exceptions import NoSuchElementException
 from src.config import selenium_cfg
 from src.config import selectors
 from src.handlers import file_handler
 import re
+
+
+def close_unwanted_ad():
+    try:
+        selenium_cfg.driver.find_element("xpath", selectors.XPATH_UNWANTED_AD).click()
+        return True
+    except NoSuchElementException:
+        return False
 
 
 def locate_searchbar():
@@ -19,7 +28,6 @@ def check_if_offer_exists() -> bool:
 
 
 def check_if_offer_was_downloaded(offers_data: list, offer_id: str) -> bool:
-    # @TODO - LOW: should be it for general purpose (file handler and api handler)?
     return any(offer_id in d.keys() for d in offers_data)
 
 

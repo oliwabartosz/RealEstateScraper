@@ -3,6 +3,7 @@ import __syspath__
 from src.scrapper import scrapper_functions
 from src.scrapper import questions
 from src.handlers import file_handler
+from src.handlers import images_handler
 
 import traceback
 from tqdm import tqdm
@@ -32,4 +33,5 @@ if __name__ == "__main__":
 
     scrapper_functions.logout()
     scrapper_functions.statuses_summary()
+    # images_handler.send_images_to_ssh()
 

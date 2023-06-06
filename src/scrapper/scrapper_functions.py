@@ -1,11 +1,13 @@
 import json
 import re
+from operator import itemgetter
 import scrapper_functions_aux
 from src.config import selenium_cfg
 from src.config import logger_cfg
 from src.config import selectors
 from src.handlers import file_handler
 from src.handlers import api_handler
+from src.config import config_data
 from selenium.webdriver import Keys
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
@@ -13,20 +15,14 @@ from time import sleep
 import traceback
 
 
-def get_login_data() -> tuple:
-    with open('./data/input/config.json') as config_file:
-        data = json.load(config_file)
-
-    website_url = data['website']
-    login_data = data['login']
-    password_data = data['password']
-
-    return website_url, login_data, password_data
-
-
 def login() -> None:
     """Log in to website"""
-    website_url, login_data, password_data = get_login_data()
+    data = config_data.get_login_data()
+
+    website_url, login_data, password_data = itemgetter('website_url',
+                                                        'login_data',
+                                                        'password_data',
+                                                        )(data)
 
     # Go to web and locate forms
     selenium_cfg.driver.get(website_url)
@@ -42,6 +38,9 @@ def login() -> None:
     sleep(selenium_cfg.SLEEP_TIME)
     logger_cfg.logger1.info(f'Logged in. Waiting {selenium_cfg.SLEEP_TIME}s.')
 
+    # Close unwanted ads
+    if scrapper_functions_aux.close_unwanted_ad():
+        logger_cfg.logger1.info('Closed unwanted ad.')
 
 def logout() -> None:
     """Logouts from the website"""
@@ -87,8 +86,9 @@ def get_offers_list_from_file() -> list:
 
         return offers
 
-    except FileNotFoundError:
-        logger_cfg.logger1.warning("Are you sure that input.txt exists?")
+    except FileNotFoundError as e:
+        file_name_from_error_message = str(e).split(": ")[-1].strip("'").split('/')[-1]
+        logger_cfg.logger1.warning(f"Are you sure that {file_name_from_error_message} exists?")
         try:
             logout()
             exit(1)
@@ -104,6 +104,11 @@ def get_offers_list_from_file() -> list:
 
 
 def input_to_searchbar(offer_id: str) -> bool:
+    # Close unwanted ads
+    if scrapper_functions_aux.close_unwanted_ad():
+        logger_cfg.logger1.info('Closed unwanted ad.')
+
+    # Input data
     searchbar = scrapper_functions_aux.locate_searchbar()
 
     logger_cfg.logger1.info(f"{offer_id} will be downloaded.")

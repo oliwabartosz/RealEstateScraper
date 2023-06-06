@@ -18,6 +18,8 @@ XPATH_OFFER_ID: str = '//*[@id="idlabel"]'
 XPATH_OFFER_NOT_EXISTS: str = "//*[@class='x-combo-list-inner' and text()='Nie znaleziono takiej oferty. Spróbuj " \
                                 "wyszukać ponownie.']"
 
-# OFFERS IMAGES
-XPATH_IMAGES_FOR_OFFER: str = "(//a[contains(@class,'-images')])"
+# UNWANTED ADS
+XPATH_UNWANTED_AD: str = "//div[@class='x-tool x-tool-close']"
 
+# IMAGES
+XPATH_IMAGES_COUNT = "(//a[contains(@class,'-images')])"

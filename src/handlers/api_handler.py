@@ -38,3 +38,4 @@ def get_offers_list_from_api():
 # jwt_data = get_jwt_token('http://localhost:3000/re/auth')
 # refresh_jwt_token('http://localhost:3000/re/refresh', access_token=jwt_data['access_token'],
 #                   cookie_jwt=jwt_data['cookie_jwt'])
+    
