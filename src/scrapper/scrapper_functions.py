@@ -42,6 +42,7 @@ def login() -> None:
     if scrapper_functions_aux.close_unwanted_ad():
         logger_cfg.logger1.info('Closed unwanted ad.')
 
+
 def logout() -> None:
     """Logouts from the website"""
     selenium_cfg.wait.until(EC.element_to_be_clickable(("xpath", selectors.XPATH_LOGOUT_BTN_ARROW)))
@@ -169,30 +170,30 @@ def get_offers_data(offers_type: str, offer_id: str):
     offer_data = scrapper_functions_aux.translate_keys(offers_type, offer_data)
 
     # Saving data
+
     # api_handler.send_offer_to_api(offer_data)  # @TODO - LOW: api handler
     file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
                                     file_name_str='statuses.json')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
 
 
-def get_images_links(offer_id) -> dict:
-    offer_images_dict = {}
-    offer_images_links = []
-
-    images_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_IMAGES_FOR_OFFER)
+def get_images_links(offer_id, images_links=[], images_dict={}) -> dict:
+    images_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_IMAGES_COUNT)
     if images_elements:
         logger_cfg.logger1.info(f'Preparing list of images to download {len(images_elements)} images for {offer_id}')
         for image_element in images_elements:
             image_link = image_element.get_attribute('href')
-            offer_images_links.append(image_link)
+            images_links.append(image_link)
+
+            images_dict.update({
+                offer_id: images_links
+            })
+
+            file_handler.save_images_links_to_file(images_dict)
     else:
         logger_cfg.logger1.info(f'No images found for {offer_id}.')
 
-    offer_images_dict.update({
-        offer_id: offer_images_links
-    })
-
-    return offer_images_dict
+    return images_dict
 
 
 def statuses_summary():
