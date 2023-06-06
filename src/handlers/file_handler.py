@@ -11,7 +11,6 @@ FILE_PATH_FLATS_DICTIONARY = './src/scrapper/templates/flats_dictionary.json'
 FILE_PATH_HOUSES_DICTIONARY = './src/scrapper/templates/houses_dictionary.json'
 FILE_PATH_PLOTS_DICTIONARY = './src/scrapper/templates/plots_dictionary.json'
 
-
 def load_json_file(file_path):
     if file_path == FILE_PATH_OFFERS or file_path == FILE_PATH_STATUSES:
         _prepare_file_if_not_exists(file_path)
@@ -29,10 +28,10 @@ def load_txt_file(file_path, split=False):
             return file.read()
 
 
-def _prepare_file_if_not_exists(file_path):
+def _prepare_file_if_not_exists(file_path, start=[]):
     if not os.path.isfile(file_path):
         with open(file_path, mode='w', encoding='utf-8') as file:
-            json.dump([], file)
+            json.dump(start, file)
 
 
 def save_offer_to_file(offer_data: dict, file_name, file_name_str: str):
@@ -44,7 +43,7 @@ def save_offer_to_file(offer_data: dict, file_name, file_name_str: str):
     logger_cfg.logger1.info(f"File saved to {file_name_str}")
 
 
-def save_images_links_to_file(images_dict):
+def save_images_links_to_file(images):
     _prepare_file_if_not_exists(FILE_PATH_IMAGES)
     with open(FILE_PATH_IMAGES, mode='w', encoding='utf-8') as file:
-        json.dump(images_dict, file)
+        json.dump(images, file)

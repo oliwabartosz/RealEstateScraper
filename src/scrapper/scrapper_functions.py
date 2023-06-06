@@ -14,6 +14,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
 import traceback
 
+images_data_to_json = []
 
 def login() -> None:
     """Log in to website"""
@@ -177,7 +178,10 @@ def get_offers_data(offers_type: str, offer_id: str):
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
 
 
-def get_images_links(offer_id, images_links=[], images_dict={}) -> dict:
+def get_images_links(offer_id) -> dict:
+    images_links = []
+    images_dict = {}
+
     images_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_IMAGES_COUNT)
     if images_elements:
         logger_cfg.logger1.info(f'Preparing list of images to download {len(images_elements)} images for {offer_id}')
@@ -185,13 +189,15 @@ def get_images_links(offer_id, images_links=[], images_dict={}) -> dict:
             image_link = image_element.get_attribute('href')
             images_links.append(image_link)
 
-            images_dict.update({
-                offer_id: images_links
-            })
-
-            file_handler.save_images_links_to_file(images_dict)
     else:
         logger_cfg.logger1.info(f'No images found for {offer_id}.')
+
+    images_dict.update({
+        offer_id: images_links
+    })
+
+    images_data_to_json.append(images_dict)
+    file_handler.save_images_links_to_file(images_data_to_json)
 
     return images_dict
 

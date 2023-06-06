@@ -23,18 +23,22 @@ def type_of_offers():
 
 
 def delete_previous_run():
-    if os.path.exists(file_handler.FILE_PATH_OFFERS) or os.path.exists(file_handler.FILE_PATH_STATUSES):
+    def _delete_files(file_path: str):
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            print(f"File: {os.path.basename(file_path)} has been deleted.")
+
+    if os.path.exists(file_handler.FILE_PATH_OFFERS) or \
+            os.path.exists(file_handler.FILE_PATH_STATUSES) or \
+            os.path.exists(file_handler.FILE_PATH_IMAGES):
+
         if input(
-                f"Files from previus run have been found. Delete these files and start as clean run?"
+                f"Files from previous run have been found. Delete these files and start as clean run?"
                 f"(Y/N) ").lower() == "y":
 
-            if os.path.exists(file_handler.FILE_PATH_OFFERS):
-                os.remove(file_handler.FILE_PATH_OFFERS)
-                print(f"File: {os.path.basename(file_handler.FILE_PATH_OFFERS)} has been deleted.")
-
-            if os.path.exists(file_handler.FILE_PATH_STATUSES):
-                os.remove(file_handler.FILE_PATH_STATUSES)
-                print(f"{os.path.basename(file_handler.FILE_PATH_STATUSES)} has been deleted.")
+            _delete_files(file_handler.FILE_PATH_OFFERS)
+            _delete_files(file_handler.FILE_PATH_STATUSES)
+            _delete_files(file_handler.FILE_PATH_IMAGES)
 
         else:
             print("File deletion has been cancelled.")
