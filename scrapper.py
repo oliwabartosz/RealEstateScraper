@@ -1,14 +1,17 @@
-import __syspath__
-
-from src.scrapper import scrapper_functions
-from src.scrapper import questions
-from src.handlers import file_handler
-from src.handlers import images_handler
-
+import asyncio
 import traceback
 from tqdm import tqdm
+import __syspath__
+from src.handlers.api_handler import get_jwt_token
+from src.scrapper import scrapper_functions
+from src.scrapper import questions
+from src.scrapper.scrapper_functions import download_images
+from src.handlers import file_handler
+from src.handlers.file_handler import load_json_file
+
 
 if __name__ == "__main__":
+
     # Initial questions
     offers_type = questions.type_of_offers()
 
@@ -21,6 +24,9 @@ if __name__ == "__main__":
     # Starts browser session and gets the data
     scrapper_functions.login()
 
+    # Get JWT AUTH TOKEN
+    jwt_data = get_jwt_token('http://localhost:3000/re/auth')
+
     for offer_id in tqdm(offers_to_download):
         if scrapper_functions.input_to_searchbar(offer_id):
             try:
@@ -31,6 +37,9 @@ if __name__ == "__main__":
                 scrapper_functions.logout()
                 traceback.print_exc()
                 exit(1)
+
+    loop = asyncio.get_event_loop()
+    loop.run_until_complete(download_images(load_json_file(file_handler.FILE_PATH_IMAGES)))
 
     scrapper_functions.logout()
     scrapper_functions.statuses_summary()

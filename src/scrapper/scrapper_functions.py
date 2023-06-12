@@ -12,9 +12,16 @@ from selenium.webdriver import Keys
 from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.support import expected_conditions as EC
 from time import sleep
+from PIL import Image
 import traceback
+import asyncio
+import aiohttp
+import os
+
+from src.handlers.file_handler import load_json_file
 
 images_data_to_json = []
+
 
 def login() -> None:
     """Log in to website"""
@@ -200,6 +207,52 @@ def get_images_links(offer_id) -> dict:
     file_handler.save_images_links_to_file(images_data_to_json)
 
     return images_dict
+
+
+async def download_image(url, folder):
+    async with aiohttp.ClientSession() as session:
+        async with session.get(url) as response:
+            if response.status == 200:
+                image_data = await response.read()
+                filename = url.split("/")[-1]
+                filepath = os.path.join(folder, filename)
+                with open(filepath, "wb") as file:
+                    file.write(image_data)
+                    logger_cfg.logger1.info(f"Downloaded {url} to {filepath}")
+            else:
+                logger_cfg.logger1.warning(f"Failed to download {url}")
+
+
+def convert_to_webp(image_path):
+    image = Image.open(image_path)
+    webp_path = os.path.splitext(image_path)[0] + ".webp"
+    image.save(webp_path, "WebP")
+    os.remove(image_path)
+
+
+async def download_images(data):
+    tasks = []
+
+    for item in data:
+        for folder, urls in item.items():
+            if not os.path.exists(folder):
+                os.makedirs(file_handler.FILE_PATH_IMAGES_DIR + folder)
+            for url in urls:
+                task = download_image(url, file_handler.FILE_PATH_IMAGES_DIR + folder)
+                tasks.append(task)
+    await asyncio.gather(*tasks)
+
+    # Convert downloaded images to WebP
+    image_files = []
+    for item in data:
+        for folder, urls in item.items():
+            for url in urls:
+                filename = url.split("/")[-1]
+                image_path = os.path.join(file_handler.FILE_PATH_IMAGES_DIR + folder, filename)
+                image_files.append(image_path)
+
+    for image_file in image_files:
+        convert_to_webp(image_file)
 
 
 def statuses_summary():
