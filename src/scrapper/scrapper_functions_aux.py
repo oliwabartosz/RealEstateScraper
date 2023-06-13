@@ -78,6 +78,19 @@ def translate_keys(offers_type, offer_data) -> dict:
     return {dictionary.get(key, key): value for key, value in offer_data.items()}
 
 
+def remove_keys_with_empty_string(offer_data):
+    keys_to_remove = [key for key, value in offer_data.items() if value == '']
+    for key in keys_to_remove:
+        del offer_data[key]
+
+
+def change_comma_to_dot(offer_data):
+    keys_to_update = ['price', 'priceM2', 'priceOffer', 'rent']
+    for key_to_update in keys_to_update:
+        if key_to_update in offer_data:
+            offer_data[key_to_update] = offer_data[key_to_update].replace(',', '.')
+
+
 def make_chunks_from_description(offers_type, offers_data):
     # Load templates
     template_fields_from_json = file_handler.load_json_file(file_handler.FILE_PATH_TEMPLATES)

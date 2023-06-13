@@ -57,7 +57,7 @@ def save_images_links_to_file(images):
         json.dump(images, file)
 
 def send_images_to_ssh():
-    data = config_data.get_login_data()
+    data = config_data.get_config_data()
 
     ssh_hostname, ssh_username, ssh_password, ssh_port = itemgetter('ssh_hostname',
                                                                     'ssh_username',
