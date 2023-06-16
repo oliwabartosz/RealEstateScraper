@@ -1,7 +1,8 @@
 import json
-import os.path
+import os
 import paramiko
-import socket
+from paramiko.client import SSHClient
+from scp import SCPClient
 from src.config import logger_cfg
 from src.config import config_data
 from operator import itemgetter
@@ -16,7 +17,6 @@ FILE_PATH_TEMPLATES = './src/scrapper/templates/chunks_templates.json'
 FILE_PATH_FLATS_DICTIONARY = './src/scrapper/templates/flats_dictionary.json'
 FILE_PATH_HOUSES_DICTIONARY = './src/scrapper/templates/houses_dictionary.json'
 FILE_PATH_PLOTS_DICTIONARY = './src/scrapper/templates/plots_dictionary.json'
-
 
 
 def load_json_file(file_path):
@@ -56,25 +56,63 @@ def save_images_links_to_file(images):
     with open(FILE_PATH_IMAGES, mode='w', encoding='utf-8') as file:
         json.dump(images, file)
 
+
 def send_images_to_ssh():
     data = config_data.get_config_data()
+    current_dir = os.getcwd()
+    local_directory = os.path.join(current_dir, 'data', 'output', 'images/')
 
-    ssh_hostname, ssh_username, ssh_password, ssh_port = itemgetter('ssh_hostname',
-                                                                    'ssh_username',
-                                                                    'ssh_password',
-                                                                    'ssh_port')(data)
+    ssh_host, ssh_username, ssh_password, ssh_port, ssh_remote_dir = itemgetter('ssh_hostname',
+                                                                                'ssh_username',
+                                                                                'ssh_password',
+                                                                                'ssh_port',
+                                                                                'ssh_remote_dir')(data)
 
     try:
-        ssh_client = paramiko.SSHClient()
-        ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh_client.connect(hostname=ssh_hostname, username=ssh_username, password=ssh_password, port=ssh_port)
-        stdin, stdout, stderr = ssh_client.exec_command('ls')
+        # Create an SSH client
+        ssh = SSHClient()
+        ssh.load_system_host_keys()
+        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        # TODO: add folder 'images' upload
-        print(stdin, stdout, stderr)
+        ssh.connect(ssh_host, port=ssh_port, username=ssh_username, password=ssh_password)
 
-    except socket.gaierror:
-        raise ConnectionError('Connection to SSH Failed. Check hostname in config.json.')
-    except paramiko.ssh_exception.AuthenticationException:
-        raise ConnectionError('Connection to SSH Failed. Check if data (username, password or port) is correct in '
-                              'config.json')
+        # Create an SCP client
+        scp = SCPClient(ssh.get_transport())
+
+        # Iterate over files in the local directory
+        logger_cfg.logger1.info('Sending images to SSH.')
+        # Iterate over files in the local directory
+        for root, dirs, files in os.walk(local_directory):
+            for filename in files:
+                local_path = os.path.join(root, filename)
+                remote_path = os.path.join(ssh_remote_dir, root.replace(local_directory, ''), filename)
+
+                # Check if the file already exists on the remote server
+                sftp = ssh.open_sftp()
+                try:
+                    sftp.stat(remote_path)
+                    print(f'Skipping {remote_path} - File already exists on the remote server.')
+                    continue
+                except FileNotFoundError:
+                    pass
+                finally:
+                    sftp.close()
+
+                # Create the remote directory if it doesn't exist
+                remote_dir = os.path.dirname(remote_path)
+                ssh.exec_command('mkdir -p {}'.format(remote_dir))
+
+                # Upload the file to the remote directory
+                scp.put(local_path, remote_path)
+                print(f'Copied {remote_path}.')
+
+        # Close the SCP client
+        scp.close()
+        logger_cfg.logger1.info('Directory uploaded successfully!')
+    except Exception as e:
+        print('An error occurred:', str(e))
+    finally:
+        # Close the SSH connection
+        ssh.close()
+
+

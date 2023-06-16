@@ -12,6 +12,7 @@ def get_config_data() -> dict:
     ssh_username = data['ssh_username']
     ssh_password = data['ssh_password']
     ssh_port = data['ssh_port']
+    ssh_remote_dir = data['ssh_remote_dir']
     jwt_api_login = data['jwt_api_login']
     jwt_api_password = data['jwt_api_password']
     api_auth_token_url = data['api_auth_token_url']
@@ -26,6 +27,7 @@ def get_config_data() -> dict:
         'ssh_username': ssh_username,
         'ssh_password': ssh_password,
         'ssh_port': ssh_port,
+        'ssh_remote_dir': ssh_remote_dir,
         'api_auth_token_url': api_auth_token_url,
         'api_refresh_token_url': api_refresh_token_url,
         'jwt_api_login': jwt_api_login,
