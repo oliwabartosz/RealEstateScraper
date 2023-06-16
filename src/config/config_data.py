@@ -6,6 +6,7 @@ def get_config_data() -> dict:
         data = json.load(config_file)
 
     website_url = data['website']
+    rer_url = data['rer_url']
     login_data = data['login']
     password_data = data['password']
     ssh_hostname = data['ssh_hostname']
@@ -15,12 +16,10 @@ def get_config_data() -> dict:
     ssh_remote_dir = data['ssh_remote_dir']
     jwt_api_login = data['jwt_api_login']
     jwt_api_password = data['jwt_api_password']
-    api_auth_token_url = data['api_auth_token_url']
-    api_refresh_token_url = data['api_refresh_token_url']
-    post_flats_data_url = data['post_flats_data_url']
 
     return {
         'website_url': website_url,
+        'rer_url': rer_url,
         'login_data': login_data,
         'password_data': password_data,
         'ssh_hostname': ssh_hostname,
@@ -28,9 +27,6 @@ def get_config_data() -> dict:
         'ssh_password': ssh_password,
         'ssh_port': ssh_port,
         'ssh_remote_dir': ssh_remote_dir,
-        'api_auth_token_url': api_auth_token_url,
-        'api_refresh_token_url': api_refresh_token_url,
         'jwt_api_login': jwt_api_login,
         'jwt_api_password': jwt_api_password,
-        'post_flats_data_url': post_flats_data_url
     }

@@ -184,8 +184,7 @@ def get_offers_data(offers_type: str, offer_id: str, access_token: str):
     scrapper_functions_aux.change_comma_to_dot(offer_data)
 
     # Saving data
-
-    api_handler.send_offer_to_api(offer_data, access_token)  # @TODO - LOW: api handler
+    api_handler.send_offer_to_api(offer_data, access_token)
     file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
                                     file_name_str='statuses.json')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
