@@ -7,12 +7,13 @@ from src.config import logger_cfg
 from src.config import config_data
 from operator import itemgetter
 
+# Important paths that can be used in other .py files.
 FILE_PATH_INPUT = './data/input/input.txt'
 FILE_PATH_OFFERS = './data/output/offers.json'
 FILE_PATH_STATUSES = './data/output/statuses.json'
 FILE_PATH_IMAGES = './data/output/images.json'
 FILE_PATH_IMAGES_DIR = './data/output/images/'
-
+# Templates/dictionaries
 FILE_PATH_TEMPLATES = './src/scrapper/templates/chunks_templates.json'
 FILE_PATH_FLATS_DICTIONARY = './src/scrapper/templates/flats_dictionary.json'
 FILE_PATH_HOUSES_DICTIONARY = './src/scrapper/templates/houses_dictionary.json'
