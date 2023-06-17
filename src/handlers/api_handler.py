@@ -39,7 +39,7 @@ def refresh_jwt_token(url, access_token, cookie_jwt):
     # logger_cfg.logger1.info(f"JWT Token refreshed: \nNew token{json.loads(r.content)['accessToken']}")
 
 
-def send_offer_to_api(offer_data, access_token):
+def send_offer_to_api(offer_data, access_token, offers_type):
     sleep(5)
 
     # Checking if that offer exists in a database
@@ -56,13 +56,17 @@ def send_offer_to_api(offer_data, access_token):
                                                           # use json=offer_data, it would be useful if in
                                                           # request.post was used data=json_offer_data
 
-        r = requests.post(f'{rer_url}/rer/api/flats/', json=offer_data, headers=headers)
+        r = requests.post(f'{rer_url}/rer/api/{offers_type}/', json=offer_data, headers=headers)
 
         match r.status_code:
             case 202:
                 logger_cfg.logger1.info('Response 202. Data has been sent to the Database.')
             case 500:
                 logger_cfg.logger1.warning('Response 500. Data has NOT been sent to the Database')
+            case 403:
+                logger_cfg.logger1.warning('Response 403. Forbidden.')
+            case 404:
+                logger_cfg.logger1.warning('Response 404. Check the routers.')
             case _:
                 logger_cfg.logger1.warning(
                     'Something bad happened while trying to post data. Data has NOT been sent to the Database')

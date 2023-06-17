@@ -184,7 +184,7 @@ def get_offers_data(offers_type: str, offer_id: str, access_token: str):
     scrapper_functions_aux.change_comma_to_dot(offer_data)
 
     # Saving data
-    api_handler.send_offer_to_api(offer_data, access_token)
+    api_handler.send_offer_to_api(offer_data, access_token, offers_type)
     file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
                                     file_name_str='statuses.json')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
@@ -229,10 +229,11 @@ async def download_image(url, folder):
 
 
 def convert_to_webp(image_path):
-    image = Image.open(image_path)
-    webp_path = os.path.splitext(image_path)[0] + ".webp"
-    image.save(webp_path, "WebP")
-    os.remove(image_path)
+    if f"{image_path.split('/')[-1]}.webp" not in os.listdir(os.path.dirname(image_path)):
+        image = Image.open(image_path)
+        webp_path = os.path.splitext(image_path)[0] + ".webp"
+        image.save(webp_path, "WebP")
+        os.remove(image_path)
 
 
 async def download_images(data):
@@ -240,11 +241,15 @@ async def download_images(data):
 
     for item in data:
         for folder, urls in item.items():
-            if not os.path.exists(folder):
+            if os.path.exists(folder):
                 os.makedirs(file_handler.FILE_PATH_IMAGES_DIR + folder)
             for url in urls:
-                task = download_image(url, file_handler.FILE_PATH_IMAGES_DIR + folder)
-                tasks.append(task)
+                # Check if image has been downloaded before
+                if url.split('/')[-1] + '.webp' in os.listdir(file_handler.FILE_PATH_IMAGES_DIR + folder):
+                    print(f"File {url.split('/')[-1]} has been downloaded previously.")
+                else:
+                    task = download_image(url, file_handler.FILE_PATH_IMAGES_DIR + folder)
+                    tasks.append(task)
     await asyncio.gather(*tasks)
 
     # Convert downloaded images to WebP

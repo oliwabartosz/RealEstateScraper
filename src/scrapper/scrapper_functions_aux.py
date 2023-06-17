@@ -28,20 +28,20 @@ def check_if_offer_exists() -> bool:
 
 
 def check_if_offer_was_downloaded(offers_data: list, offer_id: str) -> bool:
-    return any(offer_id in d.keys() for d in offers_data)
+    return any(offer_id in d.values() for d in offers_data)
 
 
 def _load_dictionary(offers_type):
     match offers_type:
         case 'flats':
-            dictionary = file_handler.load_json_file(file_handler.FILE_PATH_FLATS_DICTIONARY)
-            return dictionary
+            dictionary_flats = file_handler.load_json_file(file_handler.FILE_PATH_FLATS_DICTIONARY)
+            return dictionary_flats
         case 'houses':
-            dictionary = file_handler.load_json_file(file_handler.FILE_PATH_HOUSES_DICTIONARY)
-            return 'houses'
+            dictionary_houses = file_handler.load_json_file(file_handler.FILE_PATH_HOUSES_DICTIONARY)
+            return dictionary_houses
         case 'plots':
-            dictionary = file_handler.load_json_file(file_handler.FILE_PATH_PLOTS_DICTIONARY)
-            return 'plots'
+            dictionary_plots = file_handler.load_json_file(file_handler.FILE_PATH_PLOTS_DICTIONARY)
+            return dictionary_plots
         case _:
             print("No information or information invalid. Cannot process further operations without this information.")
             exit(1)
@@ -85,7 +85,9 @@ def remove_keys_with_empty_string(offer_data):
 
 
 def change_comma_to_dot(offer_data):
-    keys_to_update = ['price', 'priceM2', 'priceOffer', 'rent']
+    keys_to_update = ['price', 'priceM2', 'priceOffer', 'priceSold',
+                      'rent', 'priceParkingUnderground', 'priceParkingGround']
+
     for key_to_update in keys_to_update:
         if key_to_update in offer_data:
             offer_data[key_to_update] = offer_data[key_to_update].replace(',', '.')
