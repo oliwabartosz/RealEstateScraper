@@ -1,0 +1,5 @@
+# This file should have name input.txt. Delete that comment also.
+
+
+EXAMPLE12345
+EXAMPLE23456

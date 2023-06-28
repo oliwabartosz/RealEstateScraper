@@ -1,0 +1,15 @@
+// This file should have name config.json. Delete that comment also.
+
+{
+  "website": "https://abc.abc.ab/",
+  "login": "email@address.com",
+  "password": "PaSSwOrD",
+  "ssh_hostname": "server.serv.er",
+  "ssh_username": "username",
+  "ssh_password": "PassWord!",
+  "ssh_port": 11111,
+  "ssh_remote_dir": "/path/to/push/images",
+  "jwt_api_login": "Api",
+  "jwt_api_password": "API_RER!2023",
+  "rer_url": "http://localhost:3000"
+}

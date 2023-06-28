@@ -44,16 +44,17 @@ if __name__ == "__main__":
                 traceback.print_exc()
                 exit(1)
 
+    scrapper_functions.logout()
+
+    # Download images
     loop = asyncio.get_event_loop()
     loop.run_until_complete(download_images(load_json_file(file_handler.FILE_PATH_IMAGES)))
-
-    scrapper_functions.logout()
-    scrapper_functions.statuses_summary()
 
     # Send image to remote server using SSH
     file_handler.send_images_to_ssh()
 
     # End.
-    print('Done.')
+    scrapper_functions.statuses_summary()
+
 
 

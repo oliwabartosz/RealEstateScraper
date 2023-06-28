@@ -241,7 +241,7 @@ async def download_images(data):
 
     for item in data:
         for folder, urls in item.items():
-            if os.path.exists(folder):
+            if not os.path.exists(folder):
                 os.makedirs(file_handler.FILE_PATH_IMAGES_DIR + folder)
             for url in urls:
                 # Check if image has been downloaded before
