@@ -1,0 +1,29 @@
+{
+  "technologyGPT": 1,
+  "lawStatusGPT": 1,
+  "balconyGPT": -9,
+  "elevatorGPT": 0,
+  "basementGPT": 1,
+  "garageGPT": 0,
+  "gardenGPT": -9,
+  "modernizationGPT": 4,
+  "alarmGPT": -9,
+  "kitchenGPT": 2,
+  "outbuildingGPT": 1,
+  "qualityGPT": 3,
+  "rentGPT": 250,
+  "commentsGPT": {
+    "lawStatusGPT": "Własność",
+    "balconyGPT": "Brak informacji o balkonie",
+    "elevatorGPT": "Brak windy",
+    "basementGPT": "Piwnica przynależy do mieszkania",
+    "garageGPT": "Brak informacji o garażu",
+    "gardenGPT": "Brak informacji o ogrodzie",
+    "modernizationGPT": "Brak informacji o modernizacji",
+    "alarmGPT": "Brak informacji o monitoringu",
+    "kitchenGPT": "Kuchnia widna",
+    "outbuildingGPT": "Mieszkanie jest oficyną kamienicy",
+    "qualityGPT": "Brak informacji o jakości",
+    "rentGPT": "Czynsz wynosi 250 PLN/miesiąc"
+  }
+}

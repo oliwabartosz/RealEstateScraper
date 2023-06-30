@@ -16,6 +16,7 @@ def get_config_data() -> dict:
     ssh_remote_dir = data['ssh_remote_dir']
     jwt_api_login = data['jwt_api_login']
     jwt_api_password = data['jwt_api_password']
+    OPENAI_API_KEY = data['OPENAI_API_KEY']
 
     return {
         'website_url': website_url,
@@ -29,4 +30,5 @@ def get_config_data() -> dict:
         'ssh_remote_dir': ssh_remote_dir,
         'jwt_api_login': jwt_api_login,
         'jwt_api_password': jwt_api_password,
+        'OPENAI_API_KEY': OPENAI_API_KEY,
     }

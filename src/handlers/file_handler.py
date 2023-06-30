@@ -18,6 +18,9 @@ FILE_PATH_TEMPLATES = './src/scrapper/templates/chunks_templates.json'
 FILE_PATH_FLATS_DICTIONARY = './src/scrapper/templates/flats_dictionary.json'
 FILE_PATH_HOUSES_DICTIONARY = './src/scrapper/templates/houses_dictionary.json'
 FILE_PATH_PLOTS_DICTIONARY = './src/scrapper/templates/plots_dictionary.json'
+# GPT
+FILE_PATH_GPT_INPUT = './data/input/gpt.txt'
+FILE_PATH_GPT_OUTPUT = './data/output/gpt_answer.txt'
 
 
 def load_json_file(file_path):
@@ -36,6 +39,9 @@ def load_txt_file(file_path, split=False):
         else:
             return file.read()
 
+def save_txt_file(file_path, text_to_save):
+    with open(file_path, 'w') as file:
+        file.write(text_to_save)
 
 def _prepare_file_if_not_exists(file_path, start=[]):
     if not os.path.isfile(file_path):
