@@ -1,29 +1,66 @@
-{
-  "technologyGPT": 1,
-  "lawStatusGPT": 1,
-  "balconyGPT": -9,
-  "elevatorGPT": 0,
-  "basementGPT": 1,
-  "garageGPT": 0,
-  "gardenGPT": -9,
-  "modernizationGPT": 4,
-  "alarmGPT": -9,
-  "kitchenGPT": 2,
-  "outbuildingGPT": 1,
-  "qualityGPT": 3,
-  "rentGPT": 250,
-  "commentsGPT": {
-    "lawStatusGPT": "Własność",
-    "balconyGPT": "Brak informacji o balkonie",
-    "elevatorGPT": "Brak windy",
-    "basementGPT": "Piwnica przynależy do mieszkania",
-    "garageGPT": "Brak informacji o garażu",
-    "gardenGPT": "Brak informacji o ogrodzie",
-    "modernizationGPT": "Brak informacji o modernizacji",
-    "alarmGPT": "Brak informacji o monitoringu",
-    "kitchenGPT": "Kuchnia widna",
-    "outbuildingGPT": "Mieszkanie jest oficyną kamienicy",
-    "qualityGPT": "Brak informacji o jakości",
-    "rentGPT": "Czynsz wynosi 250 PLN/miesiąc"
-  }
-}
+Your task is to evaluate the property offer parameters from the text separated by <> symbols. To do this, perform the following steps:
+
+1. Create a JSON object that contains the following keys: technologyGPT, lawStatusGPT, balconyGPT, elevatorGPT, basementGPT, garageGPT, gardenGPT, modernizationGPT, alarmGPT, kitchenGPT, outbuildingGPT, qualityGPT, rentGPT, commentsGPT.
+Analyze the text and gather information about: building technology, legal status, balcony in the apartment, garage, garden, building modernization, surveillance, kitchen, rent, outbuilding.
+
+2. For the evaluation of Legal Status (lawStatusGPT key of the JSON object):
+- If the year of construction is less than 1990 and the material is prefabricated concrete, enter the value 2.
+- Obtain information from the <Legal Status> field. If the <Legal Status> is ownership, enter the value 1, if the word cooperative is mentioned, enter the value 2.
+- If there is no information in the <Legal Status> field, consider the <Apartment Description>. If the community is mentioned, enter the value 1. If the cooperative is mentioned, enter the value 2.
+- If there is no information about the legal status, enter null.
+- If you are unsure of the answer, enter: -9.
+
+Assign the legal status evaluation to the lawStatusGPT key of the JSON object.
+
+3. For the evaluation of Balcony (balconyGPT key of the JSON object):
+- Enter the value 1 if there is information about a balcony, terrace, or loggia in the <Apartment Description>.
+- Enter the value 0 if there is information that the apartment only has a French balcony in the <Apartment Description>.
+- If there is no information about the balcony in the <Apartment Description>, retrieve the information from the <Balcony> field. If it is "yes", enter 1. If it is "no" or empty, enter 0.
+- If you are unsure of the answer, enter: -9.
+
+Assign the balcony evaluation to the balconyGPT key of the JSON object.
+
+4. For the evaluation of Elevator (elevatorGPT key of the JSON object):
+- Enter 1 if the <Elevator> field is "yes".
+- Enter 0 if the <Elevator> field is "no".
+- However, if the number of floors is greater than 6 or this information is in the <Apartment Description>, enter 1.
+- Enter 0 if the number of floors is less than 6 and there is no such information in the <Elevator> or <Apartment Description> fields.
+- If you are unsure of the answer, enter: -9.
+
+Assign the elevator evaluation to the elevatorGPT key of the JSON object.
+
+5. For the evaluation of Basement (basementGPT key of the JSON object):
+- Enter 1 if the <Basement> field is "yes".
+- Enter 0 if the <Basement> field is "no".
+- However, if the <Apartment Description> states that the basement or tenant storage room is available for an additional fee, enter 0.
+- Enter 1 if the <Apartment Description> states that the apartment includes a basement or tenant storage room or if it is included in the price.
+- If you are unsure of the answer, enter: -9.
+
+Assign the basement evaluation to the basementGPT key of the JSON object.
+
+6. For the evaluation of Garage (garageGPT key of the JSON object):
+- Enter 0 if the <Parking Space Price> or <Garage Space Price> field contains a number greater than 0.
+- Enter 0 if the <Apartment Description> states that the garage can be purchased.
+- Enter 0 if there is no information about the garage or parking space.
+- Enter 1 if the <Apartment Description> states that the apartment includes a garage or parking space.
+- Enter 1 if the <Apartment Description> states that the garage or parking space is included in the price of the apartment.
+- If you are unsure of the answer, enter: -9.
+
+Assign the garage and parking space evaluation to the garageGPT key of the JSON object.
+
+7. For the evaluation of Garden (gardenGPT key of the JSON object):
+- Enter 1 if the <Garden> field contains "yes".
+- Enter 0 if the <Garden> field contains "no".
+- Enter 1 if the <Apartment Description> states that there is a garden near the apartment.
+- If you are unsure of the answer, enter: -9.
+
+Assign the garden evaluation to the gardenGPT key of the JSON object.
+
+8. For the evaluation of Surveillance (alarmGPT key of the JSON object):
+- Enter 1 if the <Surveillance>, <Security>, or <Guarded Estate> field contains "yes".
+- Enter 0 if the <Surveillance>, <Security>, or <Guarded Estate> field contains "no".
+- Enter 1 if the <Apartment Description> mentions surveillance, monitoring, security, or cameras.
+- Enter 0 if the <Apartment Description> does not mention anything about surveillance, monitoring, security, or cameras.
+- If you are unsure of the answer, enter: -9.
+
+Assign

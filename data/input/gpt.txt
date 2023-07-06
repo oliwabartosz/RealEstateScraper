@@ -1,112 +1,107 @@
-Twoim zadaniem jest ocena parametrów oferty nieruchomości z tekstu rozdzielonego przez <>. W tym celu wykonaj następujące czynności:
+Translate text below to english delimited by ```:
 
-Stwórz obiekt JSON, który zawiera następujące klucze: technologyGPT, lawStatusGPT, balconyGPT, elevatorGPT, basementGPT, garageGPT gardenGPT, modernizationGPT, alarmGPT, kitchenGPT, outbuildingGPT, qualityGPT, rentGPT, commentsGPT
+```Twoim zadaniem jest ocena parametrów oferty nieruchomości z tekstu rozdzielonego przez <>. W tym celu wykonaj następujące czynności:
 
-Dla oceny Stanu prawnego (klucz lawStatusGPT obiektu JSON):
-Jeżeli rok budowy jest mniejszy niż 1990, a materiał do wielka płyta wpisz wartość 2.
-Pozyskaj informację z pola <Stan prawny>. Jeżeli <Stan prawny> to własność wpisz wartość 1, jeżeli zawarte jest słowo spółdzielcze to wpisz wartość 2.
-Jeżeli nie ma informacji w polu <Stan prawny> weź pod uwagę <Opis mieszkania>. Jeżeli zostało wspomniane o wspólnocie to wpisz wartość 1. Jeżeli natomiast wspomniano o spółdzielni wpisz wartość 2.
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+1. Stwórz obiekt JSON, który zawiera następujące klucze: technologyGPT, lawStatusGPT, balconyGPT, elevatorGPT, basementGPT, garageGPT gardenGPT, modernizationGPT, alarmGPT, kitchenGPT, outbuildingGPT, qualityGPT, rentGPT, commentsGPT
+Dokonaj analizy tekstu i pozyskaj informacje na temat: technologii budynku, stanu prawnego, balkonu w mieszkaniu, garażu, ogrodu, modernizacji budynku, monitoringu, kuchni, czynszu, oficyna
+
+2. Dla oceny Stanu prawnego (klucz lawStatusGPT obiektu JSON):
+- Jeżeli rok budowy jest mniejszy niż 1990, a materiał do wielka płyta wpisz wartość 2.
+- Pozyskaj informację z pola <Stan prawny>. Jeżeli <Stan prawny> to własność wpisz wartość 1, jeżeli zawarte jest słowo spółdzielcze to wpisz wartość 2.
+- Jeżeli nie ma informacji w polu <Stan prawny> weź pod uwagę <Opis mieszkania>. Jeżeli zostało wspomniane o wspólnocie to wpisz wartość 1. Jeżeli natomiast wspomniano o spółdzielni wpisz wartość 2.
+- Jeżeli nie ma żadnej informacji o stanie prawnym wpisz null
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę stanu prawnego przypisz do klucza lawStatusGPT obiektu JSON.
 
-Dla oceny Balkonu (klucz balconyGPT obiektu JSON):
-Wpisz wartość 0, jeżeli napisano w <Opis mieszkania>, że w mieszkaniu jest tylko balkon francuski.
-Wpisz wartość 1, jeżeli w opisie są informacje o balkonie lub tarasie lub loggi.
-Jeżeli w <Opis mieszkania> nie ma informacji o balkonie, pobierz informację z pola <Balkon>. Jeżeli jest "tak" wpisz 1. Jeżeli jest "nie" lub nie ma informacji wpisz 0.
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+3. Dla oceny Balkonu (klucz balconyGPT obiektu JSON):
+- Wpisz wartość 1, jeżeli w <Opis mieszkania> jest informacja o balkonie lub tarasie lub loggi.
+- Wpisz wartość 0, jeżeli w <Opis mieszkania> jest informacja, że w mieszkaniu jest tylko balkon francuski.
+- Jeżeli w <Opis mieszkania> nie ma informacji o balkonie, pobierz informację z pola <Balkon>. Jeżeli jest "tak" wpisz 1. Jeżeli jest "nie" lub jest puste wpisz 0.
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę stanu prawnego przypisz do klucza balconyGPT obiektu JSON.
 
-Dla oceny Windy (klucz elevatorGPT obiektu JSON):
-Wpisz 1, jeżeli w polu <Winda> jest tak.
-Wpisz 0, jeżeli w polu <Winda> jest nie.
-Jeżeli jednak liczba kondygnacji jest większa od 6 lub informacja ta jest w <Opis mieszkania> to wpisz 1
-Wpisz 0, jeżeli liczba kondygnacji jest mniejsza od 6 i nie ma takiej informacji w polu <Winda> lub <Opis mieszkania>
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+4. Dla oceny Windy (klucz elevatorGPT obiektu JSON):
+- Wpisz 1, jeżeli w polu <Winda> jest tak.
+- Wpisz 0, jeżeli w polu <Winda> jest nie.
+- Jeżeli jednak liczba kondygnacji jest większa od 6 lub informacja ta jest w <Opis mieszkania> to wpisz 1
+- Wpisz 0, jeżeli liczba kondygnacji jest mniejsza od 6 i nie ma takiej informacji w polu <Winda> lub <Opis mieszkania>
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę windy przypisz do klucza elevatorGPT obiektu JSON.
 
-Dla oceny Piwnicy (klucz basementGPT obiektu JSON):
-Wpisz 1, jeżeli w polu <Piwnica> jest tak.
-Wpisz 0, jeżeli w polu <Piwnica> jest nie.
-Jeżeli jednak w <Opis mieszkania> jest, że piwnica lub komórka lokatorska jest za dodatkową opłatą to to wpisz 0.
-Wpisz 1, jeżeli w <Opis mieszkania> jest napisane, że do mieszkania przynależy piwnica lub komórka lokatorska lub jest ona w cenie
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+5. Dla oceny Piwnicy (klucz basementGPT obiektu JSON):
+- Wpisz 1, jeżeli w polu <Piwnica> jest tak.
+- Wpisz 0, jeżeli w polu <Piwnica> jest nie.
+- Jeżeli jednak w <Opis mieszkania> jest, że piwnica lub komórka lokatorska jest za dodatkową opłatą to to wpisz 0.
+- Wpisz 1, jeżeli w <Opis mieszkania> jest napisane, że do mieszkania przynależy piwnica lub komórka lokatorska lub jest ona w cenie
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
-Ocenę windy przypisz do klucza basementGPT obiektu JSON.
+Ocenę piwnicy przypisz do klucza basementGPT obiektu JSON.
 
-Dla oceny Garażu (klucz garageGPT obiektu JSON):
-Wpisz 0, jeżeli w polu <Cena miejsca postojowego> lub <Cena miejsca garażowego> jest liczba większa od 0.
-Wpisz 0, jeżeli w <Opis mieszkania> napisano, że garaż można dokupić.
-Wpisz 0, jeżeli nie ma informacji o garażu lub miejscu postojowym.
-Wpisz 1, jeżeli w <Opis mieszkania> jest informacja, że do mieszkania przynależy garaż lub miejsce postojowe.
-Wpisz 1, jeżeli w <Opis mieszkania> napisano, że garaż lub miejsce postojowe jest w cenie mieszkania.
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+6. Dla oceny Garażu (klucz garageGPT obiektu JSON):
+- Wpisz 0, jeżeli w polu <Cena miejsca postojowego> lub <Cena miejsca garażowego> jest liczba większa od 0.
+- Wpisz 0, jeżeli w <Opis mieszkania> napisano, że garaż można dokupić.
+- Wpisz 0, jeżeli nie ma informacji o garażu lub miejscu postojowym.
+- Wpisz 1, jeżeli w <Opis mieszkania> jest informacja, że do mieszkania przynależy garaż lub miejsce postojowe.
+- Wpisz 1, jeżeli w <Opis mieszkania> napisano, że garaż lub miejsce postojowe jest w cenie mieszkania.
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę dotyczącą garażu i miejsca postojowego przypisz do klucza garageGPT obiektu JSON.
 
-Dla oceny dotyczącej Ogrodu (klucz gardenGPT obiektu JSON):
-Wpisz 1, jeżeli w polu <Ogród> wpisano tak.
-Wpisz 0, jeżeli w polu <Ogród> wpisano nie.
-Wpisz 1, jeżeli w polu <Opis mieszkania> jest informacja, że przy mieszkaniu jest ogród.
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+7. Dla oceny dotyczącej Ogrodu (klucz gardenGPT obiektu JSON):
+- Wpisz 1, jeżeli w polu <Ogród> wpisano tak.
+- Wpisz 0, jeżeli w polu <Ogród> wpisano nie.
+- Wpisz 1, jeżeli w polu <Opis mieszkania> jest informacja, że przy mieszkaniu jest ogród.
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę dotyczącą ogrodu przypisz do klucza gardenGPT obiektu JSON.
 
-Dla oceny dotyczącej Monitoringu (klucz alarmGPT obiektu JSON):
-Wpisz 1, jeżeli w polu <Monitoring> lub <Ochrona> lub <Osiedle strzeżone> wpisano tak.
-Wpisz 0, jeżeli w polu <Monitoring> lub <Ochrona> lub <Osiedle strzeżone> wpisano nie.
-Wpisz 1, jeżeli w polu <Opis mieszkania> wpisano o dozorze, monitoringu, ochronie, kamerach
-Wpisz 0, jeżeli w polu <Opis mieszkania> nie ma nic o dozorze, monitoringu, ochronie, kamerach
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+8. Dla oceny dotyczącej Monitoringu (klucz alarmGPT obiektu JSON):
+- Wpisz 1, jeżeli w polu <Monitoring> lub <Ochrona> lub <Osiedle strzeżone> wpisano tak.
+- Wpisz 0, jeżeli w polu <Monitoring> lub <Ochrona> lub <Osiedle strzeżone> wpisano nie.
+- Wpisz 1, jeżeli w polu <Opis mieszkania> wpisano o dozorze, monitoringu, ochronie, kamerach
+- Wpisz 0, jeżeli w polu <Opis mieszkania> nie ma nic o dozorze, monitoringu, ochronie, kamerach
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę dotyczącą Monitoringu przypisz do klucza alarmGPT obiektu JSON.
 
-Dla oceny dotyczącej Kuchni (klucz kitchenGPT obiektu JSON):
-Wpisz 1, jeżeli w polu <Kuchnia> "ciemna", "prześwit" lub "inny".
-Wpisz 2, jeżeli w polu <Kuchnia> wpisano "widna".
-Wpisz 3, jeżeli w polu <Kuchnia> wpisano "aneks kuchenny".
-Przeanalizuj <Opis mieszkania>. Jeżeli w opisie jest informacja o kuchni ciemnej wpisz 1, jeżeli o kuchni widnej wpisz 2, a jeśli o aneksie kuchennym to wpisz 3
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+9. Dla oceny dotyczącej Kuchni (klucz kitchenGPT obiektu JSON):
+- Wpisz 1, jeżeli w polu <Kuchnia> "ciemna", "prześwit" lub "inny".
+- Wpisz 2, jeżeli w polu <Kuchnia> wpisano "widna".
+- Wpisz 3, jeżeli w polu <Kuchnia> wpisano "aneks kuchenny".
+- Przeanalizuj <Opis mieszkania>. Jeżeli w opisie jest informacja o kuchni ciemnej wpisz 1, jeżeli o kuchni widnej wpisz 2, a jeśli o aneksie kuchennym to wpisz 3
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę dotyczącą kuchni przypisz do klucza kitchenGPT obiektu JSON.
 
-Dla oceny dotyczącej oficyny (klucz outbuildingGPT obiektu JSON):
-Wpisz 1, jeżeli w polu <Opis mieszkania> napisano, że mieszkanie jest oficynie kamienicy
-Wpisz 1, jeżeli w polu <Opis mieszkania> napisano, że mieszkanie jest w drugiej linii zabudowy, a rok budowy jest mniejszy niż 1960.
-Wpisz 0, jeżeli rok budowy jest większy niż 1960, a mieszkanie nie jest kamienicą
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+10. Dla oceny dotyczącej oficyny (klucz outbuildingGPT obiektu JSON):
+- Wpisz 1, jeżeli w polu <Opis mieszkania> napisano, że mieszkanie jest oficynie kamienicy
+- Wpisz 1, jeżeli w polu <Opis mieszkania> napisano, że mieszkanie jest w drugiej linii zabudowy, - a rok budowy jest mniejszy niż 1960.
+- Wpisz 0, jeżeli rok budowy jest większy niż 1960, a mieszkanie nie jest kamienicą
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę dotyczącą Oficyny przypisz do klucza outbuildingGPT obiektu JSON.
 
-Dla oceny dotyczącej czynszu (klucz rentGPT):
-Wpisz wartość czynszu, jeżeli jest w polu <Czynsz>. Jeżeli nie ma to wpisz informację podaną w polu <Opis mieszkania>
-Jeżeli w polu <Opis mieszkania> jest, że mieszkanie jest bezczynszowe wpisz 0.
-Jeżeli w tekście nie ma informacji o czynszu wpisz null.
-Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
+11. Dla oceny dotyczącej czynszu (klucz rentGPT):
+- Wpisz wartość czynszu, jeżeli jest w polu <Czynsz>. Jeżeli nie ma to wpisz informację podaną w polu <Opis mieszkania>
+- Jeżeli w polu <Opis mieszkania> jest, że mieszkanie jest bezczynszowe wpisz 0.
+- Jeżeli w tekście nie ma informacji o czynszu wpisz null.
+- Jeżeli nie jesteś pewny odpowiedzi wpisz: -9.
 
 Ocenę dotyczącą Czynszu przypisz do klucza rentGPT obiektu JSON.
 
-Do klucza modernizationGPT obiektu JSON przypisz wartość 4.
-Do klucza technologyGPT obiektu JSON przypisz wartość 1.
-Do klucza kitchenGPT obiektu JSON przypisz wartość 2.
-Do klucza qualityGPT obiektu JSON przypisz wartość 3.
+12. Do klucza technologyGPT obiektu JSON przypisz wartość 2.
+13. Do klucza modernizationGPT obiektu JSON przypisz wartość 0.
+15. Do klucza kitchenGPT obiektu JSON przypisz wartość 3.
+16. Do klucza qualityGPT obiektu JSON przypisz wartość 3.
 
-W kluczu commentGPT:
-Przypisz do kluczy informacje dlaczego nadałeś wartości poszczególnym kluczom.
-Wykorzystaj taki format: klucz:uzasadnienie
-Informacje przypisz do klucza commentGPT obiektu JSON.
+18. W kluczu commentGPT:
+- Przypisz do kluczy informacje dlaczego nadałeś wartości poszczególnym kluczom.
+- Wykorzystaj taki format: klucz:uzasadnienie
+- Informacje przypisz do klucza commentGPT obiektu JSON.
 
 Wygeneruj tylko poprawny obiekt JSON.
 
 Tekst oferty nieruchomości do analizy: < <Materiał>: Cegła
-<Rok budowy> 1926
-<Stan prawny> Własność
-<Winda> Nie
-<Liczba kondygnacji> 3
-<Monitoring> Nie
-<Ochrona> Nie
-<Kuchnia> Widna
-<Czynsz> 250
-<Opis mieszkania> Oferuję Państwu mieszkanie w cichej okolicy centrum miasta, przy ulicy Królowej Jadwigi. Doskonała lokalizacja i zakup zarówno dla własnych potrzeb lub na wynajem. Nieruchomość do bardzo szybkiego wydania.LOKALIZACJAMieszkanie znajduje się w drugiej linii zabudowy, tzw. oficyna kamienicy w bliskiej odległości od sklepów spożywczych, szkół, nieopodal znajduje się Zachodniopomorski Uniwersytet Technologiczny. Bardzo blisko do przystanków autobusowych, tramwajowych, w okolicy znajdują się szkoły i przedszkola. Kamienica po generalnym remoncie elewacyjnym. Podwójnie zabezpieczone wejście do budynku poprzez domofony na kod. Pod budynkiem jest dostępnych wiele miejsc parkingowych. Możliwość wjazdu na podwórko. Klatka schodowa odnowiona.O NIERUCHOMOŚCISalon jest przechodni do pokoju sypialnianego i do oddzielnej kuchni, którą można otworzyć dodając wizualnie przestrzeni w mieszkaniu. Do łazienki wejście jest z korytarza. Mieszkanie położone jest na 3 piętrze. Wysoka kondygnacja powoduje, że mieszkanie jest jasne i ciepłe. Lokal mieszkalny posiada wymienione okna PCV. Pokoje mogą wymagać odświeżenia a kuchnia i łazienka są do remontu. W łazience zamontowany jest tzw. młynek, który można wymienić. Do mieszkania przynależy piwnica. Ogrzewanie i ciepła woda z pieca gazowego dwubiegowego.UKŁAD I WYPOSAŻENIENa całkowitą powierzchnię użytkową mieszkania, tj. 43,14 m2 składa się:- salon przejściowy,- pokój,- kuchnia z wejściem z pokoju,- łazienka z toaletą,- przedpokój.DODATKOWE INFORMACJE- czynsz w wysokości 250 PLN/miesiąc + gaz i prąd wg zużycia,- do mieszkania przynależy piwnica o powierzchni 6,84m2.NIE SZUKAJ DALEJ! OFERTA NA WYŁĄCZNOŚĆ. ZAPRASZAM NA PREZENTACJĘ.
