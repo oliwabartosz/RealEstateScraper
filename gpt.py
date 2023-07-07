@@ -61,6 +61,19 @@ year_of_constr_chain = LLMChain(llm=llm, prompt=year_of_constr_prompt,
                                 )
 
 # PROMPT: Take the material from params
+building_type_prompt = ChatPromptTemplate.from_template(
+    "Get the building type from:"
+    "\n\n{offer_parameters_en}"
+    "If there is no information {offer_parameters_en}, take then from:"
+    "\n\n{real_estate_offer_en}"
+)
+
+# CHAIN: input= offer_parameters_en and output= material
+building_type_chain = LLMChain(llm=llm, prompt=building_type_prompt,
+                               output_key="building_type"
+                               )
+
+# PROMPT: Take the material from params
 material_prompt = ChatPromptTemplate.from_template(
     "Get the material from:"
     "\n\n{offer_parameters_en}"
@@ -88,9 +101,16 @@ number_floors_chain = LLMChain(llm=llm, prompt=number_floors_prompt,
 
 # PROMPT: Get summary of the technology of the building, year of const,
 technology_summary_prompt = ChatPromptTemplate.from_template(
-    "Summerize within maximum of 2 sentences the technology, year of construction, material and number of floors of the building "
-    "from:"
-    "\n\n{real_estate_offer_en}, {year_of_constr}, {material}, {number_of_floors}"
+    "Make a summary of the technology of the building, year of construction, material, building type and number of floors of the building "
+    "Also try to analyze if technology of the building is traditional, traditional improved, monolithic, prefabricated."
+    "\nBuildings based on traditional technology are buildings built of brick until 1960. As a rule, they do not exceed 6 storeys. These are mostly tenement houses and outbuildings. They arent constructed using panel construction."
+    "\nBuildings based on traditional improved technology are mainly buildings built of brick, silk and blocks since 1990."
+    "\nBuildings based on monolithic technology are tall buildings, over 15 storeys, built since 2007."
+    "\nBuildings based on prefabricated technology are high blocks with 10 to 12 storeys or low blocks up to 6 storeys built in the years 1960-1995 constructed using panel construction, large slab or concrete."
+    "\nWrite up to maximum 3 sentences. Give especially information what technology is."
+    "\n\n"
+    "Use information delimited by triple backticks"
+    "\n\n```{real_estate_offer_en}, {offer_parameters_en}, {year_of_constr}, {material}, {building_type}, {number_of_floors}```"
 
 )
 
@@ -98,25 +118,43 @@ technology_summary_prompt = ChatPromptTemplate.from_template(
 technology_summary_chain = LLMChain(llm=llm, prompt=technology_summary_prompt,
                                     output_key="technology_summary"
                                     )
-# PROMPT: Rate the technology using nominal scale
+# PROMPT: Rate the technology using nominal scale with comment
 technology_rating_prompt = ChatPromptTemplate.from_template(
-    """Rate the technology of the building in using the nominal scale and the year of construction is less than. 
-       Return 1 if material, which is {material} is brick or year of construction, which is {year_of_constr} is less than 1960.
-       Return 2 if material, which is {material} is brick  or year of construction, which is {year_of_constr} is more than 2000.
-       Return 3 if number of floors, which is {number_of_floors} is more than 15. 
-       Return 7 if material, which is {material} is large slabs or concrete or other and or year of construction, which is {year_of_constr} is between 1960 and 1992.
-       Return -9 if it's not possible to rate.
-       
-       Make a rating on this text:          
-    \n\n{technology_summary}
+    """Rate the technology based on {technology_summary}.\n
+       - if technology of the building is traditional return 1.\n
+       - if technology of the building is traditional improved return 2.\n
+       - if technology of the building is monolithic return 3. \n
+       - if material is prefabricated return 7.\n.
+       - return -9 if it's not possible to rate\n\n.
+  
     \n\n Return just a number 1, 2, 3, 7 or -9.
     """
 )
 
-# chain 3: input= Review and output= language
+# CHAIN: input= technology_rating_prompt and output= technology_rating_comment
 technology_rating_chain = LLMChain(llm=llm, prompt=technology_rating_prompt,
                                    output_key="technology_rating"
                                    )
+
+
+
+# BALCONY
+
+balcony_summary_prompt = ChatPromptTemplate.from_template(
+    "Analyze information about the balcony in the offer."
+    "Don't treat french balcony as a balcony. French balcony (also called French balustrade, wallet) is a type of balcony limited only to the balcony window and balustrade"
+    "If in the offer there is information that property has the french balcony, write there is no balcony"
+    "Use information delimited by triple backticks"
+    "\n\n```{real_estate_offer_en}, {offer_parameters_en}```"
+
+)
+
+# CHAIN: input= English_Review and output= summary
+balcony_summary_chain = LLMChain(llm=llm, prompt=balcony_summary_prompt,
+                                    output_key="balcony_summary"
+                                    )
+
+
 
 # # Generate JSON file.
 # json_prompt = ChatPromptTemplate.from_template(
@@ -134,30 +172,32 @@ technology_rating_chain = LLMChain(llm=llm, prompt=technology_rating_prompt,
 # overall_chain: input= Review
 # and output= English_Review,summary, followup_message
 overall_chain = SequentialChain(
-    chains=[translate_desc_chain, translate_params_chain, year_of_constr_chain, material_chain, number_floors_chain,
-            technology_summary_chain, technology_rating_chain],
+    chains=[translate_desc_chain, translate_params_chain,
+            year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,
+            technology_summary_chain, technology_rating_chain,
+            balcony_summary_chain],
     input_variables=["real_estate_offer", "offer_parameters"],
-    output_variables=["real_estate_offer_en", "technology_summary", "technology_rating", "offer_parameters_en"],
+    output_variables=["offer_parameters_en", "technology_summary", "technology_rating", "balcony_summary"],
     verbose=True
 )
 
 parameters = """
 <Materiał>: Cegła
-<Rok budowy> 1927
-<Stan prawny> Własność
-<Balkon> Nie
+<Rodzaj budynku>: Blok
+<Rok budowy> 1983
+<Stan prawny> Spółdzielcze własnościowe prawo
+<Balkon> Tak
 <Winda> Nie
-<Liczba kondygnacji> 5
+<Liczba kondygnacji> 4
 <Piwnica> Nie
 <Kuchnia> Oddzielna
-<Czynsz> 300
+<Czynsz> 750
 """
 
 offer_description = """
-<Opis mieszkania> Do wynajęcia 2 pokojowe mieszkanie usytuowane na Pogodnie. Mieszkanie znajduje się na 2 piętrze w odnowionym, niewielkim ( 4 rodzinnym ) budynku. Na powierzchni ok 43m2 znajdują się 2 pokoje o pow. ok. 10 i 15m2, duża 14m2 kuchnia i łazienka z wc. Mieszkanie jest umeblowane i wyposażone w sprzęt AGD. Ogrzewanie i ciepła woda z pieca gazowego 2obiegowego.Opłaty: czynsz ok. 325 zł, gaz ok. 150 zł 1/m-c, prąd ok 90 zł 1/m-c.Cały dom jest ocieplony styropianem a dach wełna mineralną. Okna PCV.Przed domem jest możliwość zaparkowania auta. Można również korzystać z ogrodu dostępnego wyłącznie dla meiszkańców domu.Serdecznie polecam i zapraszam na prezentację.
+<Opis mieszkania> Ofertą sprzedaży jest dwupokojowe mieszkanie zlokalizowane na obrzeżach Szczecina.Lokal jest w bardzo dobrym stanie, umeblowanie pozostaje także jest gotowy do zamieszkania. Obecni właściciele 3 lata temu przeprowadzili generalny remont, zostały powymieniane wszystkie instalacje, umieszczono nowe wyposażenie -samo mieszkanie jest zadbane i nie wymaga żadnych nakładów finansowych.Powierzchnia wynosi 47,7m² i składa się z jasnego salonu z balkonem francuskim, drugiego pokoju i przedpokoju z pojemną szafą. Łazienka jest z wanna oraz osobnym WC, a kuchnia jest oddzielna oraz wyposażona w zmywarkę, piekarnik, lodówkę oraz płytę indukcyjną. Aktualny układ mieszkania pozwala na połączenie pomieszczeń w celu otwarcia większej przestrzeni oraz aranżacji według własnego stylu. Pod budynkiem znajduje się wiele miejsc parkingowych dzięki czemu nigdy nie ma problemu z parkowaniem, a w pobliżu są również przystanki autobusowe dla osób niezmotoryzowanych. Sama okolica jest cicha i spokojna - idealna dla osób, które sobie cenią te atuty. Mieszkanie znajduje się na obrzeżach miasta, gdzie jest blisko do wylotówki na autostradę jednak dojazd do centrum Szczecina zajmuje 10/15 minut. Natomiast w pobliżu jest wiele punktów handlowych i usługowych m.in. galerie handlowe, restauracje, kino, sklepy czy plac zabaw. Jeśli pracujesz poza miastem i potrzebujesz mieszkania blisko obwodnicy lub szukasz czegoś z dala od miejskiego zgiełku ta oferta jest idealna dla Ciebie. Szczególnie polecam singlom czy parze bez dzieci. Serdecznie zapraszam do kontaktu w celu obejrzenia mieszkania.
 """
-
-print(overall_chain({'real_estate_offer': offer_description, "offer_parameters": parameters}))
+print(overall_chain({'real_estate_offer': offer_description, "offer_parameters": parameters}), end='\n')
 
 #############################################
 
