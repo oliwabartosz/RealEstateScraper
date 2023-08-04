@@ -1,8 +1,11 @@
 from src.config import config_data
 from operator import itemgetter
 
+# Templates
 from src.gpt.templates import gpt_translation, gpt_params, gpt_summaries, gpt_ratings
-from src.handlers.file_handler import load_txt_file, save_txt_file, FILE_PATH_GPT_INPUT, FILE_PATH_GPT_OUTPUT
+
+# Handlers
+from src.handlers import api_handler
 
 # Langchain imports
 from langchain.llms import OpenAI
@@ -12,11 +15,28 @@ from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
 
-# Load model
+# Get JWT AUTH TOKEN
+jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
 
-data = config_data.get_config_data()
-text = load_txt_file(FILE_PATH_GPT_INPUT)
-OPENAI_API_KEY = itemgetter('OPENAI_API_KEY')(data)
+# Get all data from database based on number column
+offers_data = api_handler.get_offers_data_from_api(
+    jwt_data['access_token'],
+    columns_to_get=['number', 'lawStatus', 'floorsNumber', 'rent', 'material', 'buildingType', 'yearBuilt', 'buildingQuality', 'balcony',
+                    'balconyQuantity', 'terracesQuantity', 'loggiasQuantity', 'frenchBalconyQuantity', 'kitchenType',
+                    'basement', 'storageRoom', 'attic', 'parkingPlace', 'priceParkingUnderground', 'priceParkingGround',
+                    'garden', 'elevator', 'security', 'monitoring', 'guardedArea', 'guardedEstate', 'securityControl',
+                    'description']
+)
+
+offer_record = offers_data[0]
+
+# Filter out unnecessary keys for params
+offer_params = {key: value for key, value in offer_record.items() if key not in ['number', 'description']}
+offer_description = offer_record['description']
+
+# Load model
+config_data = config_data.get_config_data()
+OPENAI_API_KEY = itemgetter('OPENAI_API_KEY')(config_data)
 
 llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.0, )
 
@@ -154,7 +174,6 @@ outbuilding_rating_chain = LLMChain(llm=llm, prompt=outbuilding_rating_prompt, o
 modernization_rating_prompt = ChatPromptTemplate.from_template(gpt_ratings.modernization_prompt)
 modernization_rating_chain = LLMChain(llm=llm, prompt=modernization_rating_prompt, output_key="modernization_rating")
 
-
 overall_chain = SequentialChain(
     chains=[
         translate_desc_chain, translate_params_chain,
@@ -191,31 +210,48 @@ overall_chain = SequentialChain(
     verbose=True
 )
 
-parameters = """
-<Materiał>: Wielka płyta
-<Rodzaj budynku>: Blok
-<Rok budowy> 1983
-<Balkon> Tak
-<Liczba kondygnacji> 4
-<Piwnica> Nie
-<Kuchnia> Oddzielna
-<Czynsz> 750
-"""
+overall_chain_result = overall_chain({'real_estate_offer': offer_description, "offer_parameters": offer_params})
 
-offer_description = """
-<Opis mieszkania> Ofertą sprzedaży jest dwupokojowe mieszkanie zlokalizowane na obrzeżach Szczecina.Lokal jest w bardzo dobrym stanie, \
-umeblowanie pozostaje także jest gotowy do zamieszkania. Obecni właściciele 3 lata temu przeprowadzili generalny remont, zostały powymieniane \
-wszystkie instalacje, umieszczono nowe wyposażenie -samo mieszkanie jest zadbane i nie wymaga żadnych nakładów finansowych.Powierzchnia wynosi 47,7m² \
-i składa się z jasnego salonu z balkonem francuskim, drugiego pokoju i przedpokoju z pojemną szafą. Łazienka jest z wanna oraz osobnym WC, \
-a kuchnia jest oddzielna oraz wyposażona w zmywarkę, piekarnik, lodówkę oraz płytę indukcyjną. Aktualny układ mieszkania pozwala na \
-połączenie pomieszczeń w celu otwarcia większej przestrzeni oraz aranżacji według własnego stylu. W budynku jest winda. Pod budynkiem \
-znajduje się wiele miejsc parkingowych dzięki czemu nigdy nie ma problemu z parkowaniem, a w pobliżu są również przystanki autobusowe \
-dla osób niezmotoryzowanych. Sama okolica jest cicha i spokojna - idealna dla osób, które sobie cenią te atuty. Mieszkanie znajduje się \
-na obrzeżach miasta, gdzie jest blisko do wylotówki na autostradę jednak dojazd do centrum Szczecina zajmuje 10/15 minut. Natomiast w \
-pobliżu jest wiele punktów handlowych i usługowych m.in. galerie handlowe, restauracje, kino, sklepy czy plac zabaw. \
-Jeśli pracujesz poza miastem i potrzebujesz mieszkania blisko obwodnicy lub szukasz czegoś z dala od miejskiego zgiełku ta \
-oferta jest idealna dla Ciebie. Szczególnie polecam singlom czy parze bez dzieci. Serdecznie zapraszam do kontaktu w celu \
-obejrzenia mieszkania.
-"""
+# print(overall_chain_result, end='\n')
 
-print(overall_chain({'real_estate_offer': offer_description, "offer_parameters": parameters}), end='\n')
+result = {
+    'technologyGPT': overall_chain_result['technology_rating'],
+    'technology_summary': overall_chain_result['technology_summary'],
+    'lawStatusGPT': overall_chain_result['law_rating'],
+    'law_summary':  overall_chain_result['law_summary'],
+    'balconyGPT':  overall_chain_result['balcony_rating'],
+    'balcony_summary': overall_chain_result['balcony_summary'],
+    'elevatorGPT': overall_chain_result['elevator_rating'],
+    'elevator_summary': overall_chain_result['elevator_summary'],
+    'basementGPT': overall_chain_result['basement_rating'],
+    'basement_summary': overall_chain_result['basement_summary'],
+    'garageGPT': overall_chain_result['garage_rating'],
+    'garage_summary': overall_chain_result['garage_summary'],
+    'gardenGPT': overall_chain_result['garden_rating'],
+    'garden_summary': overall_chain_result['garden_summary'],
+    'modernizationGPT': overall_chain_result['modernization_rating'],
+    'modernization_summary': overall_chain_result['modernization_summary'],
+    'alarmGPT': overall_chain_result['monitoring_rating'],
+    'alarm_summary': overall_chain_result['monitoring_summary'],
+    'kitchenGPT': overall_chain_result['kitchen_rating'],
+    'kitchen_summary': overall_chain_result['kitchen_summary'],
+    'outbuildingGPT': overall_chain_result['outbuilding_rating'],
+    'outbuilding_summary': overall_chain_result['outbuilding_summary'],
+    'qualityGPT': '',
+    'status': 1,
+    'rentGPT': overall_chain_result['rent_rating'],
+    'rent_summary': overall_chain_result['rent_summary'],
+
+}
+
+print(result)
+print(offer_params)
+print(offer_description)
+
+#@TODO:
+# 1. Pobrać dane z answers
+# 2. Jeżeli kuchnia, modernizacja itp są ocenione to dać do ostatecznego rezulatu, ignorując przy tym części chainingu
+# 3. Wysłać do bazy danych
+# 4. Zloopować wszystko
+# 5. Pobrać dane z status z tabeli flats_GPT - i dać if'a czy ściągać czy nie
+# 5. Translate Google!

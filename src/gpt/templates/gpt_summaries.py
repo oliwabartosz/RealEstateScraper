@@ -39,11 +39,11 @@ right. Write if in text delimited in triple backticks there was mentioned about 
 Use maximum three sentences. Tell your reasons.
 
 Text to make summary from:
-```{real_estate_offer_en}```
+```{real_estate_offer_en} and {offer_parameters_en}```
 """
 
 elevator_prompt = """Make two sentences summary about elevator from text delimited in triple \
-backticks. Does building have an elevator?  
+backticks. Does building have an elevator? How many floors the building has?  
 ```{real_estate_offer_en}```.
 """
 

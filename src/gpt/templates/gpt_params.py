@@ -27,7 +27,7 @@ Add 1 to the number of floors.
 """
 
 elevator_prompt = """
-Get the information about elevator from the text below:"
+Say if there is elevator in the building based on:"
 {offer_parameters_en}"
 
 If there were no information provided say that.

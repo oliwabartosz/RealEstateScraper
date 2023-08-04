@@ -4,7 +4,6 @@ from operator import itemgetter
 from tqdm import tqdm
 import __syspath__
 from src.config import config_data
-from src.handlers.api_handler import get_jwt_token
 from src.scrapper import scrapper_functions
 from src.scrapper import questions
 from src.scrapper.scrapper_functions import download_images
@@ -31,7 +30,7 @@ if __name__ == "__main__":
     scrapper_functions.login()
 
     # Get JWT AUTH TOKEN
-    jwt_data = get_jwt_token(f'{rer_url}/rer/auth')
+    jwt_data = api_handler.get_jwt_token(f'{rer_url}/rer/auth')
 
     for offer_id in tqdm(offers_to_download):
         if scrapper_functions.input_to_searchbar(offer_id):

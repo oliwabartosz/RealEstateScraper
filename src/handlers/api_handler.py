@@ -53,8 +53,8 @@ def send_offer_to_api(offer_data, access_token, offers_type):
 
         json_offer_data = json.dumps(offer_data,
                                      ensure_ascii=False)  # NOTE: Don't need to use json.dumps if request.post
-                                                          # use json=offer_data, it would be useful if in
-                                                          # request.post was used data=json_offer_data
+        # use json=offer_data, it would be useful if in
+        # request.post was used data=json_offer_data
 
         r = requests.post(f'{rer_url}/rer/api/{offers_type}/', json=offer_data, headers=headers)
 
@@ -72,12 +72,19 @@ def send_offer_to_api(offer_data, access_token, offers_type):
                     'Something bad happened while trying to post data. Data has NOT been sent to the Database')
 
 
-def get_offers_list_from_api(access_token: str):
+def get_offers_data_from_api(access_token: str, columns_to_get: list) -> list:
+    """
+    :param access_token: JWT Token
+    :param column_to_get: A column from database to get into a list
+    :return: A list of given column
+    """
     headers = {'authorization': f'Bearer {access_token}',
                'Content-Type': 'application/json; charset=utf-8'}
 
     r = requests.get(f'{rer_url}/rer/api/flats/', headers=headers)
 
-    offer_ids = [item['offerId'] for item in r.json()]
-
-    return offer_ids
+    if columns_to_get:
+        # It returns columns that are not empty (they are being skipped) or also don't have the None value.
+        return [{col: item[col] for col in columns_to_get if col in item and item[col] is not None} for item in r.json()]
+    else:
+        return r.json()

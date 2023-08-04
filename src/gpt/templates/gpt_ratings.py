@@ -27,8 +27,8 @@ Please provide a numeric response: 0, 1, or -9.
 """
 
 elevator_prompt = """Please rate the presence of an elevator based on the information provided in {elevator_summary}.
-- If there is an elevator, please return 1.
-- If there is no elevator, please return 0.
+- If there is an elevator or building has more than 5 floors, please return 1.
+- If there is no elevator or building has less than 5 floors, please return 0.
 - If it is not possible to determine the presence of an elevator, please return -9.
 
 Please provide a numeric response: 0, 1, or -9."""
@@ -50,7 +50,7 @@ Please provide a numeric response: 0, 1, or -9."""
 
 garden_prompt = """Please rate the occurrence of a garden  based on the information provided in \
 {garden_summary}.
-- If there is no garden, or if it comes with an additional price, please return 0.
+- If there is no garden, or if it comes with an additional price or is it unclear, please return 0.
 - If the garden belongs to the apartment, please return 1.
 - If it is not possible to determine a rating, please return -9.
 
@@ -88,7 +88,7 @@ information from ```technology_rating that is equal to {technology_rating}```.
 - If it has been mentioned that building is located in the second line of development and technology_rating \
 is 1, please return 1.
 - If technology_rating is more than 1, please return 0.
-- If it is not possible to determine a rating, please return -9.
+- If it is not possible to determine a rating, please return 0.
 
 Please provide a numeric response: 0, 1 or -9.
 """
