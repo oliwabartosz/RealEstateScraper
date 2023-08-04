@@ -26,7 +26,8 @@ balcony_prompt = """Please rate the presence of a balcony based on the informati
 Please provide a numeric response: 0, 1, or -9.
 """
 
-elevator_prompt = """Please rate the presence of an elevator based on the information provided in {elevator_summary}.
+elevator_prompt = """Please rate the presence of an elevator based on the information provided in {elevator_summary} \
+and {elevator}.
 - If there is an elevator or building has more than 5 floors, please return 1.
 - If there is no elevator or building has less than 5 floors, please return 0.
 - If it is not possible to determine the presence of an elevator, please return -9.

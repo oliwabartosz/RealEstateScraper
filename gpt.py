@@ -255,3 +255,5 @@ print(offer_description)
 # 4. Zloopować wszystko
 # 5. Pobrać dane z status z tabeli flats_GPT - i dać if'a czy ściągać czy nie
 # 5. Translate Google!
+
+# KITCHEN!!!
