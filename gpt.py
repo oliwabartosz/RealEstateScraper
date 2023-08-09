@@ -8,12 +8,16 @@ from src.gpt.templates import gpt_translation, gpt_params, gpt_summaries, gpt_ra
 from src.handlers import api_handler
 
 # Langchain imports
-from langchain.llms import OpenAI
+# from langchain.llms import OpenAI
 from langchain.chains import SequentialChain
 
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
+
+# Translator
+import translators as ts
+
 
 # Get JWT AUTH TOKEN
 jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
@@ -33,23 +37,27 @@ offer_record = offers_data[0]
 offer_params = {key: value for key, value in offer_record.items() if key not in ['number', 'description']}
 offer_description = offer_record['description']
 
+# Translate text
+offer_parameters_en = ts.translate_text(str(offer_params), translator='google', to_language='en')
+offer_description_en = ts.translate_text(offer_description, translator='google', to_language='en')
+
 # Load model
 config_data = config_data.get_config_data()
 OPENAI_API_KEY = itemgetter('OPENAI_API_KEY')(config_data)
 
-llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.0, )
+llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.0)
 
 # Chaining...
 
 # 1. TRANSLATION
 
-# Translating description from PL to EN
-translate_desc_prompt = ChatPromptTemplate.from_template(gpt_translation.translate_description_prompt)
-translate_desc_chain = LLMChain(llm=llm, prompt=translate_desc_prompt, output_key="real_estate_offer_en")
-
-# Translating parameters from PL to EN
-translate_params_prompt = ChatPromptTemplate.from_template(gpt_translation.translate_params_prompt)
-translate_params_chain = LLMChain(llm=llm, prompt=translate_params_prompt, output_key="offer_parameters_en")
+# # Translating description from PL to EN
+# translate_desc_prompt = ChatPromptTemplate.from_template(gpt_translation.translate_description_prompt)
+# translate_desc_chain = LLMChain(llm=llm, prompt=translate_desc_prompt, output_key="real_estate_offer_en")
+#
+# # Translating parameters from PL to EN
+# translate_params_prompt = ChatPromptTemplate.from_template(gpt_translation.translate_params_prompt)
+# translate_params_chain = LLMChain(llm=llm, prompt=translate_params_prompt, output_key="offer_parameters_en")
 
 # PARAMETERS
 
@@ -175,7 +183,7 @@ modernization_rating_chain = LLMChain(llm=llm, prompt=modernization_rating_promp
 
 overall_chain = SequentialChain(
     chains=[
-        translate_desc_chain, translate_params_chain,
+        # translate_desc_chain, translate_params_chain,
         year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,
         technology_summary_chain, technology_rating_chain,
         balcony_summary_chain, balcony_rating_chain,
@@ -190,9 +198,9 @@ overall_chain = SequentialChain(
         outbuilding_summary_chain, outbuilding_rating_chain,
         modernization_summary_chain, modernization_rating_chain
     ],
-    input_variables=["real_estate_offer", "offer_parameters"],
+    input_variables=['real_estate_offer_en', 'offer_parameters_en'],
     output_variables=[
-        "offer_parameters_en", "real_estate_offer_en",
+        # "offer_parameters_en", "real_estate_offer_en",
         "technology_summary", "technology_rating",
         "balcony_summary", "balcony_rating",
         "law_summary", "law_rating",
@@ -209,9 +217,9 @@ overall_chain = SequentialChain(
     verbose=True
 )
 
-overall_chain_result = overall_chain({'real_estate_offer': offer_description, "offer_parameters": offer_params})
+overall_chain_result = overall_chain({'real_estate_offer_en': offer_description_en,
+                                      "offer_parameters_en": offer_parameters_en})
 
-# print(overall_chain_result, end='\n')
 
 result = {
     'technologyGPT': overall_chain_result['technology_rating'],
@@ -245,15 +253,13 @@ result = {
 
 
 print(result)
-print(offer_params)
-print(offer_description)
 
-# @TODO:
-# 1. Pobrać dane z answers
-# 2. Jeżeli kuchnia, modernizacja itp są ocenione to dać do ostatecznego rezulatu, ignorując przy tym części chainingu
-# 3. Wysłać do bazy danych
-# 4. Zloopować wszystko
-# 5. Pobrać dane z status z tabeli flats_GPT - i dać if'a czy ściągać czy nie
-# 5. Translate Google!
-
-# KITCHEN!!!
+# # @TODO:
+# # 1. Pobrać dane z answers
+# # 2. Jeżeli kuchnia, modernizacja itp są ocenione to dać do ostatecznego rezulatu, ignorując przy tym części chainingu
+# # 3. Wysłać do bazy danych
+# # 4. Zloopować wszystko
+# # 5. Pobrać dane z status z tabeli flats_GPT - i dać if'a czy ściągać czy nie
+# # 5. Translate Google!
+#
+# # KITCHEN!!!
