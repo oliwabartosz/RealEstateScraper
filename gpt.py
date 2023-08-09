@@ -243,6 +243,7 @@ result = {
 
 }
 
+
 print(result)
 print(offer_params)
 print(offer_description)
