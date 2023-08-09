@@ -21,11 +21,10 @@ jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
 # Get all data from database based on number column
 offers_data = api_handler.get_offers_data_from_api(
     jwt_data['access_token'],
-    columns_to_get=['number', 'lawStatus', 'floorsNumber', 'rent', 'material', 'buildingType', 'yearBuilt', 'buildingQuality', 'balcony',
-                    'balconyQuantity', 'terracesQuantity', 'loggiasQuantity', 'frenchBalconyQuantity', 'kitchenType',
-                    'basement', 'storageRoom', 'attic', 'parkingPlace', 'priceParkingUnderground', 'priceParkingGround',
-                    'garden', 'elevator', 'security', 'monitoring', 'guardedArea', 'guardedEstate', 'securityControl',
-                    'description']
+    'number', 'lawStatus', 'floorsNumber', 'rent', 'material', 'buildingType', 'yearBuilt', 'buildingQuality',
+    'balcony', 'balconyQuantity', 'terracesQuantity', 'loggiasQuantity', 'frenchBalconyQuantity', 'kitchenType',
+    'basement', 'storageRoom', 'attic', 'parkingPlace', 'priceParkingUnderground', 'priceParkingGround', 'garden',
+    'elevator', 'security', 'monitoring', 'guardedArea', 'guardedEstate', 'securityControl', 'description'
 )
 
 offer_record = offers_data[0]
@@ -218,8 +217,8 @@ result = {
     'technologyGPT': overall_chain_result['technology_rating'],
     'technology_summary': overall_chain_result['technology_summary'],
     'lawStatusGPT': overall_chain_result['law_rating'],
-    'law_summary':  overall_chain_result['law_summary'],
-    'balconyGPT':  overall_chain_result['balcony_rating'],
+    'law_summary': overall_chain_result['law_summary'],
+    'balconyGPT': overall_chain_result['balcony_rating'],
     'balcony_summary': overall_chain_result['balcony_summary'],
     'elevatorGPT': overall_chain_result['elevator_rating'],
     'elevator_summary': overall_chain_result['elevator_summary'],
@@ -248,7 +247,7 @@ print(result)
 print(offer_params)
 print(offer_description)
 
-#@TODO:
+# @TODO:
 # 1. Pobrać dane z answers
 # 2. Jeżeli kuchnia, modernizacja itp są ocenione to dać do ostatecznego rezulatu, ignorując przy tym części chainingu
 # 3. Wysłać do bazy danych

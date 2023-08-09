@@ -72,10 +72,10 @@ def send_offer_to_api(offer_data, access_token, offers_type):
                     'Something bad happened while trying to post data. Data has NOT been sent to the Database')
 
 
-def get_offers_data_from_api(access_token: str, columns_to_get: list) -> list:
+def get_offers_data_from_api(access_token: str, *args) -> list:
     """
     :param access_token: JWT Token
-    :param column_to_get: A column from database to get into a list
+    :param columns_to_get: A column from database to get into a list
     :return: A list of given column
     """
     headers = {'authorization': f'Bearer {access_token}',
@@ -83,8 +83,8 @@ def get_offers_data_from_api(access_token: str, columns_to_get: list) -> list:
 
     r = requests.get(f'{rer_url}/rer/api/flats/', headers=headers)
 
-    if columns_to_get:
+    if args:
         # It returns columns that are not empty (they are being skipped) or also don't have the None value.
-        return [{col: item[col] for col in columns_to_get if col in item and item[col] is not None} for item in r.json()]
+        return [{col: item[col] for col in args if col in item and item[col] is not None} for item in r.json()]
     else:
         return r.json()
