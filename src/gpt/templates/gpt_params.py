@@ -25,11 +25,3 @@ If there were no information, take then from text below:"
 
 Add 1 to the number of floors.
 """
-
-elevator_prompt = """
-Say if there is elevator in the building based on:"
-{offer_parameters_en}"
-
-If there were no information provided say that.
-"""
-

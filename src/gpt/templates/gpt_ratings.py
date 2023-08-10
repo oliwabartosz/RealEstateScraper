@@ -26,8 +26,7 @@ balcony_prompt = """Please rate the presence of a balcony based on the informati
 Please provide a numeric response: 0, 1, or -9.
 """
 
-elevator_prompt = """Please rate the presence of an elevator based on the information provided in {elevator_summary} \
-and {elevator}.
+elevator_prompt = """Please rate the presence of an elevator based on the information provided in {elevator_summary}
 - If there is an elevator or building has more than 5 floors, please return 1.
 - If there is no elevator or building has less than 5 floors, please return 0.
 - If it is not possible to determine the presence of an elevator, please return -9.
@@ -77,8 +76,8 @@ kitchen_prompt = """Please rate the occurrence of a kitchen based on the informa
 Please provide a numeric response: 1, 2, 3, or -9.
 """
 
-rent_prompt = """Please provide a numeric response that indicate the value of administrative rent from the information \
-provided in {rent_summary}. 
+rent_prompt = """Please provide a just numeric response that indicate the value of administrative rent from the \
+information provided in {rent_summary}. 
 If it is not possible to determine a rating, please return -9
 """
 
@@ -94,7 +93,8 @@ is 1, please return 1.
 Please provide a numeric response: 0, 1 or -9.
 """
 
-modernization_prompt = """Please rate the modernization based on the information provided in {modernization_summary}. \
+modernization_prompt = """Please rate the modernization based on the information provided in \
+{modernization_summary}.
 Take also information from ```technology_rating that is equal to {technology_rating}```.
 
 - If it has been mentioned that building was modernized, please return 4.

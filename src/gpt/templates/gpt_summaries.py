@@ -87,7 +87,7 @@ is located in the second line of development?
 modernization_prompt = """Provide a two-sentence summary of the building's modernization, based on the text \
 enclosed in triple backticks. Has the building undergone insulation, modernization, or restoration? If so, \
 please specify when these changes were made. Focus solely on information about the building and exclude any \
-details about the apartment.
+details about the apartment. Do not make summary of apartment modernization.
 ```{real_estate_offer_en}```
 """
 
