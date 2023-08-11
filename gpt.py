@@ -1,11 +1,8 @@
 # Translator
 import translators as ts
 
-# Langchain essentials
-from langchain.llms import OpenAI
-from langchain.chains import SequentialChain
-
 # Langchain chains
+from langchain.chains import SequentialChain
 from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building_type_chain, \
     number_floors_chain, technology_summary_chain, technology_rating_chain, balcony_summary_chain, balcony_rating_chain, \
     law_status_summary_chain, law_status_rating_chain, elevator_summary_chain, elevator_rating_chain, \
@@ -13,7 +10,6 @@ from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building
     garden_rating_chain, monitoring_summary_chain, monitoring_rating_chain, rent_summary_chain, rent_rating_chain, \
     outbuilding_summary_chain, outbuilding_rating_chain, kitchen_summary_chain, kitchen_rating_chain, \
     modernization_summary_chain, modernization_rating_chain
-
 
 # Utils
 from src.utils.utils import translate_result_to_pl
