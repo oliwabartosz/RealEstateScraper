@@ -1,15 +1,9 @@
-from operator import itemgetter
-
-# Config data
-from src.config import config_data
-
-# Offers from database
-from src.gpt.data.flats_offers import offer_record, offer_description_en, offer_parameters_en, offer_params, offers_data
+# Translator
+import translators as ts
 
 # Langchain essentials
 from langchain.llms import OpenAI
 from langchain.chains import SequentialChain
-from langchain.chat_models import ChatOpenAI
 
 # Langchain chains
 from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building_type_chain, \
@@ -20,14 +14,13 @@ from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building
     outbuilding_summary_chain, outbuilding_rating_chain, kitchen_summary_chain, kitchen_rating_chain, \
     modernization_summary_chain, modernization_rating_chain
 
+
 # Utils
 from src.utils.utils import translate_result_to_pl
 
-# Load model
-config_data = config_data.get_config_data()
-OPENAI_API_KEY = itemgetter('OPENAI_API_KEY')(config_data)
+# Data
+from src.gpt.data.flats_offers import offers_data
 
-llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.0)
 
 chain = [
     year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,
@@ -58,6 +51,14 @@ output_variables = [
 
 # TEST ONLY
 offer_record = offers_data[0]
+
+# Filter out unnecessary keys for params
+offer_params = {key: value for key, value in offer_record.items() if key not in ['id', 'number', 'description']}
+offer_description = offer_record['description']
+
+# Translate text
+offer_parameters_en = ts.translate_text(str(offer_params), translator='google', to_language='en')
+offer_description_en = ts.translate_text(offer_description, translator='google', to_language='en')
 
 if 'kitchenGPT' not in offer_record:
     chain.extend([kitchen_summary_chain, kitchen_rating_chain])

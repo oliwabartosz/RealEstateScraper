@@ -1,6 +1,3 @@
-import translators as ts
-
-from gpt import offer_record
 from src.handlers import api_handler
 from src.utils.utils import merge_dictionaries_by_id
 
@@ -28,10 +25,3 @@ offers_gpt_data = api_handler.get_offers_data_from_api(
 # Update data with information from another table get from the database
 offers_data = merge_dictionaries_by_id(offers_data, offers_gpt_data)
 
-# Filter out unnecessary keys for params
-offer_params = {key: value for key, value in offer_record.items() if key not in ['id', 'number', 'description']}
-offer_description = offer_record['description']
-
-# Translate text
-offer_parameters_en = ts.translate_text(str(offer_params), translator='google', to_language='en')
-offer_description_en = ts.translate_text(offer_description, translator='google', to_language='en')

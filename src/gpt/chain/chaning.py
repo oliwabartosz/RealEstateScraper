@@ -1,13 +1,13 @@
 from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
 
-from gpt import llm
+from src.gpt.model import llm
 from src.gpt.templates import gpt_params, gpt_summaries, gpt_ratings
 
 
-def create_llm_chain(llm, prompt: str, output_key: str):
+def create_llm_chain(llm_model, prompt: str, output_key: str):
     prompt = ChatPromptTemplate.from_template(prompt)
-    return LLMChain(llm=llm, prompt=prompt, output_key=output_key)
+    return LLMChain(llm=llm_model, prompt=prompt, output_key=output_key)
 
 
 # Chaining...
