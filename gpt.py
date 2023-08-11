@@ -1,127 +1,33 @@
-from src.config import config_data
 from operator import itemgetter
 
-# Templates
-from src.gpt.templates import gpt_params, gpt_summaries, gpt_ratings
+# Config data
+from src.config import config_data
 
-# Handlers
-from src.handlers import api_handler
+# Offers from database
+from src.gpt.data.flats_offers import offer_record, offer_description_en, offer_parameters_en, offer_params, offers_data
 
-# Langchain imports
+# Langchain essentials
 from langchain.llms import OpenAI
 from langchain.chains import SequentialChain
 from langchain.chat_models import ChatOpenAI
-from src.gpt.chain.chaning import create_llm_chain
 
-# Translator
-import translators as ts
+# Langchain chains
+from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building_type_chain, \
+    number_floors_chain, technology_summary_chain, technology_rating_chain, balcony_summary_chain, balcony_rating_chain, \
+    law_status_summary_chain, law_status_rating_chain, elevator_summary_chain, elevator_rating_chain, \
+    basement_summary_chain, basement_rating_chain, garage_summary_chain, garage_rating_chain, garden_summary_chain, \
+    garden_rating_chain, monitoring_summary_chain, monitoring_rating_chain, rent_summary_chain, rent_rating_chain, \
+    outbuilding_summary_chain, outbuilding_rating_chain, kitchen_summary_chain, kitchen_rating_chain, \
+    modernization_summary_chain, modernization_rating_chain
 
 # Utils
-from src.utils.utils import merge_dictionaries_by_id, translate_result_to_pl
-
-# Get JWT AUTH TOKEN
-jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
-
-# Get all data from database based on number column
-offers_data = api_handler.get_offers_data_from_api(
-    jwt_data['access_token'],
-    '/rer/api/flats/',
-    'GET',
-    'id', 'number', 'lawStatus', 'floorsNumber', 'rent', 'material', 'buildingType', 'yearBuilt', 'buildingQuality',
-    'balcony', 'balconyQuantity', 'terracesQuantity', 'loggiasQuantity', 'frenchBalconyQuantity', 'kitchenType',
-    'basement', 'storageRoom', 'attic', 'parkingPlace', 'priceParkingUnderground', 'priceParkingGround', 'garden',
-    'elevator', 'security', 'monitoring', 'guardedArea', 'guardedEstate', 'securityControl', 'description'
-)
-
-offers_gpt_data = api_handler.get_offers_data_from_api(
-    jwt_data['access_token'],
-    '/rer/api/flats/gpt',
-    'GET',
-    'id', 'technologyGPT', 'modernizationGPT', 'kitchenGPT', 'qualityGPT'
-)
-
-# Update data with information from another table get from the database
-offers_data = merge_dictionaries_by_id(offers_data, offers_gpt_data)
-# TEST ONLY
-offer_record = offers_data[0]
-
-# Filter out unnecessary keys for params
-offer_params = {key: value for key, value in offer_record.items() if key not in ['id', 'number', 'description']}
-offer_description = offer_record['description']
-
-# Translate text
-offer_parameters_en = ts.translate_text(str(offer_params), translator='google', to_language='en')
-offer_description_en = ts.translate_text(offer_description, translator='google', to_language='en')
+from src.utils.utils import translate_result_to_pl
 
 # Load model
 config_data = config_data.get_config_data()
 OPENAI_API_KEY = itemgetter('OPENAI_API_KEY')(config_data)
 
 llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.0)
-
-# Chaining...
-
-# PARAMETERS
-# Year of the construction of the building
-year_of_constr_chain = create_llm_chain(llm, gpt_params.year_of_constr_prompt, "year_of_constr")
-# Building type
-building_type_chain = create_llm_chain(llm, gpt_params.building_type_prompt, "building_type")
-# Material of the building that have been constructed
-material_chain = create_llm_chain(llm, gpt_params.material_prompt, "material")
-# Number of floors that building have
-number_floors_chain = create_llm_chain(llm, gpt_params.number_floors_prompt, "number_of_floors")
-
-# SUMMARIES
-# Technology
-technology_summary_chain = create_llm_chain(llm, gpt_summaries.technology_prompt, "technology_summary")
-# Law status
-law_status_summary_chain = create_llm_chain(llm, gpt_summaries.law_status_prompt, "law_summary")
-# Balcony
-balcony_summary_chain = create_llm_chain(llm, gpt_summaries.balcony_prompt, "balcony_summary")
-# Elevator
-elevator_summary_chain = create_llm_chain(llm, gpt_summaries.elevator_prompt, "elevator_summary")
-# Basement
-basement_summary_chain = create_llm_chain(llm, gpt_summaries.basement_prompt, "basement_summary")
-# Garage
-garage_summary_chain = create_llm_chain(llm, gpt_summaries.garage_prompt, "garage_summary")
-# Garden
-garden_summary_chain = create_llm_chain(llm, gpt_summaries.garden_prompt, "garden_summary")
-# Monitoring
-monitoring_summary_chain = create_llm_chain(llm, gpt_summaries.monitoring_prompt, "monitoring_summary")
-# Kitchen
-kitchen_summary_chain = create_llm_chain(llm, gpt_summaries.kitchen_prompt, "kitchen_summary")
-# Rent
-rent_summary_chain = create_llm_chain(llm, gpt_summaries.rent_prompt, "rent_summary")
-# Outbuilding
-outbuilding_summary_chain = create_llm_chain(llm, gpt_summaries.outbuilding_prompt, "outbuilding_summary")
-# Modernization
-modernization_summary_chain = create_llm_chain(llm, gpt_summaries.modernization_prompt, "modernization_summary")
-
-# RATINGS
-# Technology
-technology_rating_chain = create_llm_chain(llm, gpt_ratings.technology_prompt, "technology_rating")
-# Law status
-law_status_rating_chain = create_llm_chain(llm, gpt_ratings.law_status_prompt, "law_rating")
-# Balcony
-balcony_rating_chain = create_llm_chain(llm, gpt_ratings.balcony_prompt, "balcony_rating")
-# Elevator
-elevator_rating_chain = create_llm_chain(llm, gpt_ratings.elevator_prompt, "elevator_rating")
-# Basement
-basement_rating_chain = create_llm_chain(llm, gpt_ratings.basement_prompt, "basement_rating")
-# Garage
-garage_rating_chain = create_llm_chain(llm, gpt_ratings.garage_prompt, "garage_rating")
-# Garden
-garden_rating_chain = create_llm_chain(llm, gpt_ratings.garden_prompt, "garden_rating")
-# Monitoring
-monitoring_rating_chain = create_llm_chain(llm, gpt_ratings.monitoring_prompt, "monitoring_rating")
-# Kitchen
-kitchen_rating_chain = create_llm_chain(llm, gpt_ratings.kitchen_prompt, "kitchen_rating")
-# Rent
-rent_rating_chain = create_llm_chain(llm, gpt_ratings.rent_prompt, "rent_rating")
-# Outbuilding
-outbuilding_rating_chain = create_llm_chain(llm, gpt_ratings.outbuilding_prompt, "outbuilding_rating")
-# Modernization
-modernization_rating_chain = create_llm_chain(llm, gpt_ratings.modernization_prompt, "modernization_rating")
 
 chain = [
     year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,
@@ -150,6 +56,9 @@ output_variables = [
     "outbuilding_summary", "outbuilding_rating",
 ]
 
+# TEST ONLY
+offer_record = offers_data[0]
+
 if 'kitchenGPT' not in offer_record:
     chain.extend([kitchen_summary_chain, kitchen_rating_chain])
     output_variables.extend(["kitchen_summary", "kitchen_rating"])
@@ -168,8 +77,7 @@ overall_chain = SequentialChain(
 overall_chain_result = overall_chain({'real_estate_offer_en': offer_description_en,
                                       "offer_parameters_en": offer_parameters_en})
 
-elevator_param = int(offer_params.get('floorsNumber', 0)) > 5
-elevator_param = offer_params.get('elevator') == 'Tak'
+elevator_param = int(offer_params.get('floorsNumber', 0)) > 5 and offer_params.get('elevator') == 'Tak'
 rent_param = offer_params.get('rent', '')
 
 result = {
