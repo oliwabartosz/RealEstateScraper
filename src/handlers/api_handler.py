@@ -64,6 +64,7 @@ def send_offer_to_api(offer_data: dict, access_token: str, offers_type: str, end
     if check_if_exists:
         if _check_if_offer_exists_in_db(access_token, offer_data, offers_type, endpoint):
             logger_cfg.logger1.info('That offer already exists in the Database.')
+        #@TODO: LOGIC NEEDS TO BE BETTER, ROUTER IN EXPRESS NEEDS TO BE MODIFIED
         else:
             logger_cfg.logger1.info('Sending data to database.')
             r = requests.post(f'{rer_url}/rer/api/{offers_type}/{endpoint}', json=offer_data, headers=headers)
