@@ -11,12 +11,17 @@ from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building
     outbuilding_summary_chain, outbuilding_rating_chain, kitchen_summary_chain, kitchen_rating_chain, \
     modernization_summary_chain, modernization_rating_chain
 
+# Handlers
+from src.handlers import api_handler
+
 # Utils
 from src.utils.utils import translate_result_to_pl
 
 # Data
 from src.gpt.data.flats_offers import offers_data
 
+# Get JWT AUTH TOKEN
+jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
 
 chain = [
     year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,
@@ -129,6 +134,9 @@ result_en = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStat
                                    'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT', 'qualityGPT',
                                    'status', 'rentGPT')
 print(result_en)
+
+api_handler.send_offer_to_api(result_en, jwt_data['access_token'], 'flats', endpoint='gpt',
+                              check_if_exists=False)
 
 # # @TODO:
 # # 3. Wysłać do bazy danych
