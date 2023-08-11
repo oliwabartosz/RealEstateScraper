@@ -4,7 +4,6 @@ import requests
 import json
 from time import sleep
 from src.config import logger_cfg, config_data
-from src.config.config_data import get_config_data
 
 data = config_data.get_config_data()
 rer_url, jwt_api_login, jwt_api_password = itemgetter('rer_url',
@@ -43,7 +42,7 @@ def send_offer_to_api(offer_data, access_token, offers_type):
     sleep(5)
 
     # Checking if that offer exists in a database
-    offer_ids: list = get_offers_list_from_api(access_token)
+    offer_ids: list = get_offers_data_from_api(access_token, '/rer/api/flats/', 'GET')
     if offer_data['offerId'] in offer_ids:
         logger_cfg.logger1.info('That offer already exists in the Database.')
         pass
@@ -72,19 +71,22 @@ def send_offer_to_api(offer_data, access_token, offers_type):
                     'Something bad happened while trying to post data. Data has NOT been sent to the Database')
 
 
-def get_offers_data_from_api(access_token: str, path: str, method='GET', *args) -> list:
+def get_offers_data_from_api(access_token: str, path: str, method='GET', *columns_to_get) -> list:
     """
-    :param access_token: JWT Token
-    :param columns_to_get: A column from database to get into a list
-    :return: A list of given column
+    :param access_token: JWT Token.
+    :param path: route to API.
+    :param method: GET is default. Information just for better reading.
+    :param columns_to_get: A column from database to get.
+    :return: A list of data.
     """
     headers = {'authorization': f'Bearer {access_token}',
                'Content-Type': 'application/json; charset=utf-8'}
 
     r = requests.get(f'{rer_url}{path}', headers=headers)
 
-    if args:
+    if columns_to_get:
         # It returns columns that are not empty (they are being skipped) or also don't have the None value.
-        return [{col: item[col] for col in args if col in item and item[col] is not None} for item in r.json()]
+        return [{col: item[col] for col in columns_to_get if col in item and item[col] is not None} for item in
+                r.json()]
     else:
         return r.json()

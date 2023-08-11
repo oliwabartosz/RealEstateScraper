@@ -17,7 +17,7 @@ from src.gpt.chain.chaning import create_llm_chain
 import translators as ts
 
 # Utils
-from src.utils.utils import merge_dictionaries_by_id
+from src.utils.utils import merge_dictionaries_by_id, translate_result_to_pl
 
 # Get JWT AUTH TOKEN
 jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
@@ -158,7 +158,6 @@ if 'modernizationGPT' not in offer_record:
     chain.extend([modernization_summary_chain, modernization_rating_chain])
     output_variables.extend(["modernization_summary", "modernization_rating"])
 
-
 overall_chain = SequentialChain(
     chains=chain,
     input_variables=['real_estate_offer_en', 'offer_parameters_en'],
@@ -197,8 +196,8 @@ result = {
     'modernizationGPT': offer_record['modernizationGPT'] if 'modernizationGPT' in offer_record else
     overall_chain_result['modernization_rating'],
 
-    #@TODO: Got to have some explanation that rated by user beforehand
-    'modernization_summary': overall_chain_result['modernization_summary'],
+    'modernization_summary': 'Rated by user.' if 'modernizationGPT' in offer_record else
+    overall_chain_result['modernization_summary'],
 
     'alarmGPT': overall_chain_result['monitoring_rating'],
     'alarm_summary': overall_chain_result['monitoring_summary'],
@@ -206,8 +205,8 @@ result = {
     'kitchenGPT': offer_record['kitchenGPT'] if 'kitchenGPT' in offer_record else
     overall_chain_result['kitchen_rating'],
 
-    #@TODO: Got to have some explanation that rated by user beforehand
-    'kitchen_summary': overall_chain_result['kitchen_summary'],
+    'kitchen_summary': 'Rated by user.' if 'kitchenGPT' in offer_record else
+    overall_chain_result['kitchen_summary'],
 
     'outbuildingGPT': overall_chain_result['outbuilding_rating'],
     'outbuilding_summary': overall_chain_result['outbuilding_summary'],
@@ -215,15 +214,19 @@ result = {
     'status': 1,
 
     'rentGPT': rent_param if overall_chain_result['rent_rating'] == -9 else overall_chain_result['rent_rating'],
-    #@TODO: Got to have explanation that data gathered from params
-    'rent_summary': overall_chain_result['rent_summary'],
+    'rent_summary': 'Information taken from parameters description.' if rent_param != '' and overall_chain_result
+    ['rent_rating'] == -9 else overall_chain_result['rent_summary'],
 }
 
-print(result)
+# Translate results to pl
+result_en = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
+                                   'elevatorGPT', 'balconyGPT', 'basementGPT', 'garageGPT', 'gardenGPT',
+                                   'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT', 'qualityGPT',
+                                   'status', 'rentGPT')
+print(result_en)
 
 # # @TODO:
 # # 3. Wysłać do bazy danych
 # # 4. Zloopować wszystko
-# # 5. Translate Google!
 #
 # # KITCHEN CHAIN CHECK!!!
