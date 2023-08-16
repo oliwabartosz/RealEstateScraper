@@ -39,10 +39,8 @@ def refresh_jwt_token(url, access_token, cookie_jwt):
 
 def _check_if_offer_exists_in_db(access_token: str, offer_data: dict, offers_type: str, endpoint: str) -> bool:
     offer_ids: list = get_offers_data_from_api(access_token, f'/rer/api/{offers_type}/{endpoint}', 'GET')
-    if offer_data['offerId'] in offer_ids:
-        return True
-    else:
-        return False
+
+    return True if offer_data['offerId'] in offer_ids else False
 
 
 def send_offer_to_api(offer_data: dict, access_token: str, offers_type: str, endpoint: str, check_if_exists: bool) \
@@ -54,33 +52,28 @@ def send_offer_to_api(offer_data: dict, access_token: str, offers_type: str, end
     :param offers_type: can be flats, houses or plots
     :param endpoint: an endpoint of the route ex. rer/api/flats/gpt, where gpt is endpoint
     :param check_if_exists: boolean to check if offer exists in database (checked by just offerId)
-    :return: Nothing to return -> sends data to database.
+    :return: Nothing to return -> sends data into database.
     """
     sleep(2)
 
     headers = {'authorization': f'Bearer {access_token}',
                'Content-Type': 'application/json; charset=utf-8'}
 
+    log_msg = {
+        202: 'Response 202. Data has been sent to the Database.',
+        500: 'Response 500. Data has NOT been sent to the Database',
+        403: 'Response 403. Forbidden.',
+        404: 'Response 404. Check the routers.',
+    }
+
     if check_if_exists:
         if _check_if_offer_exists_in_db(access_token, offer_data, offers_type, endpoint):
             logger_cfg.logger1.info('That offer already exists in the Database.')
-        #@TODO: LOGIC NEEDS TO BE BETTER, ROUTER IN EXPRESS NEEDS TO BE MODIFIED
-        else:
-            logger_cfg.logger1.info('Sending data to database.')
-            r = requests.post(f'{rer_url}/rer/api/{offers_type}/{endpoint}', json=offer_data, headers=headers)
+            return
 
-            match r.status_code:
-                case 202:
-                    logger_cfg.logger1.info('Response 202. Data has been sent to the Database.')
-                case 500:
-                    logger_cfg.logger1.warning('Response 500. Data has NOT been sent to the Database')
-                case 403:
-                    logger_cfg.logger1.warning('Response 403. Forbidden.')
-                case 404:
-                    logger_cfg.logger1.warning('Response 404. Check the routers.')
-                case _:
-                    logger_cfg.logger1.warning(
-                        'Something bad happened while trying to post data. Data has NOT been sent to the Database')
+    logger_cfg.logger1.info('Sending data to database.')
+    r = requests.post(f'{rer_url}/rer/api/{offers_type}/{endpoint}', json=offer_data, headers=headers)
+    log_msg.get(r.status_code, "Unknown error occurred.")
 
 
 def get_offers_data_from_api(access_token: str, path: str, method: str = 'GET', *columns_to_get: str) -> list:
@@ -102,3 +95,4 @@ def get_offers_data_from_api(access_token: str, path: str, method: str = 'GET', 
                 r.json()]
     else:
         return r.json()
+

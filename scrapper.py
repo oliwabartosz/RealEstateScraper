@@ -35,7 +35,7 @@ if __name__ == "__main__":
     for offer_id in tqdm(offers_to_download):
         if scrapper_functions.input_to_searchbar(offer_id):
             try:
-                scrapper_functions.get_offers_data(offers_type, offer_id, jwt_data['access_token'])
+                scrapper_functions.download_offers_data_from_web(offers_type, offer_id, jwt_data['access_token'])
                 scrapper_functions.get_images_links(offer_id)
             except Exception as e:
                 print(e)

@@ -141,7 +141,7 @@ def input_to_searchbar(offer_id: str) -> bool:
         return True
 
 
-def get_offers_data(offers_type: str, offer_id: str, access_token: str):
+def download_offers_data_from_web(offers_type: str, offer_id: str, access_token: str):
     if "/" in offer_id:
         offer_id = offer_id.replace("/", "")
 
