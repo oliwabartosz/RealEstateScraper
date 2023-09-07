@@ -1,18 +1,20 @@
 // This file should have name config.json. Delete that comment also.
 
 {
-  "website": "https://abc.abc.ab/",
-  "login": "email@address.com",
-  "password": "PaSSwOrD",
-  "ssh_hostname": "server.serv.er",
+  "website": "https://www.somesite.site/",
+  "login": "login",
+  "password": "Password!@#",
+  "send_images_to_ssh": true,
+  "ssh_hostname": "srv.ssh",
   "ssh_username": "username",
-  "ssh_password": "PassWord!",
-  "ssh_port": 11111,
-  "ssh_remote_dir": "/path/to/push/images",
+  "ssh_password": "Password!@#",
+  "ssh_port": 10227,
+  "ssh_remote_dir": "/dir/to/images",
+  "save_to_database": true,
   "jwt_api_login": "Api",
   "jwt_api_password": "API_RER!2023",
-  "rer_url": "http://localhost:3000",
+  "rer_url": "https://www.yoursite.yours/",
   "OPENAI_API_KEY": "your-api-key",
-  "web_browser_driver": "firefox",
+  "web_browser_driver": "chrome",
   "web_driver_auto_install": false
 }
