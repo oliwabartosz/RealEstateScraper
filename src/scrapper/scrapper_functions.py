@@ -5,6 +5,7 @@ import scrapper_functions_aux
 from src.config import selenium_cfg
 from src.config import logger_cfg
 from src.config import selectors
+from src.config.config_data import get_config_data
 from src.handlers import file_handler
 from src.handlers import api_handler
 from src.config import config_data
@@ -21,16 +22,17 @@ import os
 from src.handlers.file_handler import load_json_file
 
 images_data_to_json = []
+data = config_data.get_config_data()
+
+website_url, login_data, password_data, save_to_database = itemgetter('website_url',
+                                                                      'login_data',
+                                                                      'password_data',
+                                                                      'save_to_database'
+                                                                      )(data)
 
 
 def login() -> None:
     """Log in to website"""
-    data = config_data.get_config_data()
-
-    website_url, login_data, password_data = itemgetter('website_url',
-                                                        'login_data',
-                                                        'password_data',
-                                                        )(data)
 
     # Go to web and locate forms
     selenium_cfg.driver.get(website_url)
@@ -184,7 +186,9 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
     scrapper_functions_aux.change_comma_to_dot(offer_data)
 
     # Saving data
-    api_handler.send_offer_to_api(offer_data, access_token, offers_type, endpoint='', check_if_exists=True)
+    if save_to_database:
+        api_handler.send_offer_to_api(offer_data, access_token, offers_type, endpoint='', check_if_exists=True)
+
     file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
                                     file_name_str='statuses.json')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')

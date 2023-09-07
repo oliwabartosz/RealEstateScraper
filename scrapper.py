@@ -16,6 +16,7 @@ if __name__ == "__main__":
     # Load important data from config file
     data = config_data.get_config_data()
     rer_url = itemgetter('rer_url')(data)
+    send_images_to_ssh = itemgetter('send_images_to_ssh')
 
     # Initial questions
     offers_type = questions.type_of_offers()
@@ -50,7 +51,8 @@ if __name__ == "__main__":
     loop.run_until_complete(download_images(load_json_file(file_handler.FILE_PATH_IMAGES)))
 
     # Send image to remote server using SSH
-    file_handler.send_images_to_ssh()
+    if send_images_to_ssh:
+        file_handler.send_images_to_ssh()
 
     # End.
     scrapper_functions.statuses_summary()
