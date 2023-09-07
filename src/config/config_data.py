@@ -17,6 +17,8 @@ def get_config_data() -> dict:
     jwt_api_login = data['jwt_api_login']
     jwt_api_password = data['jwt_api_password']
     OPENAI_API_KEY = data['OPENAI_API_KEY']
+    web_browser_driver = data['web_browser_driver']
+    web_driver_auto_install = data["web_driver_auto_install"]
 
     return {
         'website_url': website_url,
@@ -31,4 +33,6 @@ def get_config_data() -> dict:
         'jwt_api_login': jwt_api_login,
         'jwt_api_password': jwt_api_password,
         'OPENAI_API_KEY': OPENAI_API_KEY,
+        'web_browser_driver': web_browser_driver,
+        'web_driver_auto_install': web_driver_auto_install
     }

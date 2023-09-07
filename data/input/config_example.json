@@ -11,5 +11,8 @@
   "ssh_remote_dir": "/path/to/push/images",
   "jwt_api_login": "Api",
   "jwt_api_password": "API_RER!2023",
-  "rer_url": "http://localhost:3000"
+  "rer_url": "http://localhost:3000",
+  "OPENAI_API_KEY": "your-api-key",
+  "web_browser_driver": "firefox",
+  "web_driver_auto_install": false
 }
