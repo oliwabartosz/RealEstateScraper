@@ -1,6 +1,6 @@
 # SUMMARIES
-balcony_prompt = """Analyze information about the balcony in the offer. "Don't treat french balcony as \
-a balcony. 
+balcony_prompt = """Analyze information about the balcony in the offer. "Don't treat french balcony and balcony window \
+as a balcony. 
 
 French balcony (also called French balustrade, wallet) is a type of balcony limited only to the balcony window and \
 balustrade.

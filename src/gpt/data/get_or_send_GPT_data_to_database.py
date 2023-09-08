@@ -22,6 +22,6 @@ offers_gpt_data = api_handler.get_offers_data_from_api(
     'id', 'technologyGPT', 'modernizationGPT', 'kitchenGPT', 'qualityGPT'
 )
 
-# Update data with information from another table get from the database
+# Update data with information from another table got from the database
 offers_data = merge_dictionaries_by_id(offers_data, offers_gpt_data)
 

@@ -18,7 +18,7 @@ from src.handlers import api_handler
 from src.utils.utils import translate_result_to_pl
 
 # Data
-from src.gpt.data.flats_offers import offers_data
+from src.gpt.data.get_or_send_GPT_data_to_database import offers_data
 
 # Get JWT AUTH TOKEN
 jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
