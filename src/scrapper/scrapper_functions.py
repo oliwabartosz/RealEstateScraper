@@ -86,6 +86,9 @@ def get_offers_list_from_file() -> list:
         # Check if offers have statuses like downloaded or skipped
         offers_to_remove = []
         for offer in offers:
+            if "/" in offer:
+                offer = offer.replace("/", "")
+
             if scrapper_functions_aux.check_if_offer_was_downloaded(statuses_of_offers, offer):
                 offers_to_remove.append(offer)
 
@@ -189,7 +192,7 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
     if save_to_database:
         api_handler.send_offer_to_api(offer_data, access_token, offers_type, endpoint='', check_if_exists=True)
 
-    file_handler.save_offer_to_file({"downloaded": offer_id}, file_name=file_handler.FILE_PATH_STATUSES,
+    file_handler.save_offer_to_file({offer_id: "downloaded"}, file_name=file_handler.FILE_PATH_STATUSES,
                                     file_name_str='statuses.json')
     file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
 
@@ -233,20 +236,26 @@ async def download_image(url, folder):
 
 
 def convert_to_webp(image_path):
+    print(os.listdir(os.path.dirname(image_path)))
     if f"{image_path.split('/')[-1]}.webp" not in os.listdir(os.path.dirname(image_path)):
+
         image = Image.open(image_path)
         webp_path = os.path.splitext(image_path)[0] + ".webp"
         image.save(webp_path, "WebP")
         os.remove(image_path)
 
 
-async def download_images(data):
+async def download_images(offer_id_and_images_links_dict: dict):
     tasks = []
 
-    for item in data:
+    for item in offer_id_and_images_links_dict:
         for folder, urls in item.items():
-            if not os.path.exists(folder):
+            if "/" in folder:
+                folder = folder.replace("/", "")
+
+            if not os.path.exists(file_handler.FILE_PATH_IMAGES_DIR + folder):
                 os.makedirs(file_handler.FILE_PATH_IMAGES_DIR + folder)
+
             for url in urls:
                 # Check if image has been downloaded before
                 if url.split('/')[-1] + '.webp' in os.listdir(file_handler.FILE_PATH_IMAGES_DIR + folder):
@@ -258,8 +267,11 @@ async def download_images(data):
 
     # Convert downloaded images to WebP
     image_files = []
-    for item in data:
+    for item in offer_id_and_images_links_dict:
         for folder, urls in item.items():
+            if "/" in folder:
+                folder = folder.replace("/", "")
+
             for url in urls:
                 filename = url.split("/")[-1]
                 image_path = os.path.join(file_handler.FILE_PATH_IMAGES_DIR + folder, filename)

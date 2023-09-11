@@ -28,7 +28,7 @@ def check_if_offer_exists() -> bool:
 
 
 def check_if_offer_was_downloaded(offers_data: list, offer_id: str) -> bool:
-    return any(offer_id in d.values() for d in offers_data)
+    return any(offer_id in d.keys() for d in offers_data)
 
 
 def _load_dictionary(offers_type):
