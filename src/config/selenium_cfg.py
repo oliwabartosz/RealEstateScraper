@@ -13,6 +13,7 @@ web_driver_auto_install = itemgetter('web_driver_auto_install')(config_data)
 
 
 def start_web_browser_driver(web_browser_driver: str, auto_install: bool):
+    # @TODO: add to the config file
     sleep_time = 5
 
     options = Options()

@@ -39,9 +39,11 @@ def load_txt_file(file_path, split=False):
         else:
             return file.read()
 
+
 def save_txt_file(file_path, text_to_save):
     with open(file_path, 'w') as file:
         file.write(text_to_save)
+
 
 def _prepare_file_if_not_exists(file_path, start=[]):
     if not os.path.isfile(file_path):
@@ -49,7 +51,7 @@ def _prepare_file_if_not_exists(file_path, start=[]):
             json.dump(start, file)
 
 
-def save_offer_to_file(offer_data: dict, file_name, file_name_str: str):
+def save_offer_data_to_file(offer_data: dict, file_name, file_name_str: str):
     offers_data_from_file = load_json_file(file_name)
     offers_data_from_file.append(offer_data)
     with open(file_name, mode='w', encoding='utf-8') as file:
@@ -121,5 +123,3 @@ def send_images_to_ssh():
     finally:
         # Close the SSH connection
         ssh.close()
-
-

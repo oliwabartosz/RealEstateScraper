@@ -21,7 +21,10 @@ import os
 
 from src.handlers.file_handler import load_json_file
 
-images_data_to_json = []
+# @TODO: make in function: images_data_to_json?
+images_data_to_json = file_handler.load_json_file(file_handler.FILE_PATH_IMAGES) if os.path.exists(
+    file_handler.FILE_PATH_IMAGES) else []
+
 data = config_data.get_config_data()
 
 website_url, login_data, password_data, save_to_database = itemgetter('website_url',
@@ -76,21 +79,11 @@ def get_offers_list_from_file() -> list:
     # Open data
 
     try:
-        # offers = open('./data/input/input.txt', 'r').read().split()
-        offers = file_handler.load_txt_file(file_handler.FILE_PATH_INPUT, split=True)
+        offers: list = file_handler.load_txt_file(file_handler.FILE_PATH_INPUT, split=True)
         logger_cfg.logger1.info(f"{len(offers)} offers will be downloaded.")
 
-        # Load statuses
-        statuses_of_offers = file_handler.load_json_file(file_handler.FILE_PATH_STATUSES)
-
-        # Check if offers have statuses like downloaded or skipped
-        offers_to_remove = []
-        for offer in offers:
-            if "/" in offer:
-                offer = offer.replace("/", "")
-
-            if scrapper_functions_aux.check_if_offer_was_downloaded(statuses_of_offers, offer):
-                offers_to_remove.append(offer)
+        # Handle statuses.json and returns offers_to_remove list
+        offers_to_remove = scrapper_functions_aux.handle_statuses_json(offers)
 
         # Remove offers from input if were downloaded or skipped
         offers_removed = list(filter(lambda x: x in offers_to_remove, offers))
@@ -111,8 +104,12 @@ def get_offers_list_from_file() -> list:
             exit(1)
     except Exception as e:
         logger_cfg.logger1.warning('Something went wrong.')
-        quit_browser()
         print(e)
+        try:
+            logout()
+        except:
+            pass
+        quit_browser()
         traceback.print_exc()
         exit(1)
 
@@ -136,8 +133,8 @@ def input_to_searchbar(offer_id: str) -> bool:
         logger_cfg.logger1.info(f'The offer {offer_id} not found. Skipping it.')
         searchbar.clear()
         searchbar.send_keys(Keys.ESCAPE)
-        file_handler.save_offer_to_file({offer_id: "skipped"}, file_name=file_handler.FILE_PATH_STATUSES,
-                                        file_name_str='statuses.json')
+        file_handler.save_offer_data_to_file({offer_id: "skipped"}, file_name=file_handler.FILE_PATH_STATUSES,
+                                             file_name_str='statuses.json')
         return False
     else:
         searchbar.send_keys(Keys.RETURN)
@@ -192,9 +189,10 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
     if save_to_database:
         api_handler.send_offer_to_api(offer_data, access_token, offers_type, endpoint='', check_if_exists=True)
 
-    file_handler.save_offer_to_file({offer_id: "downloaded"}, file_name=file_handler.FILE_PATH_STATUSES,
-                                    file_name_str='statuses.json')
-    file_handler.save_offer_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS, file_name_str='offers.json')
+    file_handler.save_offer_data_to_file({offer_id: "downloaded"}, file_name=file_handler.FILE_PATH_STATUSES,
+                                         file_name_str='statuses.json')
+    file_handler.save_offer_data_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS,
+                                         file_name_str='offers.json')
 
 
 def get_images_links(offer_id) -> dict:
@@ -215,6 +213,9 @@ def get_images_links(offer_id) -> dict:
         offer_id: images_links
     })
 
+    # @TODO: check this out
+    # file_handler.save_offer_data_to_file({offer_id: images_links}, file_name=file_handler.FILE_PATH_IMAGES,
+    #                                      file_name_str='images.json')
     images_data_to_json.append(images_dict)
     file_handler.save_images_links_to_file(images_data_to_json)
 
@@ -236,9 +237,7 @@ async def download_image(url, folder):
 
 
 def convert_to_webp(image_path):
-    print(os.listdir(os.path.dirname(image_path)))
     if f"{image_path.split('/')[-1]}.webp" not in os.listdir(os.path.dirname(image_path)):
-
         image = Image.open(image_path)
         webp_path = os.path.splitext(image_path)[0] + ".webp"
         image.save(webp_path, "WebP")

@@ -116,3 +116,23 @@ def make_chunks_from_description(offers_type, offers_data):
     offers_data.update(chunks)
 
     return offers_data
+
+
+def handle_statuses_json(offers: list) -> list:
+    """
+    This function loads the data from statuses.json, then checks if data was downloaded (or skipped) before.
+    It prevents of trying to re-download the offers in previous run. Returns the list of offers_to_remove.
+    """
+    # Load statuses
+    statuses_of_offers = file_handler.load_json_file(file_handler.FILE_PATH_STATUSES)
+
+    # Check if offers have statuses like downloaded or skipped
+    offers_to_remove = []
+    for offer in offers:
+        if "/" in offer:
+            offer = offer.replace("/", "")
+
+        if check_if_offer_was_downloaded(statuses_of_offers, offer):
+            offers_to_remove.append(offer)
+
+    return offers_to_remove
