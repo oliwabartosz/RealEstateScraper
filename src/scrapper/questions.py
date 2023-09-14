@@ -9,13 +9,13 @@ def type_of_offers():
 
     match answer:
         case 'f':
-            logger_cfg.logger1.info('Downloading: FLATS')
+            logger_cfg.logger_scrapper.info('Downloading: FLATS')
             return 'flats'
         case 'h':
-            logger_cfg.logger1.info('Downloading: HOUSES')
+            logger_cfg.logger_scrapper.info('Downloading: HOUSES')
             return 'houses'
         case 'p':
-            logger_cfg.logger1.info('Downloading: PLOTS')
+            logger_cfg.logger_scrapper.info('Downloading: PLOTS')
             return 'plots'
         case _:
             print("No information or information invalid. Cannot process further operations without this information.")

@@ -37,8 +37,11 @@ if __name__ == "__main__":
             try:
                 while not scrapper_functions.download_offers_data_from_web(offers_type, offer_id,
                                                                         jwt_data['access_token']):
-                    scrapper_functions.input_to_searchbar(offer_id)
-                    scrapper_functions.download_offers_data_from_web(offers_type, offer_id, jwt_data['access_token'])
+                    if not scrapper_functions.input_to_searchbar(offer_id):
+                        break  # if offer not found in the searchbar, break the loop and get the next offer.
+                    else:
+                        if scrapper_functions.download_offers_data_from_web(offers_type, offer_id, jwt_data['access_token']):
+                            break  # if data are downloaded, break the loop and get the next offer.
                 scrapper_functions.get_images_links(offer_id)
             except Exception as e:
                 print(e)

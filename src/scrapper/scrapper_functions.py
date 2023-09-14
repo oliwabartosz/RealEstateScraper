@@ -47,13 +47,13 @@ def login() -> None:
     password_form.send_keys(password_data)
     sleep(selenium_cfg.SLEEP_TIME - 3)
     password_form.send_keys(Keys.ENTER)
-    logger_cfg.logger1.info('Email & Password submitted.')
+    logger_cfg.logger_scrapper.info('Email & Password submitted.')
     sleep(selenium_cfg.SLEEP_TIME)
-    logger_cfg.logger1.info(f'Logged in. Waiting {selenium_cfg.SLEEP_TIME}s.')
+    logger_cfg.logger_scrapper.info(f'Logged in. Waiting {selenium_cfg.SLEEP_TIME}s.')
 
     # Close unwanted ads
     if scrapper_functions_aux.close_unwanted_ad():
-        logger_cfg.logger1.info('Closed unwanted ad.')
+        logger_cfg.logger_scrapper.info('Closed unwanted ad.')
 
 
 def logout() -> None:
@@ -61,9 +61,9 @@ def logout() -> None:
     selenium_cfg.wait.until(EC.element_to_be_clickable(("xpath", selectors.XPATH_LOGOUT_BTN_ARROW)))
     selenium_cfg.driver.find_element("class name", selectors.CLASS_LOGOUT_BTN_ARROW).click()
     selenium_cfg.driver.find_element("xpath", selectors.XPATH_LOGOUT_BTN).click()
-    logger_cfg.logger1.info('Logged out.')
+    logger_cfg.logger_scrapper.info('Logged out.')
     selenium_cfg.driver.quit()
-    logger_cfg.logger1.info('Session ended.')
+    logger_cfg.logger_scrapper.info('Session ended.')
 
 
 def quit_browser() -> None:
@@ -72,7 +72,7 @@ def quit_browser() -> None:
     :return: None.
     """
     selenium_cfg.driver.quit()
-    logger_cfg.logger1.info("Browser's session ended.")
+    logger_cfg.logger_scrapper.info("Browser's session ended.")
 
 
 def get_offers_list_from_file() -> list:
@@ -80,7 +80,7 @@ def get_offers_list_from_file() -> list:
 
     try:
         offers: list = file_handler.load_txt_file(file_handler.FILE_PATH_INPUT, split=True)
-        logger_cfg.logger1.info(f"{len(offers)} offers will be downloaded.")
+        logger_cfg.logger_scrapper.info(f"{len(offers)} offers is going to be downloaded.")
 
         # Handle statuses.json and returns offers_to_remove list
         offers_to_remove = scrapper_functions_aux.handle_statuses_json(offers)
@@ -89,13 +89,14 @@ def get_offers_list_from_file() -> list:
         offers_removed = list(filter(lambda x: x in offers_to_remove, offers))
         offers = list(filter(lambda x: x not in offers_to_remove, offers))
 
-        logger_cfg.logger2.info(f"{len(offers_removed)} offers removed from input - based on statuses.json.")
+        logger_cfg.logger_input.info(f"{len(offers_removed)} offers removed from input - based on statuses.json.")
 
         return offers
 
     except FileNotFoundError as e:
         file_name_from_error_message = str(e).split(": ")[-1].strip("'").split('/')[-1]
-        logger_cfg.logger1.warning(f"Are you sure that {file_name_from_error_message} exists?")
+        logger_cfg.logger_scrapper.warning(f"Are you sure that {file_name_from_error_message} exists?")
+        logger_cfg.logger_warnings.warning(f"{file_name_from_error_message} doesn't exists.")
         try:
             logout()
             exit(1)
@@ -103,7 +104,7 @@ def get_offers_list_from_file() -> list:
             quit_browser()
             exit(1)
     except Exception as e:
-        logger_cfg.logger1.warning('Something went wrong.')
+        logger_cfg.logger_warnings.warning(f'Something went wrong: {e}')
         print(e)
         try:
             logout()
@@ -117,12 +118,12 @@ def get_offers_list_from_file() -> list:
 def input_to_searchbar(offer_id: str) -> bool:
     # Close unwanted ads
     if scrapper_functions_aux.close_unwanted_ad():
-        logger_cfg.logger1.info('Closed unwanted ad.')
+        logger_cfg.logger_scrapper.info('Closed unwanted ad.')
 
     # Input data
     searchbar = scrapper_functions_aux.locate_searchbar()
 
-    logger_cfg.logger1.info(f"{offer_id} will be downloaded.")
+    logger_cfg.logger_scrapper.info(f"{offer_id} is going to be downloaded.")
 
     for char in offer_id:
         searchbar.send_keys(char)
@@ -130,7 +131,7 @@ def input_to_searchbar(offer_id: str) -> bool:
     sleep(selenium_cfg.SLEEP_TIME)  # sometimes wrong offers hit, so sleep should help
 
     if scrapper_functions_aux.check_if_offer_exists():
-        logger_cfg.logger1.info(f'The offer {offer_id} not found. Skipping it.')
+        logger_cfg.logger_scrapper.info(f'The offer {offer_id} not found. Skipping it.')
         searchbar.clear()
         searchbar.send_keys(Keys.ESCAPE)
         file_handler.save_offer_data_to_file({offer_id: "skipped"}, file_name=file_handler.FILE_PATH_STATUSES,
@@ -153,32 +154,32 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
     """
     offer_data = {}
 
-    # Replace '/' in offer_id because it generates issues with downloading images, etc.
-    if "/" in offer_id:
-        offer_id = offer_id.replace("/", "")
-
     # Offer ID evaluation
     offer_id_value = selenium_cfg.driver.find_element("xpath", selectors.XPATH_OFFER_ID).text
-    if "/" in offer_id_value:
-        offer_id_value = offer_id_value.replace("/", "")
 
     # Handle issue when offer id is not equal with the offer id on webpage
     if offer_id != offer_id_value:
-        logger_cfg.logger1.warning('This is not the offer supposed to download! Retrying.')
+        logger_cfg.logger_warnings.warning(
+            f'Searched offer ({offer_id}) is not what has been found on website ({offer_id_value}). ' +
+            'This is not the offer supposed to download! Retrying.')
         return False
+
+    # Clean '/' in offer_ids because it generates issues with downloading images, etc.
+    cleaned_offer_id = offer_id.replace("/", "") if "/" in offer_id else None
+    cleaned_offer_id_value = offer_id_value.replace("/", "") if "/" in offer_id_value else None
 
     # Get keys and values from the table from the webpage
     keys_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_KEYS)
     values_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_VALUES)
 
-    offer_data['Numer oferty'] = offer_id_value
-    offer_data['Numer oferty pożądany'] = offer_id
+    offer_data['Numer oferty'] = cleaned_offer_id_value or offer_id_value
+    offer_data['Numer oferty pożądany'] = cleaned_offer_id or offer_id
 
     # Getting the data
     for key, value in zip(keys_elements, values_elements):
         offer_data[key.text] = value.text
 
-    logger_cfg.logger1.info(f"Got data from {len(keys_elements)} tables.")
+    logger_cfg.logger_scrapper.info(f"Got data from {len(keys_elements)} tables.")
 
     # Clear data from junk (by keys)
     offer_data = scrapper_functions_aux.clear_data_from_unnecessary_keys(offers_type, offer_data)
@@ -214,15 +215,19 @@ def get_images_links(offer_id) -> dict:
     images_links = []
     images_dict = {}
 
+    # Clean "/" from offer_id
+    offer_id = offer_id.replace("/", "") if "/" in offer_id else offer_id
+
     images_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_IMAGES_COUNT)
     if images_elements:
-        logger_cfg.logger1.info(f'Preparing list of images to download {len(images_elements)} images for {offer_id}')
+        logger_cfg.logger_scrapper.info(
+            f'Preparing list of images to download {len(images_elements)} images for {offer_id}')
         for image_element in images_elements:
             image_link = image_element.get_attribute('href')
             images_links.append(image_link)
 
     else:
-        logger_cfg.logger1.info(f'No images found for {offer_id}.')
+        logger_cfg.logger_scrapper.info(f'No images found for {offer_id}.')
 
     images_dict.update({
         offer_id: images_links
@@ -238,7 +243,7 @@ def get_images_links(offer_id) -> dict:
 
 
 async def download_image(url, folder):
-    async with aiohttp.ClientSession() as session:
+    async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=1)) as session:
         async with session.get(url) as response:
             if response.status == 200:
                 image_data = await response.read()
@@ -246,13 +251,16 @@ async def download_image(url, folder):
                 filepath = os.path.join(folder, filename)
                 with open(filepath, "wb") as file:
                     file.write(image_data)
-                    logger_cfg.logger1.info(f"Downloaded {url} to {filepath}")
+                    logger_cfg.logger_scrapper.info(f"Downloaded {url} to {filepath}")
             else:
-                logger_cfg.logger1.warning(f"Failed to download {url}")
+                logger_cfg.logger_scrapper.warning(f"Failed to download {url}")
+                logger_cfg.logger_warnings.warning(f"Failed to download {url}")
 
-    await asyncio.sleep(2)
+    await asyncio.sleep(10)
+
 
 def convert_to_webp(image_path):
+    print("Converting image to WebP format...")
     if f"{image_path.split('/')[-1]}.webp" not in os.listdir(os.path.dirname(image_path)):
         image = Image.open(image_path)
         webp_path = os.path.splitext(image_path)[0] + ".webp"
@@ -310,5 +318,5 @@ def statuses_summary():
         elif "downloaded" in item[0]:
             downloaded_count += 1
 
-    logger_cfg.logger1.info(
+    logger_cfg.logger_scrapper.info(
         f"Summary: Total downloaded offers: {downloaded_count}; total skipped offers: {skipped_count}")

@@ -21,7 +21,10 @@ FILE_PATH_PLOTS_DICTIONARY = './src/scrapper/templates/plots_dictionary.json'
 # GPT
 FILE_PATH_GPT_INPUT = './data/input/gpt.txt'
 FILE_PATH_GPT_OUTPUT = './data/output/gpt_answer.txt'
-
+# Logs
+FILE_PATH_INPUT_LOG = './data/logs/input.log'
+FILE_PATH_SCRAPPER_LOG = './data/logs/scrapper.log'
+FILE_PATH_WARNINGS_LOG = './data/logs/warnings.log'
 
 def load_json_file(file_path):
     if file_path == FILE_PATH_OFFERS or file_path == FILE_PATH_STATUSES:
@@ -57,7 +60,7 @@ def save_offer_data_to_file(offer_data: dict, file_name, file_name_str: str):
     with open(file_name, mode='w', encoding='utf-8') as file:
         json.dump(offers_data_from_file, file)
 
-    logger_cfg.logger1.info(f"File saved to {file_name_str}")
+    logger_cfg.logger_scrapper.info(f"File saved to {file_name_str}")
 
 
 # @TODO: maybe delete this?? (images.json)
@@ -90,7 +93,7 @@ def send_images_to_ssh():
         scp = SCPClient(ssh.get_transport())
 
         # Iterate over files in the local directory
-        logger_cfg.logger1.info('Sending images to SSH.')
+        logger_cfg.logger_scrapper.info('Sending images to SSH.')
         # Iterate over files in the local directory
         for root, dirs, files in os.walk(local_directory):
             for filename in files:
@@ -118,7 +121,7 @@ def send_images_to_ssh():
 
         # Close the SCP client
         scp.close()
-        logger_cfg.logger1.info('Directory uploaded successfully!')
+        logger_cfg.logger_scrapper.info('Directory uploaded successfully!')
     except Exception as e:
         print('An error occurred:', str(e))
     finally:

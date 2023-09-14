@@ -129,9 +129,6 @@ def handle_statuses_json(offers: list) -> list:
     # Check if offers have statuses like downloaded or skipped
     offers_to_remove = []
     for offer in offers:
-        if "/" in offer:
-            offer = offer.replace("/", "")
-
         if check_if_offer_was_downloaded(statuses_of_offers, offer):
             offers_to_remove.append(offer)
 

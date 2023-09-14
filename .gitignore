@@ -3,6 +3,7 @@ data/input/input.txt
 data/input/logs/
 /data/logs/input.log
 /data/logs/scrapper.log
+/data/logs/warnings.log
 /data/output/images.json
 /data/output/offers.json
 /data/output/statuses.json
@@ -13,3 +14,4 @@ __pycache__/
 
 
 /geckodriver.log
+

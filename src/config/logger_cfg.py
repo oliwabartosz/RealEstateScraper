@@ -3,7 +3,7 @@ Here is a config file for logger.
 You can set options such as:
 - logging parameters.
 """
-
+from typing import Union
 import logging
 
 
@@ -19,10 +19,9 @@ class Logger:
     """
 
     @staticmethod
-    def setup(name: str, file_name: str):
+    def setup(name: str, file_name: str, log_filemode: Union[str, str] = 'w'):
         log_file = file_name
         log_format = "%(asctime)s - %(name)-12s: %(levelname)-8s %(message)s"
-        log_filemode = "w"  # w - overwrite, a - append
         log_level = logging.INFO
 
         logger = logging.getLogger(name)
@@ -30,7 +29,7 @@ class Logger:
         # File output line
         logger.setLevel(logging.INFO)
         formatter = logging.Formatter(log_format)
-        file_handler = logging.FileHandler(log_file)
+        file_handler = logging.FileHandler(log_file, mode=log_filemode)
         file_handler.setFormatter(formatter)
         logger.addHandler(file_handler)
 
@@ -46,6 +45,6 @@ class Logger:
 
 
 # LOGGERS
-logger1 = Logger.setup(name='scrapper', file_name='./data/logs/scrapper.log')
-logger1.info('Logger initialized.')
-logger2 = Logger.setup(name='input', file_name='./data/logs/input.log')
+logger_scrapper = Logger.setup(name='scrapper', file_name='./data/logs/scrapper.log')
+logger_input = Logger.setup(name='input', file_name='./data/logs/input.log')
+logger_warnings = Logger.setup(name='warnings', file_name='./data/logs/warnings.log')
