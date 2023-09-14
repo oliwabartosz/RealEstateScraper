@@ -129,13 +129,13 @@ result = {
 }
 
 # Translate results to pl
-result_en = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
+result_pl = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
                                    'elevatorGPT', 'balconyGPT', 'basementGPT', 'garageGPT', 'gardenGPT',
                                    'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT', 'qualityGPT',
                                    'status', 'rentGPT')
-print(result_en)
+print(result_pl)
 
-api_handler.send_offer_to_api(result_en, jwt_data['access_token'], 'flats', endpoint='gpt',
+api_handler.send_offer_to_api(result_pl, jwt_data['access_token'], 'flats', endpoint='gpt',
                               check_if_exists=False)
 
 # # @TODO:

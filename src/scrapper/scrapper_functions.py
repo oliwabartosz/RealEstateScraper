@@ -143,22 +143,35 @@ def input_to_searchbar(offer_id: str) -> bool:
         return True
 
 
-def download_offers_data_from_web(offers_type: str, offer_id: str, access_token: str):
+def download_offers_data_from_web(offers_type: str, offer_id: str, access_token: str) -> bool:
+    """
+    Downloads the data from the webpage.
+    :param offers_type: provided from user type of offers (F - Flats, H - Houses, P - Plots)
+    :param offer_id: a string taken from input.txt
+    :param access_token: JWT access token.
+    :return: False when OfferId on the webpage is not the same as OfferId from input.txt.
+    """
+    offer_data = {}
+
+    # Replace '/' in offer_id because it generates issues with downloading images, etc.
     if "/" in offer_id:
         offer_id = offer_id.replace("/", "")
 
-    offer_data = {}
+    # Offer ID evaluation
+    offer_id_value = selenium_cfg.driver.find_element("xpath", selectors.XPATH_OFFER_ID).text
+    if "/" in offer_id_value:
+        offer_id_value = offer_id_value.replace("/", "")
 
+    # Handle issue when offer id is not equal with the offer id on webpage
+    if offer_id != offer_id_value:
+        logger_cfg.logger1.warning('This is not the offer supposed to download! Retrying.')
+        return False
+
+    # Get keys and values from the table from the webpage
     keys_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_KEYS)
     values_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_VALUES)
 
-    # Offer ID evaluation
-
-    offer_number_value = selenium_cfg.driver.find_element("xpath", selectors.XPATH_OFFER_ID).text
-    if "/" in offer_number_value:
-        offer_number_value = offer_number_value.replace("/", "")
-
-    offer_data['Numer oferty'] = offer_number_value
+    offer_data['Numer oferty'] = offer_id_value
     offer_data['Numer oferty pożądany'] = offer_id
 
     # Getting the data
@@ -193,6 +206,8 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
                                          file_name_str='statuses.json')
     file_handler.save_offer_data_to_file(offer_data, file_name=file_handler.FILE_PATH_OFFERS,
                                          file_name_str='offers.json')
+
+    return True
 
 
 def get_images_links(offer_id) -> dict:
@@ -235,6 +250,7 @@ async def download_image(url, folder):
             else:
                 logger_cfg.logger1.warning(f"Failed to download {url}")
 
+    await asyncio.sleep(2)
 
 def convert_to_webp(image_path):
     if f"{image_path.split('/')[-1]}.webp" not in os.listdir(os.path.dirname(image_path)):
@@ -262,6 +278,7 @@ async def download_images(offer_id_and_images_links_dict: dict):
                 else:
                     task = download_image(url, file_handler.FILE_PATH_IMAGES_DIR + folder)
                     tasks.append(task)
+
     await asyncio.gather(*tasks)
 
     # Convert downloaded images to WebP

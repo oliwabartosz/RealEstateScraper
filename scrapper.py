@@ -10,7 +10,6 @@ from src.scrapper.scrapper_functions import download_images
 from src.handlers import file_handler, api_handler
 from src.handlers.file_handler import load_json_file
 
-
 if __name__ == "__main__":
 
     # Load important data from config file
@@ -36,7 +35,10 @@ if __name__ == "__main__":
     for offer_id in tqdm(offers_to_download):
         if scrapper_functions.input_to_searchbar(offer_id):
             try:
-                scrapper_functions.download_offers_data_from_web(offers_type, offer_id, jwt_data['access_token'])
+                while not scrapper_functions.download_offers_data_from_web(offers_type, offer_id,
+                                                                        jwt_data['access_token']):
+                    scrapper_functions.input_to_searchbar(offer_id)
+                    scrapper_functions.download_offers_data_from_web(offers_type, offer_id, jwt_data['access_token'])
                 scrapper_functions.get_images_links(offer_id)
             except Exception as e:
                 print(e)
@@ -56,6 +58,3 @@ if __name__ == "__main__":
 
     # End.
     scrapper_functions.statuses_summary()
-
-
-

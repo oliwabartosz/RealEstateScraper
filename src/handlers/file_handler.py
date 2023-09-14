@@ -60,6 +60,7 @@ def save_offer_data_to_file(offer_data: dict, file_name, file_name_str: str):
     logger_cfg.logger1.info(f"File saved to {file_name_str}")
 
 
+# @TODO: maybe delete this?? (images.json)
 def save_images_links_to_file(images):
     _prepare_file_if_not_exists(FILE_PATH_IMAGES)
     with open(FILE_PATH_IMAGES, mode='w', encoding='utf-8') as file:
