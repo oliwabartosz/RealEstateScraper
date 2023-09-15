@@ -81,18 +81,6 @@ information provided in {rent_summary}.
 If it is not possible to determine a rating, please return -9
 """
 
-outbuilding_prompt = """
-Please rate the occurrence of a outbuilding based on the information provided in {outbuilding_summary}. Take also \
-information from ```technology_rating that is equal to {technology_rating}```.
-- If it has been mentioned that building is outbuilding, please return 1.
-- If it has been mentioned that building is located in the second line of development and technology_rating \
-is 1, please return 1.
-- If technology_rating is more than 1, please return 0.
-- If it is not possible to determine a rating, please return 0.
-
-Please provide a numeric response: 0, 1 or -9.
-"""
-
 modernization_prompt = """Please rate the modernization based on the information provided in \
 {modernization_summary}.
 Take also information from ```technology_rating that is equal to {technology_rating}```.
@@ -105,6 +93,17 @@ Take also information from ```technology_rating that is equal to {technology_rat
 Please provide a numeric response: 4, 5, null or -9.
 """
 
+outbuilding_prompt = """
+Please rate the occurrence of a outbuilding based on the information provided in {outbuilding_summary}. Take also \
+information from ```technology_rating that is equal to {technology_rating}```.
+- If it has been mentioned that building is outbuilding, please return 1.
+- If it has been mentioned that building is located in the second line of development and technology_rating \
+is 1, please return 1.
+- If technology_rating is more than 1, please return 0.
+- If it is not possible to determine a rating, please return 0.
+
+Please provide a numeric response: 0, 1 or -9.
+"""
 
 
 

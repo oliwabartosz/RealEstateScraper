@@ -48,6 +48,7 @@ outbuilding_summary_chain = create_llm_chain(llm, gpt_summaries.outbuilding_prom
 # Modernization
 modernization_summary_chain = create_llm_chain(llm, gpt_summaries.modernization_prompt, "modernization_summary")
 
+
 # RATINGS
 # Technology
 technology_rating_chain = create_llm_chain(llm, gpt_ratings.technology_prompt, "technology_rating")

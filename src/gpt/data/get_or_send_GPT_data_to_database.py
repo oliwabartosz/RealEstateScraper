@@ -15,13 +15,13 @@ offers_data = api_handler.get_offers_data_from_api(
     'elevator', 'security', 'monitoring', 'guardedArea', 'guardedEstate', 'securityControl', 'description'
 )
 # Get all the data pre-rated by the user from database based on selected columns
-offers_gpt_data = api_handler.get_offers_data_from_api(
+offers_ans_data = api_handler.get_offers_data_from_api(
     jwt_data['access_token'],
-    '/rer/api/flats/gpt',
+    '/rer/api/flats/answers',
     'GET',
-    'id', 'technologyGPT', 'modernizationGPT', 'kitchenGPT', 'qualityGPT'
+    'id', 'technologyAns', 'modernizationAns', 'kitchenAns', 'qualityAns'
 )
 
 # Update data with information from another table got from the database
-offers_data = merge_dictionaries_by_id(offers_data, offers_gpt_data)
+offers_data = merge_dictionaries_by_id(offers_data, offers_ans_data)
 

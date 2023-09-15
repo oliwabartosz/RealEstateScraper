@@ -25,7 +25,7 @@ def translate_result_to_pl(dict_to_translate: dict, language: str, *exclude_keys
 
     for key, value in dict_to_translate.items():
         if key not in exclude_keys:
-            value = ts.translate_text(str(value), translator='google', to_language=language)
+            value = ts.translate_text(str(value), translator='baidu', to_language=language)
         translated_dict[key] = value
 
     return translated_dict
