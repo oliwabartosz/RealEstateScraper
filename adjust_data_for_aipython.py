@@ -1,5 +1,27 @@
 from src.handlers import api_handler
 from src.handlers.api_handler import get_offers_data_from_api
+import pandas as pd
+
+
+def add_data_after_key(original_dict, specific_key, new_key, new_value=''):
+    new_dict = {}
+
+    for key, value in original_dict.items():
+        new_dict[key] = value  # Copy all key-value pairs from the original dictionary
+
+        if key == specific_key:
+            new_dict[new_key] = new_value  # Add the new key-value pair after the specific key
+
+    return new_dict
+
+
+def merge_dicts_by_key(dict1, dict2):
+    merged_dict = dict1.copy()
+    for key, value in dict2.items():
+        if key in merged_dict:
+            merged_dict[key] = value
+    return merged_dict
+
 
 FLATS_COLS = {
     "Numer oferty": "offerId",
@@ -24,8 +46,8 @@ FLATS_COLS = {
     "Czynsz administracyjny": "rent",
     "Materiał": "material",
     "Stan mieszkania": "flatQuality",
-    "Cena z miejscami parkingowymi": "skipOffer",
-    "Cena z wszelkimi dodatkami": "skipOffer",
+    "Cena z miejscami parkingowymi": "price_with_parking",
+    "Cena z wszelkimi dodatkami": "price_with_addings",
     "Piętro": "floor",
     "Ogród": "garden",
     "Liczba pięter": "floorsNumber",
@@ -43,18 +65,18 @@ FLATS_COLS = {
     "Piwnica": "basement",
     "Liczba balkonów": "balconyQuantity",
     "Opis": "description",
-    "Uwagi": "skipOffer",
+    "Uwagi": "comments",
     "Osiedle strzeżone": "guardedEstate",
-    "Recepcja": "skipOffer",
+    "Recepcja": "reception",
     "Liczba loggi": "loggiasQuantity",
     "Komórka": "storageRoom",
     "Poddasze użytkowe": "attic",
     "Liczba tarasów": "terracesQuantity",
     "Liczba balkonów francuskich": "frenchBalconyQuantity",
-    "Numer zewnętrzny": "skipOffer",
+    "Numer zewnętrzny": "outside_no",
     "Cena za parking podziemny (miejsce)": "priceParkingUnderground",
     "Cena za parking naziemny (miejsce)": "priceParkingGround",
-    "Uwagi dla użytkowników z SWO/MLS": "skipOffer",
+    "Uwagi dla użytkowników z SWO/MLS": "swo_comment",
     "balkon": "balconyDesc",
     "francu": "frenchBalconyDesc",
     "taras": "terraceDesc",
@@ -102,24 +124,28 @@ FLATS_COLS = {
     "bezczynsz": "withoutRentDesc",
     "czynsz": "rentDesc",
     "poziom": "levelDesc",
-    "ul.": "skipOffer",
-    "al.": "skipOffer",
-    " zł": "skipOffer",
-    " zl": "skipOffer",
-    "pln": "skipOffer",
-    "ul\.": "skipOffer",
-    "al\.": "skipOffer",
+    "ul.": "ul1",
+    "al.": "al1",
+    " zł": "zl1",
+    " zl": "zl2",
+    "pln": "zl3",
+    "ul\.": "ul2",
+    "al\.": "al2",
+    "status": "new",
 }
+
+expected_dict = {value: '' for value in FLATS_COLS.values()}
+expected_dict['status'] = 'new'
 
 jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
 data = get_offers_data_from_api(jwt_data['access_token'], '/rer/api/flats/', 'GET',
                                 'offerId', 'offerIdExpected', 'offerType', 'offerStatus', 'dateAdded', 'dateChanged',
                                 'dateUpdated',
-                                'dateEndTransaction', 'localization', 'street', 'lawStatus', 'skipOffer', 'price',
+                                'dateEndTransaction', 'localization', 'street', 'lawStatus', 'price',
                                 'priceOffer', 'priceSold',
                                 'livingArea', 'balcony', 'market', 'priceM2', 'rent', 'material', 'flatQuality',
                                 'floor', 'garden', 'floorsNumber', 'elevator', 'parkingPlace', 'buildingType',
-                                'yearBuilt', 'buildingQuality', 'buildingQuality', 'security', 'guardedArea',
+                                'yearBuilt', 'buildingQuality', 'security', 'guardedArea',
                                 'monitoring', 'securityControl', 'roomsNumber', 'kitchenType', 'basement',
                                 'balconyQuantity', 'description', 'balconyQuantity', 'description', 'guardedEstate',
                                 'loggiasQuantity', 'storageRoom', 'attic', 'terracesQuantity', 'frenchBalconyQuantity',
@@ -138,7 +164,13 @@ data = get_offers_data_from_api(jwt_data['access_token'], '/rer/api/flats/', 'GE
                                 'levelDesc'
                                 )
 
-print(data[0])
+input_to_df = []
+
+for record in data:
+    merged_dict = merge_dicts_by_key(expected_dict, record)
+    input_to_df.append(merged_dict)
+
+df = pd.DataFrame(input_to_df).drop_duplicates().to_csv('output.csv', index=False, header=False)
 
 # Dodaj "pominięte kolumny"
 # Dodaj warunki dla NULLi

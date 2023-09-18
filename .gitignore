@@ -11,7 +11,8 @@ data/input/logs/
 data/output/images/*
 .idea/
 __pycache__/
-
+/output.csv
 
 /geckodriver.log
+
 
