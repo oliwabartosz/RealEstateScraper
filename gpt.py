@@ -52,7 +52,7 @@ main_output_variables = [
 list_of_id_in_gpt_database = [item['id'] for item in offers_gpt_data]
 #
 # TEST ONLY
-for offer_record in offers_data[132:]:
+for offer_record in offers_data[154:]:
     if offer_record not in list_of_id_in_gpt_database:
 
         print(offer_record)
@@ -88,6 +88,7 @@ for offer_record in offers_data[132:]:
 
         elevator_param = int(offer_params.get('floorsNumber', 0)) > 5 and offer_params.get('elevator') == 'Tak'
         rent_param = offer_params.get('rent', '')
+        rent_param = -9 if not isinstance(rent_param, (int, float)) else rent_param
 
         result = {
             'id': offer_record['id'],
@@ -96,7 +97,8 @@ for offer_record in offers_data[132:]:
             'law_summary': overall_chain_result['law_summary'],
             'balconyGPT': overall_chain_result['balcony_rating'],
             'balcony_summary': overall_chain_result['balcony_summary'],
-            'elevatorGPT': int(elevator_param) if int(overall_chain_result['elevator_rating']) == -9 else overall_chain_result[
+            'elevatorGPT': int(elevator_param) if int(overall_chain_result['elevator_rating']) == -9 else
+            overall_chain_result[
                 'elevator_rating'],
 
             'elevator_summary': overall_chain_result['elevator_summary'],
@@ -132,22 +134,31 @@ for offer_record in offers_data[132:]:
             'qualityGPT': offer_record['qualityAns'] if 'qualityAns' in offer_record else -9,
             'status': 1,
 
-            'rentGPT': rent_param if int(float(overall_chain_result['rent_rating'])) == -9 else overall_chain_result['rent_rating'],
-            'rent_summary': 'Information taken from parameters description.' if rent_param != '' and int(float(overall_chain_result
-            ['rent_rating'])) == -9 else overall_chain_result['rent_summary'],
+            'rentGPT': rent_param if int(float(overall_chain_result['rent_rating'])) == -9 else overall_chain_result[
+                'rent_rating'],
+            'rent_summary': 'Information taken from parameters description.' if rent_param != '' and int(
+                float(overall_chain_result
+                      ['rent_rating'])) == -9 else overall_chain_result['rent_summary'],
         }
 
         # Translate results to pl
         try:
             result_pl = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
                                                'elevatorGPT', 'balconyGPT', 'basementGPT', 'garageGPT', 'gardenGPT',
-                                               'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT', 'qualityGPT',
+                                               'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT',
+                                               'qualityGPT',
                                                'status', 'rentGPT')
         except requests.exceptions.HTTPError as http_error:
             result_pl = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
                                                'elevatorGPT', 'balconyGPT', 'basementGPT', 'garageGPT', 'gardenGPT',
-                                               'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT', 'qualityGPT',
+                                               'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT',
+                                               'qualityGPT',
                                                'status', 'rentGPT')
+        except requests.exceptions.ConnectionError as connection_error:
+            result_pl = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
+                                               'elevatorGPT', 'balconyGPT', 'basementGPT', 'garageGPT', 'gardenGPT',
+                                               'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT',
+                                               'qualityGPT', 'status', 'rentGPT')
 
         print(result_pl)
 
