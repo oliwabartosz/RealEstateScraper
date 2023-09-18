@@ -1,11 +1,11 @@
 # SUMMARIES
-balcony_prompt = """Analyze information about the balcony in the offer. "Don't treat french balcony and balcony window \
-as a balcony. 
+balcony_prompt = """Analyze information if the apartment has the balcony. 
 
+Don't treat french balcony and balcony window as a balcony. \
 French balcony (also called French balustrade, wallet) is a type of balcony limited only to the balcony window and \
-balustrade.
+balustrade. If in the offer there is information that property has just the french balcony, \
+treat that there is no balcony. \
 
-If in the offer there is information that property has just the french balcony, treat that there is no balcony. \
 Use maximum 2 sentences. 
 Use information delimited by triple backticks: 
 ```{real_estate_offer_en}, {offer_parameters_en}```"""
@@ -42,7 +42,7 @@ Text to make summary from:
 ```{real_estate_offer_en} and {offer_parameters_en}```
 """
 
-elevator_prompt = """Make two sentences summary about elevator from text delimited in triple \
+elevator_prompt = """Make two sentences summary about elevator in the building from text delimited in triple \
 backticks. Does building have an elevator? How many floors the building has?  
 ```{real_estate_offer_en}```.
 """
@@ -53,7 +53,7 @@ backticks. Does basement or attic belong to the flat? Does it have additional pr
 """
 
 garage_prompt = """Make two sentences summary about garage and parking place from text delimited in triple \
-backticks. Does garage or parking place belong to the flat? Does it have additional price? 
+backticks. Does garage or parking place belong to the apartment? Does it have additional price? 
 ```{real_estate_offer_en}```
 """
 

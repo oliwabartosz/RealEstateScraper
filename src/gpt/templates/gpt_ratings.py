@@ -11,9 +11,9 @@ technology_prompt = """Please rate the technology of the building based on the i
 Please provide a numeric response: 1, 2, 3, 7, or -9."""
 
 law_status_prompt = """Please rate the legal status based on the information provided in {law_summary}.
-- If the law status indicates ownership right, please return 1.
-- If the law status indicates cooperative right, please return 2.
-- If it is not possible to determine the legal status, please return -9.
+- If the legal status of an apartment is ownership return 1.
+- If the legal status of an apartment is cooperative right (it can be with the Land and Mortgage Register), please return 2.
+- If you don't know, please return -9.
 
 Please provide a numeric response: 1, 2, or -9.
 """
@@ -94,9 +94,9 @@ Please provide a numeric response: 4, 5, null or -9.
 """
 
 outbuilding_prompt = """
-Please rate the occurrence of a outbuilding based on the information provided in {outbuilding_summary}. Take also \
-information from ```technology_rating that is equal to {technology_rating}```.
-- If it has been mentioned that building is outbuilding, please return 1.
+Please rate the occurrence of a tenement house (called sometimes also outbuilding) based on the information provided \
+in {outbuilding_summary}. Take also information from ```technology_rating that is equal to {technology_rating}```.
+- If it has been mentioned that building is a tenement house, please return 1.
 - If it has been mentioned that building is located in the second line of development and technology_rating \
 is 1, please return 1.
 - If technology_rating is more than 1, please return 0.

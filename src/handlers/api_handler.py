@@ -79,7 +79,7 @@ def send_offer_to_api(offer_data: dict, access_token: str, offers_type: str, end
 def get_offers_data_from_api(access_token: str, path: str, method: str = 'GET', *columns_to_get: str) -> list:
     """
     :param access_token: JWT Token.
-    :param path: route to API.
+    :param path: route to API. Add just realestate type and endpoint eg. /flats/gpt.
     :param method: GET is default. Information just for better reading.
     :param columns_to_get: A column from database to get.
     :return: A list of data.
