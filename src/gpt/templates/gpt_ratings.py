@@ -77,7 +77,7 @@ Please provide a numeric response: 1, 2, 3, or -9.
 """
 
 rent_prompt = """Please provide a just numeric response that indicate the value of administrative rent from the \
-information provided in {rent_summary}. 
+information provided in {rent_summary}. Provide just number and skip the text.
 If it is not possible to determine a rating, please return -9
 """
 

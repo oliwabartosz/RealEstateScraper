@@ -59,7 +59,8 @@ def clear_data_from_unnecessary_keys(offers_type, offer_data) -> dict:
 
 def clear_data_values_from_unnecessary_things(offer_data) -> dict:
     headers_parenthesis = {'Data aktualizacji'}
-    headers_pln = {'Cena', 'Cena za m2', 'Czynsz administracyjny', 'Cena za parking podziemny (miejsce)',
+    headers_pln = {'Cena', 'Cena transakcyjna', 'Cena za m2', 'Czynsz administracyjny',
+                   'Cena za parking podziemny (miejsce)',
                    'Cena za parking naziemny (miejsce)', 'Cena ofertowa', 'Cena za (m2/a/ha)'}
 
     for header in headers_parenthesis:

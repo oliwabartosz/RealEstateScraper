@@ -52,10 +52,12 @@ main_output_variables = [
 list_of_id_in_gpt_database = [item['id'] for item in offers_gpt_data]
 #
 # TEST ONLY
-for offer_record in offers_data[154:]:
+for offer_record in offers_data[131:132]:
     if offer_record not in list_of_id_in_gpt_database:
 
         print(offer_record)
+        if offer_record["description"] == ' ':
+            offer_record["description"] = 'Brak opisu'
 
         chain = main_chain.copy()
         output_variables = main_output_variables.copy()

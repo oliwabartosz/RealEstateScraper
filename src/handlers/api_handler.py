@@ -38,9 +38,11 @@ def refresh_jwt_token(url, access_token, cookie_jwt):
 
 
 def _check_if_offer_exists_in_db(access_token: str, offer_data: dict, offers_type: str, endpoint: str) -> bool:
-    offer_ids: list = get_offers_data_from_api(access_token, f'/rer/api/{offers_type}/{endpoint}', 'GET')
-
-    return True if offer_data['offerId'] in offer_ids else False
+    try:
+        offer_ids: list = get_offers_data_from_api(access_token, f'/rer/api/{offers_type}/{endpoint}', 'GET')
+        return True if offer_data['offerId'] in offer_ids else False
+    except Exception as e:
+        raise Exception(f'Check if the endpoint (/rer/api/{offers_type}/{endpoint}) is correct')
 
 
 def send_offer_to_api(offer_data: dict, access_token: str, offers_type: str, endpoint: str, check_if_exists: bool) \
@@ -95,4 +97,3 @@ def get_offers_data_from_api(access_token: str, path: str, method: str = 'GET', 
                 r.json()]
     else:
         return r.json()
-
