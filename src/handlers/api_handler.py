@@ -83,7 +83,7 @@ def get_offers_data_from_api(access_token: str, path: str, method: str = 'GET', 
     :param access_token: JWT Token.
     :param path: route to API. Add just realestate type and endpoint eg. /flats/gpt.
     :param method: GET is default. Information just for better reading.
-    :param columns_to_get: A column from database to get.
+    :param columns_to_get: A column from database to get. If '' it'll return whole json.
     :return: A list of data.
     """
     headers = {'authorization': f'Bearer {access_token}',
@@ -91,9 +91,9 @@ def get_offers_data_from_api(access_token: str, path: str, method: str = 'GET', 
 
     r = requests.get(f'{rer_url}{path}', headers=headers)
 
-    if columns_to_get:
+    if not columns_to_get or columns_to_get[0] == '':
+        return r.json()
+    else:
         # It returns columns that are not empty (they are being skipped) or also don't have the None value.
         return [{col: item[col] for col in columns_to_get if col in item and item[col] is not None} for item in
                 r.json()]
-    else:
-        return r.json()

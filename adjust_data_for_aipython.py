@@ -27,8 +27,7 @@ match offer_type:
         raise Exception('Wrong answer. Must by F, H or P!')
 
 jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
-data = get_offers_data_from_api(jwt_data['access_token'], path, 'GET',
-                                columns_to_get)
+data = get_offers_data_from_api(jwt_data['access_token'], path, 'GET', '')
 
 expected_dict = {value: '' for value in offers_dict.values()}
 expected_dict['status'] = 'new'
