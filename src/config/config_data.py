@@ -21,6 +21,7 @@ def get_config_data() -> dict:
     web_driver_auto_install = data['web_driver_auto_install']
     save_to_database = data['save_to_database']
     send_images_to_ssh = data['send_images_to_ssh']
+    download_images_async = data['download_images_async']
 
     return {
         'website_url': website_url,
@@ -39,4 +40,5 @@ def get_config_data() -> dict:
         'web_driver_auto_install': web_driver_auto_install,
         'save_to_database': save_to_database,
         'send_images_to_ssh': send_images_to_ssh,
+        'download_images_async': download_images_async,
     }

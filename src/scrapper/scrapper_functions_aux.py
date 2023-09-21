@@ -5,6 +5,7 @@ from src.config import selenium_cfg
 from src.config import selectors
 from src.handlers import file_handler
 import re
+import os
 
 
 def close_unwanted_ad():
@@ -147,3 +148,12 @@ def handle_statuses_json(offers: list) -> list:
             offers_to_remove.append(offer)
 
     return offers_to_remove
+
+
+def image_previous_download_check(url: str, folder: str, extension='') -> bool:
+    # Check if image has been downloaded before
+    if url.split('/')[-1] + extension in os.listdir(file_handler.FILE_PATH_IMAGES_DIR + folder):
+        # print(f"File {url.split('/')[-1]} has been downloaded previously.")
+        return True
+    else:
+        return False

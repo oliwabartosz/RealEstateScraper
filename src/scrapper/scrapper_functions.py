@@ -16,6 +16,7 @@ import asyncio
 import aiohttp
 import os
 from tqdm import tqdm
+import requests
 
 # @TODO: make in function: images_data_to_json?
 images_data_to_json = file_handler.load_json_file(file_handler.FILE_PATH_IMAGES) if os.path.exists(
@@ -231,16 +232,13 @@ def get_images_links(offer_id) -> dict:
         offer_id: images_links
     })
 
-    # @TODO: check this out
-    # file_handler.save_offer_data_to_file({offer_id: images_links}, file_name=file_handler.FILE_PATH_IMAGES,
-    #                                      file_name_str='images.json')
     images_data_to_json.append(images_dict)
     file_handler.save_images_links_to_file(images_data_to_json)
 
     return images_dict
 
 
-async def download_image(url, folder):
+async def download_image_async(url, folder):
     async with aiohttp.ClientSession(connector=aiohttp.TCPConnector(limit=1)) as session:
         async with session.get(url) as response:
             if response.status == 200:
@@ -253,22 +251,13 @@ async def download_image(url, folder):
             else:
                 logger_cfg.logger_scrapper.warning(f"Failed to download {url}")
                 logger_cfg.logger_warnings.warning(f"Failed to download {url}")
-
     await asyncio.sleep(10)
 
 
-def convert_to_webp(image_path):
-    if f"{image_path.split('/')[-1]}.webp" not in os.listdir(os.path.dirname(image_path)):
-        image = Image.open(image_path)
-        webp_path = os.path.splitext(image_path)[0] + ".webp"
-        image.save(webp_path, "WebP")
-        os.remove(image_path)
-
-
-async def download_images(offer_id_and_images_links_dict: dict):
+async def download_images_async(offer_id_and_images_links_dict: dict):
     tasks = []
 
-    for item in tqdm(offer_id_and_images_links_dict, desc="Converting images"):
+    for item in tqdm(offer_id_and_images_links_dict, desc="Downloading images", colour='green'):
         for folder, urls in item.items():
             if "/" in folder:
                 folder = folder.replace("/", "")
@@ -281,14 +270,72 @@ async def download_images(offer_id_and_images_links_dict: dict):
                 if url.split('/')[-1] + '.webp' in os.listdir(file_handler.FILE_PATH_IMAGES_DIR + folder):
                     print(f"File {url.split('/')[-1]} has been downloaded previously.")
                 else:
-                    task = download_image(url, file_handler.FILE_PATH_IMAGES_DIR + folder)
+                    task = download_image_async(url, file_handler.FILE_PATH_IMAGES_DIR + folder)
                     tasks.append(task)
 
     await asyncio.gather(*tasks)
 
     # Convert downloaded images to WebP
     image_files = []
-    for item in tqdm(offer_id_and_images_links_dict, desc="Downloading images", colour='red'):
+    for item in tqdm(offer_id_and_images_links_dict, desc="Converting images", colour='red'):
+        for folder, urls in item.items():
+            if "/" in folder:
+                folder = folder.replace("/", "")
+
+            for url in urls:
+                filename = url.split("/")[-1]
+                image_path = os.path.join(file_handler.FILE_PATH_IMAGES_DIR + folder, filename)
+                image_files.append(image_path)
+
+    for image_file in image_files:
+        convert_to_webp(image_file)
+
+
+def convert_to_webp(image_path):
+    if f"{image_path.split('/')[-1]}.webp" not in os.listdir(os.path.dirname(image_path)):
+        image = Image.open(image_path)
+        webp_path = os.path.splitext(image_path)[0] + ".webp"
+        image.save(webp_path, "WebP")
+        os.remove(image_path)
+
+
+def download_image(url: str, filepath: str):
+    url_request = requests.get(url)
+
+    if url_request.status_code == 200:
+        filename = f'{os.path.basename(url)}'
+        filename = f'{filepath}/{filename}'
+        with open(filename, "wb") as file:
+            file.write(url_request.content)
+            logger_cfg.logger_scrapper.info(f"Downloaded {url} to {filepath}")
+    else:
+        logger_cfg.logger_scrapper.warning(f"Failed to download {url}")
+        logger_cfg.logger_warnings.warning(f"Failed to download {url}")
+
+
+def download_images(offer_id_and_images_links_dict: dict):
+    for item in tqdm(offer_id_and_images_links_dict, desc="Downloading images", colour='green'):
+        for folder, urls in item.items():
+            # Get rid '/' from offers id (folder names)
+            if "/" in folder:
+                folder = folder.replace("/", "")
+
+            if not os.path.exists(file_handler.FILE_PATH_IMAGES_DIR + folder):
+                os.makedirs(file_handler.FILE_PATH_IMAGES_DIR + folder)
+
+            for url in urls:
+                # Check if image has been downloaded before
+                check_images = scrapper_functions_aux.image_previous_download_check(url, folder, extension='')
+                check_images_webp = scrapper_functions_aux.image_previous_download_check(url, folder, extension='.webp')
+                if not check_images and not check_images_webp:
+                    download_image(url, file_handler.FILE_PATH_IMAGES_DIR + folder)
+
+    # @TODO: duplicated code -> make a function
+    # Convert downloaded images to WebP
+    image_files = []
+    for item in tqdm(offer_id_and_images_links_dict, desc="Converting images", colour='red'):
+
+        # Get rid '/' from offers id (folder names)
         for folder, urls in item.items():
             if "/" in folder:
                 folder = folder.replace("/", "")
@@ -303,8 +350,8 @@ async def download_images(offer_id_and_images_links_dict: dict):
 
 
 def statuses_summary():
-    data = file_handler.load_json_file(file_handler.FILE_PATH_STATUSES)
-    unique_data = list(set(tuple(d.items()) for d in data))
+    summary_data = file_handler.load_json_file(file_handler.FILE_PATH_STATUSES)
+    unique_data = list(set(tuple(d.items()) for d in summary_data))
 
     skipped_count = 0
     downloaded_count = 0

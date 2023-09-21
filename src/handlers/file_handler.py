@@ -6,6 +6,8 @@ from scp import SCPClient
 from src.config import logger_cfg
 from src.config import config_data
 from operator import itemgetter
+from tqdm import tqdm
+from time import sleep
 
 # Important paths that can be used in other .py files.
 FILE_PATH_INPUT = './data/input/input.txt'
@@ -81,49 +83,55 @@ def send_images_to_ssh():
                                                                                 'ssh_port',
                                                                                 'ssh_remote_dir')(data)
 
-    try:
-        # Create an SSH client
-        ssh = SSHClient()
-        ssh.load_system_host_keys()
-        ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+    ssh = None
 
-        ssh.connect(ssh_host, port=ssh_port, username=ssh_username, password=ssh_password)
+    while True:  # Start an infinite loop
+        try:
+            # Create an SSH client
+            ssh = SSHClient()
+            ssh.load_system_host_keys()
+            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
 
-        # Create an SCP client
-        scp = SCPClient(ssh.get_transport())
+            ssh.connect(ssh_host, port=ssh_port, username=ssh_username, password=ssh_password)
 
-        # Iterate over files in the local directory
-        logger_cfg.logger_scrapper.info('Sending images to SSH.')
-        # Iterate over files in the local directory
-        for root, dirs, files in os.walk(local_directory):
-            for filename in files:
-                local_path = os.path.join(root, filename)
-                remote_path = os.path.join(ssh_remote_dir, root.replace(local_directory, ''), filename)
+            # Create an SCP client
+            scp = SCPClient(ssh.get_transport())
 
-                # Check if the file already exists on the remote server
-                sftp = ssh.open_sftp()
-                try:
-                    sftp.stat(remote_path)
-                    print(f'Skipping {remote_path} - File already exists on the remote server.')
-                    continue
-                except FileNotFoundError:
-                    pass
-                finally:
-                    sftp.close()
+            # Iterate over files in the local directory
+            logger_cfg.logger_scrapper.info('Sending images to SSH.')
+            # Iterate over files in the local directory
+            for root, dirs, files in tqdm(os.walk(local_directory), desc='Sending images via SSH', colour='blue'):
+                for filename in files:
+                    local_path = os.path.join(root, filename)
+                    remote_path = os.path.join(ssh_remote_dir, root.replace(local_directory, ''), filename)
 
-                # Create the remote directory if it doesn't exist
-                remote_dir = os.path.dirname(remote_path)
-                ssh.exec_command('mkdir -p {}'.format(remote_dir))
+                    # Check if the file already exists on the remote server
+                    sftp = ssh.open_sftp()
+                    try:
+                        sftp.stat(remote_path)
+                        # print(f'Skipping {remote_path} - File already exists on the remote server.')
+                        continue
+                    except FileNotFoundError:
+                        pass
+                    finally:
+                        sftp.close()
 
-                # Upload the file to the remote directory
-                scp.put(local_path, remote_path)
-                print(f'Copied {remote_path}.')
+                    # Create the remote directory if it doesn't exist
+                    remote_dir = os.path.dirname(remote_path)
+                    ssh.exec_command('mkdir -p {}'.format(remote_dir))
 
-        # Close the SCP client
-        scp.close()
-        logger_cfg.logger_scrapper.info('Directory uploaded successfully!')
-    except Exception as e:
-        print('An error occurred:', str(e))
-    finally:
-        # Close the SSH connection
-        ssh.close()
+                    # Upload the file to the remote directory
+                    scp.put(local_path, remote_path)
+                    # print(f'Copied {remote_path}.')
+
+            # Close the SCP client
+            scp.close()
+            logger_cfg.logger_scrapper.info('Directory uploaded successfully!')
+            break  # If successful, break out of the loop
+        except Exception as e:
+            print('An error occurred:', str(e))
+            sleep(5)  # Sleep for 5 seconds before retrying
+        finally:
+            # Close the SSH connection
+            if ssh is not None:
+                ssh.close()

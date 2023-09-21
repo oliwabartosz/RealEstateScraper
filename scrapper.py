@@ -6,7 +6,7 @@ import __syspath__
 from src.config import config_data
 from src.scrapper import scrapper_functions
 from src.scrapper import questions
-from src.scrapper.scrapper_functions import download_images
+from src.scrapper.scrapper_functions import download_images_async, download_images
 from src.handlers import file_handler, api_handler
 from src.handlers.file_handler import load_json_file
 
@@ -17,7 +17,8 @@ if __name__ == "__main__":
     # Load important data from config file
     data = config_data.get_config_data()
     rer_url = itemgetter('rer_url')(data)
-    send_images_to_ssh = itemgetter('send_images_to_ssh')
+    send_images_to_ssh = itemgetter('send_images_to_ssh')(data)
+    download_images_asynchronously = itemgetter('download_images_async')(data)
 
     # Initial questions
     offers_type = questions.type_of_offers()
@@ -34,7 +35,7 @@ if __name__ == "__main__":
     # Get JWT AUTH TOKEN
     jwt_data = api_handler.get_jwt_token(f'{rer_url}/rer/auth')
 
-    for offer_id in tqdm(offers_to_download, desc='Real Estate Data', color='blue'):
+    for offer_id in tqdm(offers_to_download, desc='Real Estate Data', colour='blue'):
         if scrapper_functions.input_to_searchbar(offer_id):
             try:
                 while not scrapper_functions.download_offers_data_from_web(offers_type, offer_id,
@@ -54,9 +55,12 @@ if __name__ == "__main__":
 
     scrapper_functions.logout()
 
-    # Download images
-    loop = asyncio.get_event_loop()
-    loop.run_until_complete(download_images(load_json_file(file_handler.FILE_PATH_IMAGES)))
+    # Download images [async/sync]
+    if download_images_asynchronously:
+        loop = asyncio.get_event_loop()
+        loop.run_until_complete(download_images_async(load_json_file(file_handler.FILE_PATH_IMAGES)))
+    else:
+        download_images(load_json_file(file_handler.FILE_PATH_IMAGES))
 
     # Send image to remote server using SSH
     if send_images_to_ssh:

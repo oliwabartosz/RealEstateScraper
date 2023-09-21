@@ -167,8 +167,3 @@ for offer_record in offers_data[131:132]:
         api_handler.send_offer_to_api(result_pl, jwt_data['access_token'], 'flats', endpoint='gpt',
                                       check_if_exists=False)
 
-# @TODO:
-# 3. Wysłać do bazy danych
-# 4. Zloopować wszystko
-
-# KITCHEN CHAIN CHECK!!!
