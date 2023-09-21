@@ -1,11 +1,8 @@
-import json
-import re
 from operator import itemgetter
 import scrapper_functions_aux
 from src.config import selenium_cfg
 from src.config import logger_cfg
 from src.config import selectors
-from src.config.config_data import get_config_data
 from src.handlers import file_handler
 from src.handlers import api_handler
 from src.config import config_data
@@ -18,8 +15,7 @@ import traceback
 import asyncio
 import aiohttp
 import os
-
-from src.handlers.file_handler import load_json_file
+from tqdm import tqdm
 
 # @TODO: make in function: images_data_to_json?
 images_data_to_json = file_handler.load_json_file(file_handler.FILE_PATH_IMAGES) if os.path.exists(
@@ -155,12 +151,14 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
     offer_data = {}
 
     # Offer ID evaluation
-    offer_id_value = selenium_cfg.driver.find_element("xpath", selectors.XPATH_OFFER_ID).text
+    offer_id_value: str = selenium_cfg.driver.find_element("xpath", selectors.XPATH_OFFER_ID).text
+    swo_number: str = scrapper_functions_aux.find_swo_id_value()
+    evaluation_ids = [offer_id_value, swo_number]
 
     # Handle issue when offer id is not equal with the offer id on webpage
-    if offer_id != offer_id_value:
+    if offer_id not in evaluation_ids:
         logger_cfg.logger_warnings.warning(
-            f'Searched offer ({offer_id}) is not what has been found on website ({offer_id_value}). ' +
+            f'Searched offer ({offer_id}) is not what has been found on website ({offer_id_value} or {swo_number}). ' +
             'This is not the offer supposed to download! Retrying.')
         return False
 
@@ -260,7 +258,6 @@ async def download_image(url, folder):
 
 
 def convert_to_webp(image_path):
-    print("Converting image to WebP format...")
     if f"{image_path.split('/')[-1]}.webp" not in os.listdir(os.path.dirname(image_path)):
         image = Image.open(image_path)
         webp_path = os.path.splitext(image_path)[0] + ".webp"
@@ -271,7 +268,7 @@ def convert_to_webp(image_path):
 async def download_images(offer_id_and_images_links_dict: dict):
     tasks = []
 
-    for item in offer_id_and_images_links_dict:
+    for item in tqdm(offer_id_and_images_links_dict, desc="Converting images"):
         for folder, urls in item.items():
             if "/" in folder:
                 folder = folder.replace("/", "")
@@ -291,7 +288,7 @@ async def download_images(offer_id_and_images_links_dict: dict):
 
     # Convert downloaded images to WebP
     image_files = []
-    for item in offer_id_and_images_links_dict:
+    for item in tqdm(offer_id_and_images_links_dict, desc="Downloading images", colour='red'):
         for folder, urls in item.items():
             if "/" in folder:
                 folder = folder.replace("/", "")

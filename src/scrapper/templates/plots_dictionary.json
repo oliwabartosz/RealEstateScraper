@@ -11,6 +11,7 @@
   "Ulica": "street",
   "Stan prawny": "lawStatus",
   "Cena": "price",
+  "Cena transakcyjna": "priceSold",
   "Powierzchnia działki": "plotArea",
   "Cena za (m2/a/ha)": "priceM2",
   "Prąd": "electricity",

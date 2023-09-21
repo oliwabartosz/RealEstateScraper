@@ -12,6 +12,8 @@ from src.handlers.file_handler import load_json_file
 
 if __name__ == "__main__":
 
+    # @TODO: 1. check connection to SSH, databases
+
     # Load important data from config file
     data = config_data.get_config_data()
     rer_url = itemgetter('rer_url')(data)
@@ -32,15 +34,16 @@ if __name__ == "__main__":
     # Get JWT AUTH TOKEN
     jwt_data = api_handler.get_jwt_token(f'{rer_url}/rer/auth')
 
-    for offer_id in tqdm(offers_to_download):
+    for offer_id in tqdm(offers_to_download, desc='Real Estate Data', color='blue'):
         if scrapper_functions.input_to_searchbar(offer_id):
             try:
                 while not scrapper_functions.download_offers_data_from_web(offers_type, offer_id,
-                                                                        jwt_data['access_token']):
+                                                                           jwt_data['access_token']):
                     if not scrapper_functions.input_to_searchbar(offer_id):
                         break  # if offer not found in the searchbar, break the loop and get the next offer.
                     else:
-                        if scrapper_functions.download_offers_data_from_web(offers_type, offer_id, jwt_data['access_token']):
+                        if scrapper_functions.download_offers_data_from_web(offers_type, offer_id,
+                                                                            jwt_data['access_token']):
                             break  # if data are downloaded, break the loop and get the next offer.
                 scrapper_functions.get_images_links(offer_id)
             except Exception as e:

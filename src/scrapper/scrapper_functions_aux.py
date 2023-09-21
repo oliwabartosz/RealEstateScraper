@@ -23,6 +23,19 @@ def locate_searchbar():
     return searchbar
 
 
+def find_swo_id_value() -> str:
+    """Return the value of SWO ID from offers data"""
+    key_elements = selenium_cfg.driver.find_elements("xpath", selectors.XPATH_KEYS)
+    for key_element in enumerate(key_elements):
+
+        pattern = r"\b[A-Z]+\s+ID"
+        matches = re.findall(pattern, key_element[1].text)
+
+        if matches:
+            if key_element[1].text == matches[0]:
+                return selenium_cfg.driver.find_elements("xpath", selectors.XPATH_VALUES)[key_element[0]].text
+
+
 def check_if_offer_exists() -> bool:
     return bool(selenium_cfg.driver.find_elements("xpath", selectors.XPATH_OFFER_NOT_EXISTS))
 
