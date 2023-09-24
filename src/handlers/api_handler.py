@@ -83,7 +83,7 @@ def get_offers_data_from_api(access_token: str, path: str, method: str = 'GET', 
     :param access_token: JWT Token.
     :param path: route to API. Add just realestate type and endpoint eg. /flats/gpt.
     :param method: GET is default. Information just for better reading.
-    :param columns_to_get: A column from database to get. If '' it'll return whole json.
+    :param columns_to_get: A column from database to get. If'' it'll return whole json.
     :return: A list of data.
     """
     headers = {'authorization': f'Bearer {access_token}',

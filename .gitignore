@@ -12,7 +12,7 @@ data/output/images/*
 .idea/
 __pycache__/
 /output.csv
-
 /geckodriver.log
-
-
+/data/output/django_csv/django_database_flats.csv
+/data/output/django_csv/django_database_houses.csv
+/data/output/django_csv/django_database_plots.csv

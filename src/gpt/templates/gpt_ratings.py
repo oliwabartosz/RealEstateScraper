@@ -12,8 +12,22 @@ Please provide a numeric response: 1, 2, 3, 7, or -9."""
 
 law_status_prompt = """Please rate the legal status based on the information provided in {law_summary}.
 - If the legal status of an apartment is ownership return 1.
-- If the legal status of an apartment is cooperative right (it can be with the Land and Mortgage Register), please return 2.
+- If the legal status of an apartment is cooperative right (it can be with the Land and Mortgage Register or KW), please return 2.
 - If you don't know, please return -9.
+
+Examples of summaries and desired output is listed below delimited by three dashes (-).
+
+---
+Example:
+Summary: The legal status of the property mentioned in the text is ownership. There is no mention of community or cooperation in the text.
+Output: 1
+
+Summary: The legal status of this property is the cooperative property law with KW.
+Output: 2 
+
+Summary: The legal status of the property mentioned in the text is the right of cooperative ownership
+Output: 2
+---
 
 Please provide a numeric response: 1, 2, or -9.
 """

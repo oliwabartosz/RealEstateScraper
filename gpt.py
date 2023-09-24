@@ -11,6 +11,8 @@ from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building
     garden_rating_chain, monitoring_summary_chain, monitoring_rating_chain, rent_summary_chain, rent_rating_chain, \
     outbuilding_summary_chain, outbuilding_rating_chain, kitchen_summary_chain, kitchen_rating_chain, \
     modernization_summary_chain, modernization_rating_chain, technology_summary_chain, technology_rating_chain
+from src.gpt.data.params_handler import handle_law_status_param, handle_rent_param, handle_elevator_param, \
+    handle_kitchen_param
 
 # Handlers
 from src.handlers import api_handler
@@ -50,9 +52,8 @@ main_output_variables = [
 ]
 
 list_of_id_in_gpt_database = [item['id'] for item in offers_gpt_data]
-#
-# TEST ONLY
-for offer_record in offers_data[131:132]:
+
+for offer_record in offers_data[2:3]:
     if offer_record not in list_of_id_in_gpt_database:
 
         print(offer_record)
@@ -88,20 +89,26 @@ for offer_record in offers_data[131:132]:
         overall_chain_result = overall_chain({'real_estate_offer_en': offer_description_en,
                                               "offer_parameters_en": offer_parameters_en})
 
-        elevator_param = int(offer_params.get('floorsNumber', 0)) > 5 and offer_params.get('elevator') == 'Tak'
-        rent_param = offer_params.get('rent', '')
-        rent_param = -9 if not isinstance(rent_param, (int, float)) else rent_param
+        # These parameters handlers help to manage data gathered by GPT. When GPT doesn't find the answer and therefore
+        # returns -9, the final result gets the information from parameters below that are handled in 'hard-coded' way.
 
+        law_param = handle_law_status_param(offer_params)
+        rent_param = handle_rent_param(offer_params)
+        elevator_param = handle_elevator_param(offer_params)
+        kitchen_param = handle_kitchen_param(offer_params)
+
+        # Create the result
         result = {
             'id': offer_record['id'],
 
-            'lawStatusGPT': overall_chain_result['law_rating'],
+            'lawStatusGPT': law_param if int(overall_chain_result['law_rating']) == -9 else
+            overall_chain_result['law_rating'],
+
             'law_summary': overall_chain_result['law_summary'],
             'balconyGPT': overall_chain_result['balcony_rating'],
             'balcony_summary': overall_chain_result['balcony_summary'],
             'elevatorGPT': int(elevator_param) if int(overall_chain_result['elevator_rating']) == -9 else
-            overall_chain_result[
-                'elevator_rating'],
+            overall_chain_result['elevator_rating'],
 
             'elevator_summary': overall_chain_result['elevator_summary'],
             'basementGPT': overall_chain_result['basement_rating'],
@@ -166,4 +173,3 @@ for offer_record in offers_data[131:132]:
 
         api_handler.send_offer_to_api(result_pl, jwt_data['access_token'], 'flats', endpoint='gpt',
                                       check_if_exists=False)
-
