@@ -13,6 +13,7 @@ from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building
     modernization_summary_chain, modernization_rating_chain, technology_summary_chain, technology_rating_chain
 from src.gpt.data.params_handler import handle_law_status_param, handle_rent_param, handle_elevator_param, \
     handle_kitchen_param
+from src.gpt.data.result_handler import handle_result, TAKEN_FROM_PARAMS_STR, RATED_STR
 
 # Handlers
 from src.handlers import api_handler
@@ -53,7 +54,7 @@ main_output_variables = [
 
 list_of_id_in_gpt_database = [item['id'] for item in offers_gpt_data]
 
-for offer_record in offers_data[2:3]:
+for offer_record in offers_data[6:7]:
     if offer_record not in list_of_id_in_gpt_database:
 
         print(offer_record)
@@ -91,7 +92,6 @@ for offer_record in offers_data[2:3]:
 
         # These parameters handlers help to manage data gathered by GPT. When GPT doesn't find the answer and therefore
         # returns -9, the final result gets the information from parameters below that are handled in 'hard-coded' way.
-
         law_param = handle_law_status_param(offer_params)
         rent_param = handle_rent_param(offer_params)
         elevator_param = handle_elevator_param(offer_params)
@@ -101,20 +101,30 @@ for offer_record in offers_data[2:3]:
         result = {
             'id': offer_record['id'],
 
-            'lawStatusGPT': law_param if int(overall_chain_result['law_rating']) == -9 else
-            overall_chain_result['law_rating'],
+            'lawStatusGPT': handle_result(overall_chain_result['law_rating'],
+                                          overall_chain_result['law_summary'],
+                                          law_param)[0],
+            'law_summary': handle_result(overall_chain_result['law_rating'],
+                                         overall_chain_result['law_summary'],
+                                         law_param)[1],
 
-            'law_summary': overall_chain_result['law_summary'],
             'balconyGPT': overall_chain_result['balcony_rating'],
             'balcony_summary': overall_chain_result['balcony_summary'],
-            'elevatorGPT': int(elevator_param) if int(overall_chain_result['elevator_rating']) == -9 else
-            overall_chain_result['elevator_rating'],
 
-            'elevator_summary': overall_chain_result['elevator_summary'],
+            'elevatorGPT': handle_result(overall_chain_result['elevator_rating'],
+                                         overall_chain_result['elevator_summary'],
+                                         elevator_param)[0],
+
+            'elevator_summary': handle_result(overall_chain_result['elevator_rating'],
+                                              overall_chain_result['elevator_summary'],
+                                              elevator_param)[1],
+
             'basementGPT': overall_chain_result['basement_rating'],
             'basement_summary': overall_chain_result['basement_summary'],
+
             'garageGPT': overall_chain_result['garage_rating'],
             'garage_summary': overall_chain_result['garage_summary'],
+
             'gardenGPT': overall_chain_result['garden_rating'],
             'garden_summary': overall_chain_result['garden_summary'],
 
@@ -132,11 +142,15 @@ for offer_record in offers_data[2:3]:
             'alarmGPT': overall_chain_result['monitoring_rating'],
             'alarm_summary': overall_chain_result['monitoring_summary'],
 
-            'kitchenGPT': offer_record['kitchenAns'] if 'kitchenAns' in offer_record else
-            overall_chain_result['kitchen_rating'],
+            'kitchenGPT': offer_record['kitchenAns'] if 'kitchenAns' in offer_record
+            else handle_result(overall_chain_result['kitchen_rating'],
+                               overall_chain_result['kitchen_summary'],
+                               kitchen_param)[0],
 
-            'kitchen_summary': 'Rated by user.' if 'kitchenAns' in offer_record else
-            overall_chain_result['kitchen_summary'],
+            'kitchen_summary': RATED_STR if 'kitchenAns' in offer_record
+            else handle_result(overall_chain_result['kitchen_rating'],
+                               overall_chain_result['kitchen_summary'],
+                               kitchen_param)[1],
 
             'outbuildingGPT': overall_chain_result['outbuilding_rating'],
             'outbuilding_summary': overall_chain_result['outbuilding_summary'],
@@ -145,9 +159,10 @@ for offer_record in offers_data[2:3]:
 
             'rentGPT': rent_param if int(float(overall_chain_result['rent_rating'])) == -9 else overall_chain_result[
                 'rent_rating'],
-            'rent_summary': 'Information taken from parameters description.' if rent_param != '' and int(
-                float(overall_chain_result
-                      ['rent_rating'])) == -9 else overall_chain_result['rent_summary'],
+
+            'rent_summary': TAKEN_FROM_PARAMS_STR if rent_param != -9 and int(
+                float(overall_chain_result['rent_rating'])) == -9 else
+            overall_chain_result['rent_summary'],
         }
 
         # Translate results to pl
@@ -161,7 +176,6 @@ for offer_record in offers_data[2:3]:
             result_pl = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
                                                'elevatorGPT', 'balconyGPT', 'basementGPT', 'garageGPT', 'gardenGPT',
                                                'modernizationGPT', 'alarmGPT', 'kitchenGPT', 'outbuildingGPT',
-                                               'qualityGPT',
                                                'status', 'rentGPT')
         except requests.exceptions.ConnectionError as connection_error:
             result_pl = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
