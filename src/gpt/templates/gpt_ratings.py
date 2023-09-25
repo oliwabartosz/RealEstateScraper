@@ -33,9 +33,9 @@ Please provide a numeric response: 1, 2, or -9.
 """
 
 balcony_prompt = """Please rate the presence of a balcony, loggia or terrace based on the information provided in {balcony_summary}.
-- If there is a balcony, terrace or loggia, please return 1.
-- If there is no balcony, terrace or loggia or if there is only a French balcony (without a full balcony), please return 0.
-- If it is not possible to determine the presence of a balcony, please return -9.
+- If apartment has a balcony, terrace or loggia, please return 1.
+- If apartment has not balcony, terrace or loggia or if there is only a French balcony (without a full balcony), please return 0.
+- If it is not possible to determine the presence of a balcony, terrace or loggia please return -9.
 
 Examples of summaries and desired output are listed below delimited by three dashes (-).
 
@@ -55,10 +55,10 @@ Output: 0
 
 Summary: The apartment does not have a balcony, terrace, or loggia.
 Output: 0
+
+Summary: No information about balcony, terrace or loggia in text.
+Output: -9
 ---
-
-
-
 Please provide a numeric response: 0, 1, or -9.
 """
 

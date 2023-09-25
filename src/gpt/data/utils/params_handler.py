@@ -6,7 +6,7 @@ def handle_law_status_param(offer_params: dict) -> int:
     elif "Spółdzielcze własnościowe" in law_status:
         return 2
     else:
-        return law_status
+        return -9
 
 
 def handle_elevator_param(offer_params: dict) -> int:
@@ -30,7 +30,7 @@ def handle_kitchen_param(offer_params: dict) -> int:
     elif kitchen_param == "Aneks":
         return 3
     else:
-        return int(kitchen_param)
+        return -9
 
 
 def handle_balcony_param(offer_params: dict) -> int:
@@ -44,7 +44,7 @@ def handle_balcony_param(offer_params: dict) -> int:
     elif balcony_param == 'Nie':
         return 0
     else:
-        return balcony_param
+        return -9
 
 
 def handle_monitoring_param(offer_params: dict) -> int:

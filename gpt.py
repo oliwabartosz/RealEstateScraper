@@ -12,20 +12,19 @@ from src.gpt.chain.chaning import year_of_constr_chain, material_chain, building
     garden_rating_chain, monitoring_summary_chain, monitoring_rating_chain, rent_summary_chain, rent_rating_chain, \
     outbuilding_summary_chain, outbuilding_rating_chain, kitchen_summary_chain, kitchen_rating_chain, \
     modernization_summary_chain, modernization_rating_chain, technology_summary_chain, technology_rating_chain
-from src.gpt.data.params_handler import handle_law_status_param, handle_rent_param, handle_elevator_param, \
+from src.gpt.data.utils.params_handler import handle_law_status_param, handle_rent_param, handle_elevator_param, \
     handle_kitchen_param, handle_balcony_param, handle_monitoring_param, handle_basement_param, handle_garage_param, \
     handle_garden_param, handle_outbuilding_param
-from src.gpt.data.result_handler import handle_result, TAKEN_FROM_PARAMS_STR, RATED_STR
+from src.gpt.data.utils.result_handler import handle_result, TAKEN_FROM_PARAMS_STR, RATED_STR
 
 # Handlers
 from src.handlers import api_handler
-from src.handlers.api_handler import get_offers_data_from_api
 
 # Utils
 from src.utils.utils import translate_result_to_pl
 
 # Data
-from src.gpt.data.get_or_send_GPT_data_to_database import offers_data, jwt_data, offers_gpt_data
+from src.gpt.data.utils.get_or_send_GPT_data_to_database import offers_data, jwt_data, offers_gpt_data
 
 main_chain = [
     year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,

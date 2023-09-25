@@ -6,9 +6,9 @@ French balcony (also called French balustrade, wallet) is a type of balcony limi
 balustrade. If in the offer there is information that property has just the french balcony, \
 treat that there is no balcony. \
 
-Using maximum 2 sentences, write if the apartment has balcony while remembering that french balcony and balcony window
+Using maximum 2 sentences, write if the apartment has balcony or do not have while remembering that french balcony and balcony window
 is not balcony at all. Use information below delimited by triple backticks (`): 
-```{real_estate_offer_en}, {offer_parameters_en}```"""
+```{real_estate_offer_en}```"""
 
 technology_prompt = """Provide a two-sentence summary about technology of the building based on the information \
 from this text: ```{real_estate_offer_en}```
