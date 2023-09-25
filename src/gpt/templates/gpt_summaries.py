@@ -1,5 +1,5 @@
 # SUMMARIES
-balcony_prompt = """Analyze information if the apartment has the balcony. 
+balcony_prompt = """Analyze information if the apartment has the balcony, terrace or loggia. 
 
 Don't treat french balcony and balcony window as a balcony. \
 French balcony (also called French balustrade, wallet) is a type of balcony limited only to the balcony window and \
@@ -33,8 +33,8 @@ While providing summary take also into consideration:
 Focus just on the building, skip the information about apartment.
 """
 
-law_status_prompt = """Make a summary of the law status. The law status can be cooperative right or ownership \
-right. Write if in text delimited in triple backticks there was mentioned about community or cooperative.
+law_status_prompt = """Make a summary of the legal status. The legal status can be cooperative ownership right or ownership \
+right. Write which legal status is for this apartment.
 
 Use maximum three sentences. Tell your reasons.
 
@@ -58,7 +58,8 @@ backticks. Does garage or parking place belong to the apartment? Does it have ad
 """
 
 garden_prompt = """Make two sentences summary about garden from text delimited in triple \
-backticks. Does garden belong to the flat? Does it have additional price? 
+backticks. Does garden belong to the flat? Does it have additional price? If the garden is located on loggia or terrace
+treat that information as there is no garden at all.
 ```{real_estate_offer_en}```
 """
 

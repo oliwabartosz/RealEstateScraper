@@ -21,6 +21,7 @@ def merge_dictionaries_by_id(list1: list, list2: list) -> list:
 
 
 def translate_result_to_pl(dict_to_translate: dict, language: str, *exclude_keys) -> dict:
+    print('Translating the result..')
     translated_dict = {}
 
     for key, value in dict_to_translate.items():

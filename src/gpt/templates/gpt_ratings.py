@@ -22,7 +22,7 @@ Example:
 Summary: The legal status of the property mentioned in the text is ownership. There is no mention of community or cooperation in the text.
 Output: 1
 
-Summary: The legal status of this property is the cooperative property law with KW.
+Summary: The legal status of this property is the cooperative ownership right.
 Output: 2 
 
 Summary: The legal status of the property mentioned in the text is the right of cooperative ownership
@@ -32,10 +32,32 @@ Output: 2
 Please provide a numeric response: 1, 2, or -9.
 """
 
-balcony_prompt = """Please rate the presence of a balcony based on the information provided in {balcony_summary}.
-- If there is a balcony, please return 1.
-- If there is no balcony or if there is only a French balcony (without a full balcony), please return 0.
+balcony_prompt = """Please rate the presence of a balcony, loggia or terrace based on the information provided in {balcony_summary}.
+- If there is a balcony, terrace or loggia, please return 1.
+- If there is no balcony, terrace or loggia or if there is only a French balcony (without a full balcony), please return 0.
 - If it is not possible to determine the presence of a balcony, please return -9.
+
+Examples of summaries and desired output are listed below delimited by three dashes (-).
+
+---
+Example:
+Summary: The apartment has a loggia, but there is no information provided about a balcony.
+Output: 1
+
+Summary: The apartment has a terrace, but there is no information provided about a balcony.
+Output: 1
+
+Summary: The apartment has a balcony window.
+Output: 0
+
+Summary: The apartment has a french balcony.
+Output: 0
+
+Summary: The apartment does not have a balcony, terrace, or loggia.
+Output: 0
+---
+
+
 
 Please provide a numeric response: 0, 1, or -9.
 """
@@ -59,6 +81,23 @@ garage_prompt = """Please rate the occurrence of a garage or parking place based
 - If there is no garage or parking place, or if it comes with an additional price, please return 0.
 - If the garage or parking place belongs to the apartment without any information about the price, please return 1.
 - If it is not possible to determine a rating, please return -9.
+
+Examples of summaries and desired output is listed below delimited by three dashes (-).
+
+---
+Example:
+Summary: The text mentions a garage that belongs to the apartment. The garage has an additional price of 80,000.
+Output: 0
+
+Summary: The text mentions a parking lot that belongs to the apartment. The parking lot has an additional price of 60 000.
+Output: 0
+
+Summary: The text mentions a garage that belongs to the apartment. The text does not mention about additional price.
+Output: 1
+
+Summary: The text mentions a parking lot that belongs to the apartment. The text does not mention about additional price.
+Output: 1
+---
 
 Please provide a numeric response: 0, 1, or -9."""
 
