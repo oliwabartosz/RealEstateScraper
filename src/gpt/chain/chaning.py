@@ -2,7 +2,7 @@ from langchain.prompts import ChatPromptTemplate
 from langchain.chains import LLMChain
 
 from src.gpt.model import llm
-from src.gpt.templates import gpt_params, gpt_summaries, gpt_ratings
+from src.gpt.prompts import gpt_params, gpt_summaries, gpt_ratings
 
 
 def create_llm_chain(llm_model, prompt: str, output_key: str):

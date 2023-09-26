@@ -104,7 +104,6 @@ for offer_record in offers_data[8:9]:
         outbuilding_param = handle_outbuilding_param(offer_params)
         rent_param = handle_rent_param(offer_params)
 
-        print(overall_chain_result['outbuilding_summary'])
         # Create the result
         result = {
             'id': offer_record['id'],

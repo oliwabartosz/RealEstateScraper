@@ -1,13 +1,7 @@
 # SUMMARIES
-balcony_prompt = """Analyze information if the apartment has the balcony, terrace or loggia. 
-
-Don't treat french balcony and balcony window as a balcony. \
-French balcony (also called French balustrade, wallet) is a type of balcony limited only to the balcony window and \
-balustrade. If in the offer there is information that property has just the french balcony, \
-treat that there is no balcony. \
-
-Using maximum 2 sentences, write if the apartment has balcony or do not have while remembering that french balcony and balcony window
-is not balcony at all. Use information below delimited by triple backticks (`): 
+balcony_prompt = """Using maximum 3 sentences, make a short summary about if the apartment has balcony, terrace, loggia or don't have. \
+If text doesn't mention about balcony, terrace, loggia, say that. If text says about french balcony or balcony window add this information to yours summary. 
+Use information below from text delimited by triple backticks (`): 
 ```{real_estate_offer_en}```"""
 
 technology_prompt = """Provide a two-sentence summary about technology of the building based on the information \

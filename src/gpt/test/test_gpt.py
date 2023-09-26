@@ -1,0 +1,71 @@
+import json
+import re
+from typing import TypeVar
+
+DataFrame = TypeVar('DataFrame')
+
+import pandas
+
+pandas.set_option('display.max_colwidth', None)
+
+# Translator
+import translators as ts
+from langchain.chains import SequentialChain
+
+
+def test_gpt(chain: list, output_vars: list[str], input_data_json: str, verbose=False) -> tuple[float, DataFrame]:
+    rating_pattern = '_rating$'
+    summary_pattern = '_summary$'
+
+    if not (bool(re.search(rating_pattern, output_vars[1])) and bool(re.search(summary_pattern, output_vars[0]))):
+        raise ValueError(f'output_vars error. The first value should have _summary in name, the second one should have'
+                         f'_rating, ie. ["balcony_summary", "balcony_rating"]. You have got {output_vars}.')
+
+    # Load data
+    with open(f'./src/gpt/test/test-data/{input_data_json}', mode='r', encoding='utf-8') as file:
+        data = json.load(file)
+
+    results = []
+    for offer_record in data:
+        offer_description = offer_record['description']
+
+        offer_description_en = ts.translate_text(offer_description, translator='baidu', to_language='en')
+
+        print('LLM Chaining..')
+
+        overall_chain = SequentialChain(
+            chains=chain,
+            input_variables=['real_estate_offer_en'],
+            output_variables=output_vars,
+            verbose=False,
+        )
+
+        overall_chain_result = overall_chain({'real_estate_offer_en': offer_description_en})
+
+        result = {
+            'id': offer_record['id'],
+            'rating': overall_chain_result[output_vars[1]],
+            'rating_summary': overall_chain_result[output_vars[0]],
+            'desired_output': offer_record['desiredOutput']
+        }
+
+        results.append(result)
+
+    df = pandas.DataFrame(results)
+
+    df['rating'] = pandas.to_numeric(df['rating'])
+    df['desired_output'] = pandas.to_numeric(df['desired_output'])
+
+    success_rate = df['rating'].eq(df['desired_output']).mean()
+
+    # Calculate the mismatched rows
+    mismatched_rows = df[df['rating'] != df['desired_output']]
+
+    if verbose:
+        # Print success rate
+        print('Success rate is:', success_rate)
+
+        # Print the mismatched rows
+        print('Mismatch: \n', mismatched_rows)
+
+    return success_rate, mismatched_rows

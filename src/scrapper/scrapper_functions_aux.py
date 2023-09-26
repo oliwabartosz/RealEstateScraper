@@ -109,7 +109,7 @@ def change_comma_to_dot(offer_data):
 
 
 def make_chunks_from_description(offers_type, offers_data):
-    # Load templates
+    # Load prompts
     template_fields_from_json = file_handler.load_json_file(file_handler.FILE_PATH_TEMPLATES)
     description_fields = template_fields_from_json.get(offers_type)
 
