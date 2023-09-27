@@ -6,14 +6,16 @@ DataFrame = TypeVar('DataFrame')
 
 import pandas
 
-pandas.set_option('display.max_colwidth', None)
+# pandas.set_option('display.max_colwidth', None)
+pandas.set_option('display.max_columns', None)
 
 # Translator
 import translators as ts
 from langchain.chains import SequentialChain
 
 
-def test_gpt(chain: list, output_vars: list[str], input_data_json: str, verbose=False) -> tuple[float, DataFrame]:
+def test_gpt(chain: list, output_vars: list[str], parameters: bool, input_data_json: str, verbose=False) -> tuple[
+    float, DataFrame]:
     rating_pattern = '_rating$'
     summary_pattern = '_summary$'
 
@@ -26,21 +28,35 @@ def test_gpt(chain: list, output_vars: list[str], input_data_json: str, verbose=
         data = json.load(file)
 
     results = []
-    for offer_record in data:
+    for i, offer_record in enumerate(data):
         offer_description = offer_record['description']
 
         offer_description_en = ts.translate_text(offer_description, translator='baidu', to_language='en')
+        if parameters:
+            offer_parameters_pl = {key: value for key, value in offer_record.items() if
+                                   key not in ['id', 'number', 'description', 'desiredOutput']}
+            offer_parameters_en = ts.translate_text(str(offer_parameters_pl), translator='baidu', to_language='en')
 
-        print('LLM Chaining..')
+        print(f'{i+1}/{len(data)}: LLM Chaining..')
+
+        input_variables = ['real_estate_offer_en']
+        if parameters: input_variables.append('offer_parameters_en')
 
         overall_chain = SequentialChain(
             chains=chain,
-            input_variables=['real_estate_offer_en'],
+            input_variables=input_variables,
             output_variables=output_vars,
             verbose=False,
         )
 
-        overall_chain_result = overall_chain({'real_estate_offer_en': offer_description_en})
+        if parameters:
+            overall_chain_result = overall_chain({'real_estate_offer_en': offer_description_en,
+                                                  "offer_parameters_en": offer_parameters_en})
+        else:
+            overall_chain_result = overall_chain({'real_estate_offer_en': offer_description_en})
+
+
+        print(overall_chain_result[output_vars[1]], overall_chain_result[output_vars[0]])
 
         result = {
             'id': offer_record['id'],
@@ -54,12 +70,18 @@ def test_gpt(chain: list, output_vars: list[str], input_data_json: str, verbose=
     df = pandas.DataFrame(results)
 
     df['rating'] = pandas.to_numeric(df['rating'])
-    df['desired_output'] = pandas.to_numeric(df['desired_output'])
+    df['desired_output'] = pandas.to_numeric(df['desired_output'], errors='coerce')
 
     success_rate = df['rating'].eq(df['desired_output']).mean()
 
     # Calculate the mismatched rows
     mismatched_rows = df[df['rating'] != df['desired_output']]
+
+    # Save to JSON.
+    output_name_base = input_data_json.strip('.json')
+
+    df.to_json(f'./src/gpt/test/test-data/output/{output_name_base}.json', orient="records")
+    mismatched_rows.to_json(f'./src/gpt/test/test-data/output/{output_name_base}_mismatch.json', orient="records")
 
     if verbose:
         # Print success rate

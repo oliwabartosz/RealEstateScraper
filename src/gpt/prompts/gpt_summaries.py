@@ -4,7 +4,7 @@ If text doesn't mention about balcony, terrace, loggia, say that. If text says a
 Use information below from text delimited by triple backticks (`): 
 ```{real_estate_offer_en}```"""
 
-technology_prompt = """Provide a two-sentence summary about technology of the building based on the information \
+technology_prompt = """Provide a three-sentence summary about technology of the building based on the information \
 from this text: ```{real_estate_offer_en}```
 
 The technology of the building can be traditional, improved, monolithic or prefabricated. The instruction
@@ -12,13 +12,14 @@ how to assess the technology is delimited by <>.
 
 <The building technology is classified as:
 - traditional when have brick construction until 1960, typically limited to 6 \
-storeys, and comprising mainly of tenement houses and outbuildings.
+storeys, and comprising mainly of tenement houses (kamienica) and outbuildings.
 - improved, when constructed using brick, silk, and blocks, with a year of construction greater than 1990.
 - monolithic, pertains to tall buildings over 15 storeys built since 2007.
-- prefabricated buildings were constructed using panel construction, large slabs, or concrete. They were constructed 
+- prefabricated buildings were constructed using panel construction, large slabs (Wielka Płyta), or concrete. They were constructed 
 in years with range from 1960 to 1995. They can be high blocks with 10 to 12 storeys or low blocks up to 6 storeys>
 
-While providing summary take also into consideration: 
+In summary provide information of: 
+- technology classification based on instruction delimited by <>
 - year of construction: ```{year_of_constr}```, 
 - material ```{material}```, 
 - building type: ```{building_type}```, 
@@ -27,8 +28,8 @@ While providing summary take also into consideration:
 Focus just on the building, skip the information about apartment.
 """
 
-law_status_prompt = """Make a summary of the legal status. The legal status can be cooperative ownership right or ownership \
-right. Write which legal status is for this apartment.
+law_status_prompt = """Make a summary of the legal status. The legal status can be \
+cooperative ownership right or ownership right. Write which legal status is for this apartment.
 
 Use maximum three sentences. Tell your reasons.
 
