@@ -16,3 +16,5 @@ __pycache__/
 /data/output/django_csv/django_database_flats.csv
 /data/output/django_csv/django_database_houses.csv
 /data/output/django_csv/django_database_plots.csv
+/src/gpt/test/test-data/output/test-technology_mismatch.json
+/src/gpt/test/test-data/output/test-technology.json

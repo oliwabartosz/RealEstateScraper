@@ -35,11 +35,11 @@ jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
 data = get_offers_data_from_api(jwt_data['access_token'], path, 'GET', '')
 
 expected_dict = {value: '' for value in offers_dict.values()}
-expected_dict['status'] = 'new'
 input_to_df = []
 
 for record in data:
     merged_dict = merge_dicts_by_key(expected_dict, record)
+    merged_dict['status'] = 'new'
     input_to_df.append(merged_dict)
 
 df = pd.DataFrame(input_to_df).drop_duplicates().to_csv(f'./data/output/django_csv/{output}.csv', index=False, header=False)
