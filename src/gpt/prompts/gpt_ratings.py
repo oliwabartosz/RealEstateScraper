@@ -91,8 +91,9 @@ Return just number 0, 1 or -9. Do not provide text!"""
 
 garage_prompt = """Please rate the occurrence of a garage or parking place based on the information provided in \
 {garage_summary}.
-- If there is no garage or parking place, or if it comes with an additional price, please return 0.
+- If there is no garage or parking place with the apartment, or if it comes with an additional price, please return 0.
 - If the garage or parking place belongs to the apartment without any information about the price, please return 1.
+- If text mention about possibility to buy garage or parking place return 0.
 - If it is not possible to determine a rating, please return -9.
 
 Examples of summaries and desired output is listed below delimited by three dashes (-).
@@ -103,6 +104,9 @@ Summary: The text mentions a garage that belongs to the apartment. The garage ha
 Output: 0
 
 Summary: The text mentions a parking lot that belongs to the apartment. The parking lot has an additional price of 60 000.
+Output: 0
+
+Summary: The text mentions that there is possibility of buying the parking place.
 Output: 0
 
 Summary: The text mentions a garage that belongs to the apartment. The text does not mention about additional price.

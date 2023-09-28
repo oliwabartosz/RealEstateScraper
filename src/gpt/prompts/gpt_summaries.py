@@ -47,8 +47,9 @@ backticks. Does basement or attic belong to the flat? Does it have additional pr
 ```{real_estate_offer_en}````
 """
 
-garage_prompt = """Make two sentences summary about garage and parking place from text delimited in triple \
-backticks. Does garage or parking place belong to the apartment? Does it have additional price? 
+garage_prompt = """Make three sentences summary about garage and parking place from text delimited in triple \
+backticks. Does garage or parking place belong to the apartment? Does it have additional price? Does the text mention \
+that is to possible to buy garage or parking place? 
 ```{real_estate_offer_en}```
 """
 
