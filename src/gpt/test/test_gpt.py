@@ -37,7 +37,7 @@ def test_gpt(chain: list, output_vars: list[str], parameters: bool, input_data_j
                                    key not in ['id', 'number', 'description', 'desiredOutput']}
             offer_parameters_en = ts.translate_text(str(offer_parameters_pl), translator='baidu', to_language='en')
 
-        print(f'{i+1}/{len(data)}: LLM Chaining..')
+        print(f'{i + 1}/{len(data)}: LLM Chaining..')
 
         input_variables = ['real_estate_offer_en']
         if parameters: input_variables.append('offer_parameters_en')
@@ -55,8 +55,13 @@ def test_gpt(chain: list, output_vars: list[str], parameters: bool, input_data_j
         else:
             overall_chain_result = overall_chain({'real_estate_offer_en': offer_description_en})
 
+        print(f"""id: {offer_record['id']}, 
+        LLM Rating: {overall_chain_result[output_vars[1]]}, 
+        Desired Rating: {offer_record['desiredOutput']}
+        LLM Summary: {overall_chain_result[output_vars[0]]}
+        Description: {offer_description_en}
+        """)
 
-        print(overall_chain_result[output_vars[1]], overall_chain_result[output_vars[0]])
 
         result = {
             'id': offer_record['id'],
@@ -91,3 +96,5 @@ def test_gpt(chain: list, output_vars: list[str], parameters: bool, input_data_j
         print('Mismatch: \n', mismatched_rows)
 
     return success_rate, mismatched_rows
+
+

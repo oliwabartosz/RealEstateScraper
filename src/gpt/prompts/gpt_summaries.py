@@ -59,8 +59,10 @@ treat that information as there is no garden at all.
 ```{real_estate_offer_en}```
 """
 
-monitoring_prompt = """Make two sentences summary about monitoring from text delimited in triple backticks. \
-Does building is monitored? Is it located in a guarded housing estate? Is there supervision and protection?
+monitoring_prompt = """Make three sentences summary about monitoring from text delimited in triple backticks. \
+Does building or area near it is being monitored? Is building located in a guarded housing estate? Is there supervision or protection? \
+Does text mentions something about monitoring?
+If it is not possible to determine, say that. 
 ```{real_estate_offer_en}```
 """
 

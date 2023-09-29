@@ -129,11 +129,33 @@ Please provide a numeric response: 0, 1, or -9. Do not provide text!
 
 monitoring_prompt = """Please rate the occurrence of monitoring based on the information provided in \
 {monitoring_summary}.
-- If there is no mention of monitoring, guarded estate, supervision, or protection, please return 0.
+- If there is no mention of monitoring, guarded estate, supervision, or protection, please return -9.
 - If there is any mention of monitoring, guarded estate, supervision, or protection, please return 1.
-- If it is not possible to determine a rating, please return -9.
 
-Please provide a numeric response: 0, 1, or -9. Do not provide text!
+Examples of summaries and desired output is listed below delimited by three dashes (-).
+
+---
+Example:
+Summary: The apartment is located in a monitored area within a guarded housing estate. The building itself is not mentioned to be monitored.
+Output: 1
+
+Summary: The building, block is monitored and located in a guarded housing estate. There is supervision and protection in place
+Output: 1
+
+Summary: Text mentions that area outside building or block is monitored.
+Output: 1
+
+Summary: The text does not provide any information about monitoring, whether the building is monitored or if there is supervision and protection.
+Output: -9
+
+Summary: It is not possible to determine if the building is monitored or located in a guarded housing estate based on the given text.
+Output: -9
+
+Summary: It is not possible to determine if monitoring is mentioned in the text.
+Output: -9
+---
+
+Please provide a numeric response: 1 or -9. Do not provide text!
 """
 
 
