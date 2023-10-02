@@ -18,3 +18,9 @@ __pycache__/
 /data/output/django_csv/django_database_plots.csv
 /src/gpt/test/test-data/output/test-technology_mismatch.json
 /src/gpt/test/test-data/output/test-technology.json
+/src/gpt/test/test-data/output/test-law-statu_mismatch.json
+/src/gpt/test/test-data/output/test-alarm.json
+/src/gpt/test/test-data/output/test-alarm_mismatch.json
+/src/gpt/test/test-data/output/test-balcony.json
+/src/gpt/test/test-data/output/test-balcony_mismatch.json
+/src/gpt/test/test-data/output/test-law-statu.json

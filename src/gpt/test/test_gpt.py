@@ -35,7 +35,7 @@ def test_gpt(chain: list, output_vars: list[str], parameters: bool, input_data_j
         if parameters:
             offer_parameters_pl = {key: value for key, value in offer_record.items() if
                                    key not in ['id', 'number', 'description', 'desiredOutput']}
-            offer_parameters_en = ts.translate_text(str(offer_parameters_pl), translator='baidu', to_language='en')
+            offer_parameters_en = ts.translate_text(str(offer_parameters_pl), translator='bing', to_language='en')
 
         print(f'{i + 1}/{len(data)}: LLM Chaining..')
 
@@ -58,16 +58,18 @@ def test_gpt(chain: list, output_vars: list[str], parameters: bool, input_data_j
         print(f"""id: {offer_record['id']}, 
         LLM Rating: {overall_chain_result[output_vars[1]]}, 
         Desired Rating: {offer_record['desiredOutput']}
+        {('Parameters: ' + offer_parameters_en if verbose else '') if parameters else ''}
         LLM Summary: {overall_chain_result[output_vars[0]]}
         Description: {offer_description_en}
         """)
-
 
         result = {
             'id': offer_record['id'],
             'rating': overall_chain_result[output_vars[1]],
             'rating_summary': overall_chain_result[output_vars[0]],
-            'desired_output': offer_record['desiredOutput']
+            'desired_output': offer_record['desiredOutput'],
+            'description': offer_description_en,
+            'descriptionPL': offer_description
         }
 
         results.append(result)
@@ -81,12 +83,14 @@ def test_gpt(chain: list, output_vars: list[str], parameters: bool, input_data_j
 
     # Calculate the mismatched rows
     mismatched_rows = df[df['rating'] != df['desired_output']]
+    mismatched_rows.index = mismatched_rows.index + 1
 
     # Save to JSON.
     output_name_base = input_data_json.strip('.json')
 
     df.to_json(f'./src/gpt/test/test-data/output/{output_name_base}.json', orient="records")
-    mismatched_rows.to_json(f'./src/gpt/test/test-data/output/{output_name_base}_mismatch.json', orient="records")
+    mismatched_rows.to_json(f'./src/gpt/test/test-data/output/{output_name_base}_mismatch.json', orient="records",
+                            index=True, force_ascii=False)
 
     if verbose:
         # Print success rate
@@ -96,5 +100,3 @@ def test_gpt(chain: list, output_vars: list[str], parameters: bool, input_data_j
         print('Mismatch: \n', mismatched_rows)
 
     return success_rate, mismatched_rows
-
-

@@ -6,19 +6,14 @@ from src.gpt.test.tests import start_balcony_gpt_test, start_law_status_test, st
     start_monitoring_test, start_basement_test, start_elevator_test, start_garage_test, start_garden_test, \
     start_kitchen_test, start_modernization_test, start_outbuilding_test
 
-start_balcony_gpt_test(start=True)
-start_law_status_test(start=False)
-start_technology_test(start=False)
-start_monitoring_test(start=False)
-start_basement_test(start=False)
+start_balcony_gpt_test(start=False)  # Success: 100%.
+start_law_status_test(start=False)  # Success: 0.9473684210526315
+start_technology_test(start=False)  # Success: 0.3928 - @TODO: divide the technology chain into smaller parts
+start_monitoring_test(start=False)  # Success: 100%.
+start_basement_test(start=True)  # 0.7857142857142857
 start_elevator_test(start=False)
 start_garage_test(start=False)
 start_garden_test(start=False)
 start_kitchen_test(start=False)
 start_modernization_test(start=False)
 start_outbuilding_test(start=False)
-
-
-
-
-

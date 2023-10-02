@@ -13,11 +13,40 @@ Here is instruction how to rate the technology of the building:
 Text to analyze:
 ```{technology_summary}```
 
+Examples of summaries and desired output is listed below delimited by three dashes (-).
+
+---
+Example:
+Summary: The technology classification of the building is traditional.
+Output: 1
+
+Summary: The building was constructed in years with range from 1960 to 1995.
+Output: 7
+
+Summary: The building was constructed in years with range from 1960 to 1995 and has more than 7 floors.
+Output: 7
+
+Summary: The material used for construction of building is silikat or silicate.
+Output: 2
+
+Summary: The year of construction is greater than 1990.
+Output: 2
+
+Summary: The building has more than 13 floors and the year of construction is greater than 2005.
+Output: 3.
+
+Summary: It is hard to estimate the building technology base on given information.
+Output: -9
+---
+
 Please provide a numeric response: 1, 2, 3, 7, or -9. Do not provide text!"""
 
-law_status_prompt = """Please rate the legal status based on the information provided in text delimited by three backticks (```).
+law_status_prompt = """Please rate the legal status based on the information provided in text delimited by three \
+backticks (```).
 - If the legal status of an apartment is ownership return 1.
-- If the legal status of an apartment is cooperative ownership right (it can be with the Land and Mortgage Register or KW), please return 2.
+- If the legal status of an apartment is cooperative ownership right (it can be with the Land and Mortgage Register or KW), \
+please return 2.
+If text mentions that apartment is possible to buy by citizens from outside the European Union return 2
 - If you don't know, please return -9.
 
 Text to analyze:
@@ -35,6 +64,7 @@ Output: 2
 
 Summary: The legal status of the property mentioned in the text is the right of cooperative ownership
 Output: 2
+
 ---
 
 Please provide a numeric response: 1, 2, or -9. Do not provide text!
@@ -88,10 +118,43 @@ elevator_prompt = """Please rate the presence of an elevator based on the inform
 
 Please provide a numeric response: 0, 1, or -9. Do not provide text!"""
 
-basement_prompt = """Rate the occurrence of basement based on the information provided in {basement_summary}.
-- If there is no basement or the basement comes with an additional price, please return 0.
-- If there is a basement mentioned in the text without any information about the price, please return 1.
+basement_prompt = """Treat basement, attic, storage cell as basement. 
+Rate presence of basement based on the information provided in text delimited by three backticks (```).
+- If there is no basement it comes with an additional price, please return 0.
+- If basement for use by the Cooperative or publicly accessible return 0.
+- If there is a basement mentioned in the text without any information about the price, \
+please return 1.
 - If it is not possible to determine a rating, please return -9.
+
+Text to analyze:
+```{basement_summary}```.
+
+Examples of summaries and desired output is listed below delimited by three dashes (-).
+
+---
+Example:
+Summary: The text does not mention anything about a basement belonging to the apartment.
+Output: -9
+
+Summary: The basement is not mentioned in the text, so it is unclear if the apartment has one.
+Output: -9
+
+Summary: The apartment has a basement.
+Output: 1
+
+Summary: The apartment has a basement, which is included in the price.
+Output: 1
+
+Summary: The apartment has a basement, but it is not mentioned whether it belongs to the apartment or if there are any \
+additional fees associated with it.
+Output: 1
+
+Summary: The apartment includes a basement (with garage or not) for an additional fee.
+Output: 0
+
+Summary: The basement is for use by the Cooperative or is publicly accessible.
+Output: 0
+---
 
 Return just number 0, 1 or -9. Do not provide text!"""
 

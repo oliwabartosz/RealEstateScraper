@@ -78,7 +78,7 @@ for offer_record in offers_data[8:9]:
         offer_description = offer_record['description']
 
         # Translate text
-        offer_parameters_en = ts.translate_text(str(offer_params), translator='baidu', to_language='en')
+        offer_parameters_en = ts.translate_text(str(offer_params), translator='bing', to_language='en')
         offer_description_en = ts.translate_text(offer_description, translator='baidu', to_language='en')
 
         overall_chain = SequentialChain(

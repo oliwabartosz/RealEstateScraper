@@ -23,7 +23,7 @@ def start_law_status_test(start=True):
         print('Test: lawStatus:')
         test_gpt([law_status_summary_chain, law_status_rating_chain],
                  ["law_summary", "law_rating"],
-                 True,
+                 False,
                  'test-law-status.json',
                  True
                  )
