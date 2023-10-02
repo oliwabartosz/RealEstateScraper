@@ -1,3 +1,4 @@
+import spacy
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
@@ -108,7 +109,22 @@ def change_comma_to_dot(offer_data):
             offer_data[key_to_update] = offer_data[key_to_update].replace(',', '.')
 
 
-def make_chunks_from_description(offers_type, offers_data):
+def make_chunks_from_description_spacy_version(offers_type, offers_data):
+    chunks = {}
+
+    # Get rid of \n in a description
+    offers_data['Opis'] = offers_data['Opis'].replace('\n', '')
+
+    nlp = spacy.load("pl_core_news_sm")
+    doc = nlp(offers_data['Opis']S)
+
+    # Przeszukujemy analizowany tekst w poszukiwaniu informacji o różnych formach słowa "ogród"
+    for sentence in doc.sents:
+        if 'ogród' in sentence.text.lower() or 'ogrodu' in sentence.text.lower() or 'ogródka' in sentence.text.lower():
+            print(sentence.text)
+
+
+def make_chunks_from_description_regex_version(offers_type, offers_data):
     # Load prompts
     template_fields_from_json = file_handler.load_json_file(file_handler.FILE_PATH_TEMPLATES)
     description_fields = template_fields_from_json.get(offers_type)

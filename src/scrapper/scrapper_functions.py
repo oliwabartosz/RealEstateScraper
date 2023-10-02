@@ -187,7 +187,7 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
     offer_data = scrapper_functions_aux.clear_data_values_from_unnecessary_things(offer_data)
 
     # Create chunks of data
-    offer_data = scrapper_functions_aux.make_chunks_from_description(offers_type, offer_data)
+    offer_data = scrapper_functions_aux.make_chunks_from_description_regex_version(offers_type, offer_data)
 
     # Translate data
     offer_data = scrapper_functions_aux.translate_keys(offers_type, offer_data)
