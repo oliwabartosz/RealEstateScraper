@@ -1,7 +1,9 @@
 # SUMMARIES
-balcony_prompt = """Using maximum 3 sentences, make a short summary about if the apartment has balcony, terrace, loggia or don't have. \
-If text doesn't mention about balcony, terrace, loggia, say that. If text says about french balcony or balcony window add this information to yours summary. 
-Use information below from text delimited by triple backticks (`): 
+balcony_prompt = """Using maximum 3 sentences answer the question: does text mention \
+about balcony, terrace or loggia? \
+If text says about french balcony or balcony window add this information to yours summary.\
+
+Make a summary from text delimited by triple backticks (`): 
 ```{real_estate_offer_en}```"""
 
 technology_prompt = """Provide a three-sentence summary about technology of the building based on the information \

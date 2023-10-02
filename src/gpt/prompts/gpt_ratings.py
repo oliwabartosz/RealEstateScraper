@@ -41,7 +41,7 @@ Please provide a numeric response: 1, 2, or -9. Do not provide text!
 """
 
 balcony_prompt = """Please rate the presence of a balcony, loggia or terrace based on the information provided in text delimited by three backticks (```). 
-- If apartment has a balcony, terrace or loggia, please return 1.
+- If apartment has a balcony, terrace, loggia or garden, please return 1.
 - If apartment has not balcony, terrace or loggia please return 0.
 - If apartment has just a French balcony or balcony window return 0,
 - If it is not possible to determine the presence of a balcony, terrace or loggia (there is no inforamtion) \
@@ -54,19 +54,25 @@ Examples of summaries and desired output are listed below delimited by three das
 
 ---
 Example:
+Summary: The apartment has a balcony.
+Output: 1
+
 Summary: The apartment has a loggia, but there is no information provided about a balcony.
 Output: 1
 
 Summary: The apartment has a terrace, but there is no information provided about a balcony.
 Output: 1
 
+Summary: The apartment has a loggia, but there is no information provided about a balcony.
+Output: 1
+
+Summary: The apartment doest not have a balcony, terrace, or loggia, but it has garden.
+Output: 1
+
 Summary: The apartment has a balcony window.
 Output: 0
 
 Summary: The apartment has a french balcony.
-Output: 0
-
-Summary: The apartment does not have a balcony, terrace, or loggia.
 Output: 0
 
 Summary: No information about balcony, terrace or loggia in text.
