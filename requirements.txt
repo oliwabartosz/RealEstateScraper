@@ -48,7 +48,7 @@ pandas==1.5.0
 paramiko==3.3.1
 pathos==0.3.1
 pathy==0.10.2
-Pillow==10.0.0
+Pillow==10.0.1
 pl-core-news-sm @ https://github.com/explosion/spacy-models/releases/download/pl_core_news_sm-3.7.0/pl_core_news_sm-3.7.0-py3-none-any.whl#sha256=94fd294e49f87fccf863f2792a1d89be1a0fd0a3c549790b2c8338ac304bee36
 pox==0.3.3
 ppft==1.7.6.7
