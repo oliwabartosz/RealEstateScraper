@@ -5,8 +5,10 @@
         "basementLemma": ["piwnica", "komórka", "komórką", "lokatorska", "lokatorskiej", "lokatorską", "strych", "poddasze"],
         "garageLemma": ["postojowy", "parking", "garaż", "miejsce"],
         "gardenLemma" : ["ogród"],
-        "modernizationLemma": ["ociepl", "odnowiony", "odnowić", "odnowionego", "odnowiyć", "elewacja", "zmodernizować", "odrestaurować", "odrestaurowanej", "modernizacja"]
-
+        "modernizationLemma": ["ociepl", "odnowiony", "odnowić", "odnowionego", "odnowiyć", "elewacja", "zmodernizować", "odrestaurować", "odrestaurowanej", "modernizacja"],
+        "alarmLemma": ["ochrona", "dozór", "dozorować", "moniotorować", "monitoring", "portier", "strzeżony", "zamknięty", "alarm", "kamera", "kamerować"],
+        "lawStatusLemma": ["spółdzielczy", "spółdzielnia", "KW", "księga", "wieczysty", "wspólnota", "własność", "własnościowy", "obcokrajowiec", "unia", "unii", "europejska", "europejski", "wieczysta", "wieczystej", "obywatel", "ue", "prawo", "ukrai", "wspólnościowy"],
+        "kitchenLemma": ["kuchnia", "widny", "ciemny", "aneks", "kuchenny"]
     },
 
     "houses": ["postojow", "parking", "przynależn", "garaż", "możliwość", "działk", "własno", "spóldziel",

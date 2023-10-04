@@ -95,7 +95,8 @@ If it is not possible to determine, say that.
 """
 
 kitchen_prompt = """Please provide a three-sentence summary about the kitchen based on the text enclosed \
-in triple backticks. Could you describe what type of kitchen the apartment has and whether it is an annex? \
+in triple backticks. Could you describe what type of kitchen the apartment has and whether it is an annex? If kitchen \
+is open to living room, say that there is an kitchen annex. \
 Additionally, mention if the kitchen has a window and is well-lit or if it lacks natural light and appears dark. \
  If there is no information about these details, kindly indicate so.
 ```{real_estate_offer_en}```
