@@ -8,11 +8,12 @@ from src.gpt.chain.chaning import balcony_summary_chain, balcony_rating_chain, l
     garden_summary_chain, garden_rating_chain, rent_summary_chain, rent_rating_chain, kitchen_rating_chain, \
     kitchen_summary_chain, modernization_summary_chain, modernization_rating_chain, year_of_constr_chain, \
     material_chain, building_type_chain, technology_summary_chain, technology_rating_chain, number_floors_chain
-import ts
+import translators as ts
 
 from src.gpt.src.params_handler import handle_law_status_param, handle_elevator_param, handle_kitchen_param, \
     handle_balcony_param, handle_monitoring_param, handle_basement_param, handle_garage_param, handle_garden_param, \
     handle_outbuilding_param, handle_rent_param
+from src.spacy.spacy import create_lemmatized_parameter_description
 
 TAKEN_FROM_PARAMS_STR = 'Information taken from parameters'
 RATED_STR = 'Rated by user'
@@ -87,7 +88,9 @@ def _retrieve_chain_and_output_vars(offer_parameter: str) -> tuple[list, list[st
             chain = [kitchen_summary_chain, kitchen_rating_chain]
             output_vars = ["kitchen_summary", "kitchen_rating"]
         case 'modernization':
-            chain = [modernization_summary_chain, modernization_rating_chain]
+            chain = [year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,
+                     technology_summary_chain, technology_rating_chain, modernization_summary_chain,
+                     modernization_rating_chain]
             output_vars = ["modernization_summary", "modernization_rating"]
         case 'technology':
             chain = [year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,
@@ -123,12 +126,24 @@ def _choose_params_handler(offer_parameter: str, offer_params: dict):
             return handle_rent_param(offer_params)
 
 
-def assess_offer_parameter(offer_data: dict, offer_parameter: str, offer_description: str) -> dict[str]:
+def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_description: str) -> dict[str]:
+    print(offer_description)
     chain = _retrieve_chain_and_output_vars(offer_parameter)[0]
     output_vars = _retrieve_chain_and_output_vars(offer_parameter)[1]
 
     # Filter out unnecessary keys for params
     offer_params = {key: value for key, value in offer_data.items() if key not in ['id', 'number', 'description']}
+    if not offer_description:
+        if offer_parameter in ['modernization', 'technology']:
+            result = {f'{offer_parameter}GPT': -9,
+                      f'{offer_parameter}_summary': f'Couldn\'t find information about {offer_parameter} in text.'}
+            return result
+        else:
+            parameter_result = _choose_params_handler(offer_parameter, offer_params)
+            result = {f'{offer_parameter}GPT': parameter_result,
+                      f'{offer_parameter}_summary': f'There were no information about {offer_parameter} in the text. ' +
+                                                    'Tried to get information from the offers parameters.'}
+            return result
 
     # Translate text
     offer_parameters_en = ts.translate_text(str(offer_params), translator='bing', to_language='en')
@@ -150,6 +165,19 @@ def assess_offer_parameter(offer_data: dict, offer_parameter: str, offer_descrip
         f'{offer_parameter}GPT': handle_result(llm_chain_result[f'{offer_parameter}_rating'],
                                                llm_chain_result[f'{offer_parameter}_summary'],
                                                parameter_result)[0],
+        f'{offer_parameter}_summary': handle_result(llm_chain_result[f'{offer_parameter}_rating'],
+                                                    llm_chain_result[f'{offer_parameter}_summary'],
+                                                    parameter_result)[1]
     }
 
     return result
+
+
+def assess_offer_parameter_wrapper(offer_type: str, offer_parameter: str, offers_data: dict) -> dict[str]:
+    #@TODO: add technology to spacy.json
+    lemmatized_description = create_lemmatized_parameter_description(offer_type,
+                                                                     offers_data['description'],
+                                                                     offer_parameter)
+    return assess_offer_parameter(offer_parameter,
+                                  offers_data,
+                                  lemmatized_description)

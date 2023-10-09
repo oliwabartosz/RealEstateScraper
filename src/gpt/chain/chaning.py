@@ -26,7 +26,7 @@ number_floors_chain = create_llm_chain(llm, gpt_params.number_floors_prompt, "nu
 # Technology
 technology_summary_chain = create_llm_chain(llm, gpt_summaries.technology_prompt, "technology_summary")
 # Law status
-law_status_summary_chain = create_llm_chain(llm, gpt_summaries.law_status_prompt, "law_summary")
+law_status_summary_chain = create_llm_chain(llm, gpt_summaries.law_status_prompt, "lawStatus_summary")
 # Balcony
 balcony_summary_chain = create_llm_chain(llm, gpt_summaries.balcony_prompt, "balcony_summary")
 # Elevator
@@ -53,7 +53,7 @@ modernization_summary_chain = create_llm_chain(llm, gpt_summaries.modernization_
 # Technology
 technology_rating_chain = create_llm_chain(llm, gpt_ratings.technology_prompt, "technology_rating")
 # Law status
-law_status_rating_chain = create_llm_chain(llm, gpt_ratings.law_status_prompt, "law_rating")
+law_status_rating_chain = create_llm_chain(llm, gpt_ratings.law_status_prompt, "lawStatus_rating")
 # Balcony
 balcony_rating_chain = create_llm_chain(llm, gpt_ratings.balcony_prompt, "balcony_rating")
 # Elevator

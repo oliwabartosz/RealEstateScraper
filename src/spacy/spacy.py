@@ -32,7 +32,6 @@ def create_lemmatized_parameter_description(offer_type: str, offer_description: 
     for sentence in doc.sents:
         for lemma in lemmas:
             if lemma in sentence.lemma_.lower():
-                print(lemma + ": " + sentence.lemma_ + "\n")
                 sentence_list.append(sentence.text)
     sentence_result = list(set(sentence_list))
 

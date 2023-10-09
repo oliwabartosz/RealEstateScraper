@@ -50,7 +50,7 @@ If text mentions that apartment is possible to buy by citizens from outside the 
 - If you don't know, please return -9.
 
 Text to analyze:
-```{law_summary}```
+```{lawStatus_summary}```
 
 Examples of summaries and desired output is listed below delimited by three dashes (-).
 
