@@ -110,13 +110,14 @@ def change_comma_to_dot(offer_data):
 
 
 def make_chunks_from_description_spacy_version(offers_type, offers_data):
+    #@TODO: make this after spacy.py
     chunks = {}
 
     # Get rid of \n in a description
     offers_data['Opis'] = offers_data['Opis'].replace('\n', '')
 
     nlp = spacy.load("pl_core_news_sm")
-    doc = nlp(offers_data['Opis']S)
+    doc = nlp(offers_data['Opis'])
 
     # Przeszukujemy analizowany tekst w poszukiwaniu informacji o różnych formach słowa "ogród"
     for sentence in doc.sents:

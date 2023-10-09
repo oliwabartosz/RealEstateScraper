@@ -1,0 +1,26 @@
+{
+    "flats": {
+        "balcony": ["balkon", "taras", "francuski"],
+        "elevator": ["winda"],
+        "basement": ["piwnica", "komórka", "komórką", "lokatorska", "lokatorskiej", "lokatorską", "strych", "poddasze"],
+        "garage": ["postojowy", "parking", "garaż", "miejsce"],
+        "garden" : ["ogród"],
+        "modernization": ["ociepl", "odnowiony", "odnowić", "odnowionego", "odnowiyć", "elewacja", "zmodernizować", "odrestaurować", "odrestaurowanej", "modernizacja"],
+        "monitoring": ["ochrona", "dozór", "dozorować", "moniotorować", "monitoring", "portier", "strzeżony", "zamknięty", "alarm", "kamera", "kamerować"],
+        "lawStatus": ["spółdzielczy", "spółdzielnia", "KW", "księga", "wieczysty", "wspólnota", "własność", "własnościowy", "obcokrajowiec", "unia", "unii", "europejska", "europejski", "wieczysta", "wieczystej", "obywatel", "ue", "prawo", "ukrai", "wspólnościowy"],
+        "kitchen": ["kuchnia", "widny", "ciemny", "aneks", "kuchenny"]
+    },
+
+    "houses": ["postojow", "parking", "przynależn", "garaż", "możliwość", "działk", "własno", "spóldziel",
+    "wieczyst", "wspólnot", "użytkowani", "ocieplony", "moderniz", "odrestaur", "odnow", "ociepl", "remon", 
+    "elewac", "dozór", "dozor", "monitoring", "monit", "ochron", "alarm", "strzeż", "portier","kuchni", 
+    "aneks", "widna", "ciemna", "prześwit", "z oknem", "z jadalni", "ul.", "al.", "toalet", "ubikac", "łazienk",
+    "szerego", "jednorodzin", "wolnostoj", "wolno", "wielorodzin", "bliźnia", "zabudow"],
+
+    "plots": ["szerego", "jednorodzin", "wolnostoj", "wolno", "wielorodzin", "bliźnia", "komerc", "handl", "usług",
+    "magazyn", "produkc", "przemysł", "inwestycyjn", "towarzysząc", "nieuciążli", "prąd", "energia", "elektrycz", "ZK",
+    "gaz", "woda", "wody", "wodociąg","kanaliza", "uzbroj", "szambo", "gruntow","w drodze", "granicy", "działce", "dom", 
+    "budynek", "rozbiór", "utwardzon", "asfalt", "brukow", "żużel", "żużlowa", "jumbo", "ażuro", "jomb", "yomb", "poln",
+    "użytkowani", "wieczyste", "służebność", "ogrodz", "siatka", "x", "prostokąt", "kwadrat", "trójkąt", "trapez",
+    "podłuż", "regularny", "kształt", "zagospodarowani", "MPZP", "przestrzenn", "studium", "warunk", "zabudow", "pozwoleni"]
+}

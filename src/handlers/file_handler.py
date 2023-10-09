@@ -20,6 +20,10 @@ FILE_PATH_TEMPLATES = './src/scrapper/templates/chunks_templates_regex_version.j
 FILE_PATH_FLATS_DICTIONARY = './src/scrapper/templates/flats_dictionary.json'
 FILE_PATH_HOUSES_DICTIONARY = './src/scrapper/templates/houses_dictionary.json'
 FILE_PATH_PLOTS_DICTIONARY = './src/scrapper/templates/plots_dictionary.json'
+
+# spaCy
+FILE_PATH_LEMMAS_DICT = './src/scrapper/templates/lemmatization_spacy.json'
+
 # GPT
 FILE_PATH_GPT_INPUT = './data/input/gpt.txt'
 FILE_PATH_GPT_OUTPUT = './data/output/gpt_answer.txt'
