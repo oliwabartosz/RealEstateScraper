@@ -1,4 +1,11 @@
-from typing import Callable
+from contextlib import suppress
+from operator import itemgetter
+from time import sleep
+import requests
+# Import translator setting from config
+from src.config import config_data
+data = config_data.get_config_data()
+translator = itemgetter('translator')(data)
 
 from langchain.chains import SequentialChain
 
@@ -16,7 +23,7 @@ from src.gpt.src.params_handler import handle_law_status_param, handle_elevator_
 from src.spacy.spacy import create_lemmatized_parameter_description
 
 TAKEN_FROM_PARAMS_STR = 'Information taken from parameters'
-RATED_STR = 'Rated by user'
+RATED_BY_USR_STR = 'Already rated by user'
 
 
 def handle_result(chain_result_rating_val: str, chain_result_summary_val: str, param: int) -> tuple[int, str]:
@@ -49,7 +56,7 @@ def handle_result_kwargs(**kwargs) -> tuple[int, str]:
 
             return int(kwargs['rating']), kwargs['summary']
         else:
-            return int(rated_val), RATED_STR
+            return int(rated_val), RATED_BY_USR_STR
 
 
 def _retrieve_chain_and_output_vars(offer_parameter: str) -> tuple[list, list[str]]:
@@ -126,28 +133,45 @@ def _choose_params_handler(offer_parameter: str, offer_params: dict):
             return handle_rent_param(offer_params)
 
 
-def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_description: str) -> dict[str]:
-    print(offer_description)
+def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_description_after_lemma: str) -> dict[str]:
+    print('Assessing:', offer_parameter)
     chain = _retrieve_chain_and_output_vars(offer_parameter)[0]
     output_vars = _retrieve_chain_and_output_vars(offer_parameter)[1]
 
     # Filter out unnecessary keys for params
     offer_params = {key: value for key, value in offer_data.items() if key not in ['id', 'number', 'description']}
-    if not offer_description:
+    if not offer_description_after_lemma:
         if offer_parameter in ['modernization', 'technology']:
             result = {f'{offer_parameter}GPT': -9,
                       f'{offer_parameter}_summary': f'Couldn\'t find information about {offer_parameter} in text.'}
             return result
         else:
             parameter_result = _choose_params_handler(offer_parameter, offer_params)
+            print(parameter_result)
             result = {f'{offer_parameter}GPT': parameter_result,
                       f'{offer_parameter}_summary': f'There were no information about {offer_parameter} in the text. ' +
                                                     'Tried to get information from the offers parameters.'}
             return result
 
     # Translate text
-    offer_parameters_en = ts.translate_text(str(offer_params), translator='bing', to_language='en')
-    offer_description_en = ts.translate_text(offer_description, translator='bing', to_language='en')
+    retry = True
+
+    offer_parameters_en = ""
+    offer_description_en = ""
+
+    while retry:
+        with suppress(requests.exceptions.HTTPError, requests.exceptions.ConnectionError):
+            offer_parameters_en = ts.translate_text(str(offer_params), translator=translator, to_language='en')
+            offer_description_en = ts.translate_text(offer_description_after_lemma, translator=translator,
+                                                     to_language='en')
+
+        if not offer_description_en:
+            print('Retrying, waiting 5 secs.')
+            sleep(5)
+        else:
+            retry = False
+
+    print('offer_description_en:', offer_description_en)
 
     llm_chain = SequentialChain(
         chains=chain,
@@ -174,7 +198,7 @@ def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_descrip
 
 
 def assess_offer_parameter_wrapper(offer_type: str, offer_parameter: str, offers_data: dict) -> dict[str]:
-    #@TODO: add technology to spacy.json
+    # @TODO: add technology to spacy.json
     lemmatized_description = create_lemmatized_parameter_description(offer_type,
                                                                      offers_data['description'],
                                                                      offer_parameter)
