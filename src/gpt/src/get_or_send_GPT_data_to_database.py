@@ -26,9 +26,8 @@ offers_gpt_data = api_handler.get_offers_data_from_api(
     jwt_data['access_token'],
     '/rer/api/flats/gpt',
     'GET',
-    'id')
+    'id', 'status')
 
 # Update data with information from another table got from the database
 offers_data = merge_dictionaries_by_id(offers_data, offers_ans_data)
-
 

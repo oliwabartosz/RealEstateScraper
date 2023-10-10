@@ -1,16 +1,22 @@
 import json
 import re
+from operator import itemgetter
 from typing import TypeVar
 
 DataFrame = TypeVar('DataFrame')
 
 import pandas
 
-# pandas.set_option('display.max_colwidth', None)
 pandas.set_option('display.max_columns', None)
 
 # Translator
 import translators as ts
+from src.config import config_data
+
+data = config_data.get_config_data()
+translator = itemgetter('translator')(data)
+
+# LangChain
 from langchain.chains import SequentialChain
 
 
