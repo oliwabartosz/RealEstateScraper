@@ -8,7 +8,7 @@ data = config_data.get_config_data()
 translator = itemgetter('translator')(data)
 
 
-def merge_dictionaries_by_id(list1: list, list2: list) -> list:
+def merge_dictionaries_by_id(list1: list, list2: list) -> list[dict]:
     merged_dict = {}
 
     # Merge dictionaries from list1

@@ -3,26 +3,26 @@ from src.handlers import file_handler
 from src.config import logger_cfg
 
 
-def type_of_offers():
+def type_of_offers() -> str | None:
     answer = input("Please provide offers type that you want to download.\nType F for flats, H for houses, "
                    "P for plots: ").lower()
 
     match answer:
         case 'f':
-            logger_cfg.logger_scrapper.info('Downloading: FLATS')
+            print('Choice: FLATS')
             return 'flats'
         case 'h':
-            logger_cfg.logger_scrapper.info('Downloading: HOUSES')
+            print('Choice: HOUSES')
             return 'houses'
         case 'p':
-            logger_cfg.logger_scrapper.info('Downloading: PLOTS')
+            print('Choice: PLOTS')
             return 'plots'
         case _:
             print("No information or information invalid. Cannot process further operations without this information.")
             exit(1)
 
 
-def delete_previous_run():
+def delete_previous_run() -> None:
     def _delete_files(file_path: str):
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -34,7 +34,6 @@ def delete_previous_run():
                 file_path = os.path.join(root, file)
                 os.remove(file_path)
             os.rmdir(directory)
-
 
     def _get_images_directories(directory):
         directories = []
@@ -67,3 +66,20 @@ def delete_previous_run():
 
         else:
             print("File deletion has been cancelled.")
+
+
+def retry_gpt() -> bool:
+    answers = ['y', 'n']
+    answer = None
+
+    while answer not in answers:
+        answer = input("Retry previous run (Y) or start again (N)? Y/N: \n" +
+                       "Type EXIT to end program").lower()
+
+    match answer:
+        case 'y':
+            return True
+        case 'n':
+            return False
+        case 'exit':
+            exit(1)

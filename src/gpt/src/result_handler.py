@@ -134,7 +134,7 @@ def _choose_params_handler(offer_parameter: str, offer_params: dict):
 
 
 def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_description_after_lemma: str) -> dict[str]:
-    print('Assessing:', offer_parameter)
+    print('Assessing param:', offer_parameter)
     chain = _retrieve_chain_and_output_vars(offer_parameter)[0]
     output_vars = _retrieve_chain_and_output_vars(offer_parameter)[1]
 

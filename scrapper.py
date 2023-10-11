@@ -12,7 +12,7 @@ from src.handlers.file_handler import load_json_file
 
 if __name__ == "__main__":
 
-    # @TODO: 1. check connection to SSH, databases
+    # @TODO: 1. check connection to SSH, databases - make error handler
 
     # Load important data from config file
     data = config_data.get_config_data()

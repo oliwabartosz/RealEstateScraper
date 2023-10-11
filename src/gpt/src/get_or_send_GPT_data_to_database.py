@@ -5,7 +5,7 @@ from src.utils.utils import merge_dictionaries_by_id
 jwt_data: dict = api_handler.get_jwt_token(f'{api_handler.rer_url}/rer/auth')
 
 # Get all data from database based on selected columns
-offers_data = api_handler.get_offers_data_from_api(
+data = api_handler.get_offers_data_from_api(
     jwt_data['access_token'],
     '/rer/api/flats/',
     'GET',
@@ -29,5 +29,5 @@ offers_gpt_data = api_handler.get_offers_data_from_api(
     'id', 'status')
 
 # Update data with information from another table got from the database
-offers_data = merge_dictionaries_by_id(offers_data, offers_ans_data)
+offers_data: list[dict] = merge_dictionaries_by_id(data, offers_ans_data)
 
