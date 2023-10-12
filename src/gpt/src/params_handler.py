@@ -1,6 +1,9 @@
 def handle_law_status_param(offer_params: dict) -> int:
     law_status = offer_params.get('lawStatus', -9)
 
+    if law_status is None:
+        law_status = ''
+
     if law_status == 'Własność':
         return 1
     elif "Spółdzielcze własnościowe" in law_status:

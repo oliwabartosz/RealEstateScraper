@@ -12,13 +12,29 @@ from src.gpt.src.result_handler import RATED_BY_USR_STR, \
 from src.handlers import api_handler
 
 
-# Helps to skip reassessment if rated before and restart was needed
-
-
-def start_gpt_assessment(start: int = 0, end: int = None, retry: bool = False,
-                         data: list[dict] = offers_data[:2]) -> None:
+def start_gpt_assessment(start: int = 0,
+                         end: int = None,
+                         retry: bool = False,
+                         data: list[dict] = offers_data,
+                         offers_type: str = 'flats',
+                         api: bool = True,
+                         take_result_from_offer_params: bool = True,
+                         include_params: list = []) -> dict:
+    """
+    :param start: starting point,
+    :param end: ending point, if None - it takes all.
+    :param retry: if True it won't be assessing records rated before. If False it reassess everything from beginning.
+    :param data: a data from database to analyze.
+    :param offers_type: can be flats, houses or plots.
+    :param api: if True the result will be sent to SQL database
+    :param take_result_from_offer_params: if True it will try to get the data from offer parameters, if GPT won't find information in
+    the text.
+    :param include_params: specify which parameters of real estate to include in assessment. If empty it will take all
+    the specified such as 'balcony', 'lawStatus', 'garage', 'garden', 'monitoring', 'outbuilding', 'rent',
+    'modernization', 'technology', 'kitchen', 'basement'.
+    :return: dictionary with assessed data in English.
+    """
     list_of_ids_statuses_in_gpt_db = [(item['id'], item.get('status', None)) for item in offers_gpt_data]
-    list_of_ids_statuses_in_gpt_db = list_of_ids_statuses_in_gpt_db[:2]
 
     if retry:
         # Make a list of IDs that have status == 0
@@ -45,62 +61,88 @@ def start_gpt_assessment(start: int = 0, end: int = None, retry: bool = False,
 
     # GPT Assessment
     for record in enumerate(data[start:end]):
-        print(record)
         if record[1]["description"].strip == '':
             record["description"] = 'Brak opisu'
-        _assess_by_gpt(record[1])
+        return _assess_by_gpt(record[1], offers_type, api, take_result_from_offer_params, include_params)
 
 
-def _assess_by_gpt(offer_record: dict) -> None:
+def _assess_by_gpt(offer_record: dict, offers_type: str, api: bool, take_result_from_offer_params: bool,
+                   include_params=[]) -> dict:
     print(f"{'-' * 30}\nAssessing {offer_record['id']}\n{'-' * 30}")
     result = {}
+    params_result = []
 
     # Assess parameters
-    balcony_result = assess_offer_parameter_wrapper('flats', 'balcony', offer_record)
-    law_status_result = assess_offer_parameter_wrapper('flats', 'lawStatus', offer_record)
-    garage_result = assess_offer_parameter_wrapper('flats', 'garage', offer_record)
-    garden = assess_offer_parameter_wrapper('flats', 'garden', offer_record)
-    monitoring_result = assess_offer_parameter_wrapper('flats', 'monitoring', offer_record)
-    outbuilding_result = assess_offer_parameter_wrapper('flats', 'outbuilding', offer_record)
-    rent_result = assess_offer_parameter_wrapper('flats', 'rent', offer_record)
+    if not include_params:
+        include_params = ['balcony', 'lawStatus', 'garage', 'garden', 'monitoring', 'outbuilding', 'rent',
+                          'modernization', 'technology', 'kitchen', 'basement', 'elevator']
 
-    if 'modernizationAns' not in offer_record:
-        modernization_result = assess_offer_parameter_wrapper('flats', 'modernization', offer_record)
-    else:
-        modernization_result = {"modernizationGPT": offer_record['modernizationAns'],
-                                "modernization_summary": RATED_BY_USR_STR}
+    if 'balcony' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'balcony', offer_record, take_result_from_offer_params))
+    if 'lawStatus' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'lawStatus', offer_record, take_result_from_offer_params))
+    if 'garage' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'garage', offer_record, take_result_from_offer_params))
+    if 'garden' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'garden', offer_record, take_result_from_offer_params))
+    if 'monitoring' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'monitoring', offer_record, take_result_from_offer_params))
+    if 'outbuilding' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'outbuilding', offer_record, take_result_from_offer_params))
+    if 'basement' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'basement', offer_record, take_result_from_offer_params))
+    if 'elevator' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'elevator', offer_record, take_result_from_offer_params))
+    if 'rent' in include_params:
+        params_result.append(
+            assess_offer_parameter_wrapper(offers_type, 'rent', offer_record, take_result_from_offer_params))
+    if 'modernization' in include_params:
+        if 'modernizationAns' not in offer_record:
+            params_result.append(
+                assess_offer_parameter_wrapper(offers_type, 'modernization', offer_record,
+                                               take_result_from_offer_params))
+        else:
+            params_result.append({"modernizationGPT": offer_record['modernizationAns'],
+                                  "modernization_summary": RATED_BY_USR_STR})
+    if 'technology' in include_params:
+        if 'technologyAns' not in offer_record:
+            params_result.append(
+                assess_offer_parameter_wrapper(offers_type, 'technology', offer_record, take_result_from_offer_params))
+        else:
+            params_result.append({"technologyGPT": offer_record['technologyAns'],
+                                  "technology_summary": RATED_BY_USR_STR})
+    if 'kitchen' in include_params:
+        if 'kitchenAns' not in offer_record:
+            params_result.append(
+                assess_offer_parameter_wrapper(offers_type, 'kitchen', offer_record, take_result_from_offer_params))
+        else:
+            params_result.append({"kitchenGPT": offer_record['kitchenAns'],
+                                  "kitchen_summary": RATED_BY_USR_STR})
 
-    if 'technologyAns' not in offer_record:
-        technology_result = assess_offer_parameter_wrapper('flats', 'technology', offer_record)
-    else:
-        technology_result = {"technologyGPT": offer_record['technologyAns'],
-                             "technology_summary": RATED_BY_USR_STR}
-
-    if 'kitchenAns' not in offer_record:
-        kitchen_result = assess_offer_parameter_wrapper('flats', 'kitchen', offer_record)
-    else:
-        kitchen_result = {"kitchensGPT": offer_record['kitchenAns'],
-                          "kitchen_summary": RATED_BY_USR_STR}
+    # Updating the results
+    for param_result in params_result:
+        result.update(param_result)
 
     result.update({'id': offer_record['id'],
                    'status': 1,
                    'qualityGPT': offer_record['qualityAns'] if 'qualityAns' in offer_record else -9})
 
-    params_result = [balcony_result, law_status_result, modernization_result, garage_result, garden, monitoring_result,
-                     technology_result, kitchen_result, rent_result]
-
-    for param_result in params_result:
-        result.update(param_result)
-
-    # Translate results to pl
+    # Translating results into Polish
     with suppress(requests.exceptions.HTTPError, requests.exceptions.ConnectionError):
         result_pl = translate_result_to_pl(result, 'pl', 'id', 'technologyGPT', 'lawStatusGPT',
                                            'elevatorGPT', 'balconyGPT', 'basementGPT', 'garageGPT', 'gardenGPT',
                                            'modernizationGPT', 'monitoringGPT', 'kitchenGPT', 'outbuildingGPT',
                                            'qualityGPT', 'status', 'rentGPT')
-        print(result_pl)
-    api_handler.send_offer_to_api(result_pl, jwt_data['access_token'], 'flats', endpoint='gpt',
-                                  check_if_exists=False)
 
-
-start_gpt_assessment(0, None, False)
+    if api:
+        api_handler.send_offer_to_api(result_pl, jwt_data['access_token'], offers_type, endpoint='gpt',
+                                      check_if_exists=False)
+    return result

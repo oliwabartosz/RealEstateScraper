@@ -58,7 +58,7 @@
   {
     "desiredOutput": 1,
     "description": "Apartament zlokalizowany w ścisłym centrum Szczecina, 100 m od Kaskady. Mieszkanie mieści się w kamienicy, która przeszła kapitalny remont. Budynek wyposażony w windę. Mieszkanie nowocześnie umeblowane i wyposażone. Dodatkowe koszty eksploatacyjne to czynsz do wspólnoty mieszkaniowej w wysokości 500 zł, który zawiera wszystkie zaliczki (ciepła oraz zimna woda, ogrzewanie, wywóz nieczystości itp), dodatkowo płatny prąd wg indywidualnego zużycia, przedpłata 100zł.",
-    "elevator_summary": "W budynku jest winda. Liczba pięter w budynku nie jest wymieniona w danym tekście."
+    "id": "c81b2e1e-be47-4661-a28e-b27ec411962a"
   },
   {
     "desiredOutput": -9,

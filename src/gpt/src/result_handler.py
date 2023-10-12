@@ -4,6 +4,7 @@ from time import sleep
 import requests
 # Import translator setting from config
 from src.config import config_data
+
 data = config_data.get_config_data()
 translator = itemgetter('translator')(data)
 
@@ -14,7 +15,8 @@ from src.gpt.chain.chaning import balcony_summary_chain, balcony_rating_chain, l
     monitoring_rating_chain, basement_summary_chain, basement_rating_chain, garage_summary_chain, garage_rating_chain, \
     garden_summary_chain, garden_rating_chain, rent_summary_chain, rent_rating_chain, kitchen_rating_chain, \
     kitchen_summary_chain, modernization_summary_chain, modernization_rating_chain, year_of_constr_chain, \
-    material_chain, building_type_chain, technology_summary_chain, technology_rating_chain, number_floors_chain
+    material_chain, building_type_chain, technology_summary_chain, technology_rating_chain, number_floors_chain, \
+    outbuilding_summary_chain, outbuilding_rating_chain
 import translators as ts
 
 from src.gpt.src.params_handler import handle_law_status_param, handle_elevator_param, handle_kitchen_param, \
@@ -26,37 +28,16 @@ TAKEN_FROM_PARAMS_STR = 'Information taken from parameters'
 RATED_BY_USR_STR = 'Already rated by user'
 
 
-def handle_result(chain_result_rating_val: str, chain_result_summary_val: str, param: int) -> tuple[int, str]:
-    if chain_result_rating_val == -9:
-        if param == -9:
-            return int(chain_result_rating_val), chain_result_summary_val
-        else:
-            return param, TAKEN_FROM_PARAMS_STR
+def handle_result(chain_result_rating_val: str, chain_result_summary_val: str,
+                  param: int, take_result_from_offer_params: bool = True) -> tuple[int, str]:
+    if take_result_from_offer_params:
+        if chain_result_rating_val == -9:
+            if param == -9:
+                return int(chain_result_rating_val), chain_result_summary_val
+            else:
+                return param, TAKEN_FROM_PARAMS_STR
 
     return int(chain_result_rating_val), chain_result_summary_val
-
-
-# @TODO: rethink and delete eventually: handle_result_kwargs
-def handle_result_kwargs(**kwargs) -> tuple[int, str]:
-    rated_val = kwargs.get('rated_value', False)
-
-    if not rated_val:
-
-        # Check if the required keyword arguments are present
-        required_args = ['rating', 'summary', 'param']
-        for arg in required_args:
-            if arg not in kwargs:
-                raise ValueError(f"Missing required argument: {arg}")
-
-            if kwargs['rating'] == -9:
-                if kwargs['param'] == -9:
-                    return int(kwargs['rating']), kwargs['summary']
-                else:
-                    return kwargs['param'], TAKEN_FROM_PARAMS_STR
-
-            return int(kwargs['rating']), kwargs['summary']
-        else:
-            return int(rated_val), RATED_BY_USR_STR
 
 
 def _retrieve_chain_and_output_vars(offer_parameter: str) -> tuple[list, list[str]]:
@@ -86,8 +67,10 @@ def _retrieve_chain_and_output_vars(offer_parameter: str) -> tuple[list, list[st
             chain = [garden_summary_chain, garden_rating_chain]
             output_vars = ["garden_summary", "garden_rating"]
         case 'outbuilding':
-            chain = [balcony_summary_chain, balcony_rating_chain]
-            output_vars = ["outbuilding_summary", "outbuilding_rating"]
+            chain = [year_of_constr_chain, material_chain, building_type_chain, number_floors_chain,
+                     technology_summary_chain, technology_rating_chain, outbuilding_summary_chain,
+                     outbuilding_rating_chain]
+            output_vars = ["outbuilding_summary", "outbuilding_rating", "technology_summary", "technology_rating"]
         case 'rent':
             chain = [rent_summary_chain, rent_rating_chain]
             output_vars = ["rent_summary", "rent_rating"]
@@ -133,10 +116,16 @@ def _choose_params_handler(offer_parameter: str, offer_params: dict):
             return handle_rent_param(offer_params)
 
 
-def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_description_after_lemma: str) -> dict[str]:
+def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_description_after_lemma: str,
+                           take_result_from_offer_params: bool) -> dict[str]:
     print('Assessing param:', offer_parameter)
     chain = _retrieve_chain_and_output_vars(offer_parameter)[0]
     output_vars = _retrieve_chain_and_output_vars(offer_parameter)[1]
+
+    if take_result_from_offer_params:
+        text_if_taken_from_params = ' Tried to get information from the offers parameters.'
+    else:
+        text_if_taken_from_params = ''
 
     # Filter out unnecessary keys for params
     offer_params = {key: value for key, value in offer_data.items() if key not in ['id', 'number', 'description']}
@@ -147,10 +136,9 @@ def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_descrip
             return result
         else:
             parameter_result = _choose_params_handler(offer_parameter, offer_params)
-            print(parameter_result)
             result = {f'{offer_parameter}GPT': parameter_result,
-                      f'{offer_parameter}_summary': f'There were no information about {offer_parameter} in the text. ' +
-                                                    'Tried to get information from the offers parameters.'}
+                      f'{offer_parameter}_summary': f'There were no information about {offer_parameter} in the text.' +
+                                                    text_if_taken_from_params}
             return result
 
     # Translate text
@@ -188,20 +176,28 @@ def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_descrip
     result = {
         f'{offer_parameter}GPT': handle_result(llm_chain_result[f'{offer_parameter}_rating'],
                                                llm_chain_result[f'{offer_parameter}_summary'],
-                                               parameter_result)[0],
+                                               parameter_result,
+                                               take_result_from_offer_params)[0],
+
         f'{offer_parameter}_summary': handle_result(llm_chain_result[f'{offer_parameter}_rating'],
                                                     llm_chain_result[f'{offer_parameter}_summary'],
-                                                    parameter_result)[1]
+                                                    parameter_result, take_result_from_offer_params)[1]
     }
 
     return result
 
 
-def assess_offer_parameter_wrapper(offer_type: str, offer_parameter: str, offers_data: dict) -> dict[str]:
-    # @TODO: add technology to spacy.json
-    lemmatized_description = create_lemmatized_parameter_description(offer_type,
-                                                                     offers_data['description'],
-                                                                     offer_parameter)
-    return assess_offer_parameter(offer_parameter,
-                                  offers_data,
-                                  lemmatized_description)
+def assess_offer_parameter_wrapper(offer_type: str, offer_parameter: str, offers_data: dict,
+                                   take_result_from_offer_params: bool,
+                                   lemma: bool = True) -> dict[str]:
+    if lemma:
+        lemmatized_description = create_lemmatized_parameter_description(offer_type,
+                                                                         offers_data['description'],
+                                                                         offer_parameter)
+        return assess_offer_parameter(offer_parameter,
+                                      offers_data,
+                                      lemmatized_description,
+                                      take_result_from_offer_params)
+    else:
+        # @TODO: add functonality to handle process when lemma is False
+        raise ValueError('parameter \'lemma\' should be set to True.')

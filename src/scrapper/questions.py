@@ -69,13 +69,12 @@ def delete_previous_run() -> None:
 
 
 def retry_gpt() -> bool:
-    answers = ['y', 'n']
+    answers = ['y', 'n', 'exit']
     answer = None
 
     while answer not in answers:
-        answer = input("Retry previous run (Y) or start again (N)? Y/N: \n" +
-                       "Type EXIT to end program").lower()
-
+        answer = input("Retry previous run (Y) or start again (N)? Y/N\n" +
+                       "Type EXIT to end program: ").lower()
     match answer:
         case 'y':
             return True
