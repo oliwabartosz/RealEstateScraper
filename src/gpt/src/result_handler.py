@@ -181,7 +181,8 @@ def assess_offer_parameter(offer_parameter: str, offer_data: dict, offer_descrip
 
         f'{offer_parameter}_summary': handle_result(llm_chain_result[f'{offer_parameter}_rating'],
                                                     llm_chain_result[f'{offer_parameter}_summary'],
-                                                    parameter_result, take_result_from_offer_params)[1]
+                                                    parameter_result, take_result_from_offer_params)[1],
+        f'{offer_parameter}_lemma': offer_description_en
     }
 
     return result

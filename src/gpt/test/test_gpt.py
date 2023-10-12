@@ -31,10 +31,10 @@ def test_gpt(param: str, input_data_json: str) -> list[dict]:
         data_json = json.load(file)
 
     for record in data_json:
-        print(record)
         assessment = start_gpt_assessment(start=0, end=None, retry=False, data=[record], offers_type='flats',
                                           api=False,
                                           take_result_from_offer_params=False, include_params=params)
+
         assessment['desiredOutput'] = record['desiredOutput']
         del assessment['qualityGPT']
         del assessment['status']
@@ -47,6 +47,7 @@ def insert_results_to_df(results: list[dict], verbose: bool, input_data_json: st
     # Change keys in dicts for rating and summary
     rating_pattern = 'GPT$'
     summary_pattern = '_summary$'
+    lemma_pattern = '_lemma$'
 
     for d in results:
         for k in list(d.keys()):
@@ -54,10 +55,11 @@ def insert_results_to_df(results: list[dict], verbose: bool, input_data_json: st
                 d['rating'] = d.pop(k)
             if re.search(summary_pattern, k):
                 d['GPT_summary'] = d.pop(k)
+            if re.search(lemma_pattern, k):
+                d['lemma'] = d.pop(k)
 
     # Create DataFrame
     df = pandas.DataFrame(results)
-    print(df)
 
     df['rating'] = pandas.to_numeric(df['rating'])
     df['desired_output'] = pandas.to_numeric(df['desiredOutput'], errors='coerce')
