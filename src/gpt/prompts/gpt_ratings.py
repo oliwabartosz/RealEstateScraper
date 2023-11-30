@@ -70,18 +70,16 @@ Output: 2
 Please provide a numeric response: 1, 2, or -9. Do not provide text!
 """
 
-balcony_prompt = """Please rate the presence of a balcony, loggia or terrace based on the information provided in text delimited by three backticks (```). 
-- If apartment has a balcony, terrace, loggia or garden, please return 1.
-- If apartment has not balcony, terrace or loggia please return 0.
-- If apartment has just a French balcony or balcony window return 0,
-- If it is not possible to determine the presence of a balcony, terrace or loggia (there is no inforamtion) \
-please return -9.
+balcony_prompt = """Please rate the presence one of the following in the apartment: balcony, loggia, terrace based on\
+the information provided in text delimited by three backticks (```). 
+- If apartment has at least one of the following: balcony, terrace, loggia, garden, please return 1.
+- If apartment do not have balcony or terrace or loggia please return 0.
+- If apartment has just a French balcony or balcony window return 0.
 
 Text to analyze:
 ```{balcony_summary}```.
 
 Examples of summaries and desired output are listed below delimited by three dashes (-).
-
 ---
 Example:
 Summary: The apartment has a balcony.
@@ -104,59 +102,62 @@ Output: 0
 
 Summary: The apartment has a french balcony.
 Output: 0
-
-Summary: No information about balcony, terrace or loggia in text.
-Output: -9
 ---
-Please provide a numeric response: 0, 1, or -9. Do not provide text!
+Please provide a numeric response: 0 or 1. Do not provide text!
 """
 
-elevator_prompt = """Please rate the presence of an elevator based on the information provided in {elevator_summary}
-- If there is an elevator or building has more than 5 floors, please return 1.
-- If there is no elevator or building has less than 5 floors, please return 0.
-- If it is not possible to determine the presence of an elevator, please return -9.
+elevator_prompt = """Rate presence of elevator in the building based on the information provided in text delimited by \
+three backticks (```). 
+Instructions how to rate:
+Return 1: The text says that there is at least one elevator in the building.
+Return 0: The text says there is no elevator in the building.
+Return -9: The text says that there were no information about elevator in the text.
+
+Text to analyze:
+```
+{elevator_summary}
+```
+Examples of texts and desired outputs are listed below delimited by three dashes (-). 
+Please take these examples in you consideration, while making rating.
+---
+Summary: The apartment has elevator. 
+Output: 1
+
+Summary: The apartment does not have elevator
+Output: 0
+
+Summary: There were no information about elevator in the text.
+Output: -9
+---
 
 Please provide a numeric response: 0, 1, or -9. Do not provide text!"""
 
-basement_prompt = """Treat basement, attic, storage cell as basement. 
-Rate presence of basement based on the information provided in text delimited by three backticks (```).
-- If there is no basement it comes with an additional price, please return 0.
-- If basement for use by the Cooperative or publicly accessible return 0.
-- If there is a basement mentioned in the text without any information about the price, \
-please return 1.
-- If it is not possible to determine a rating, please return -9.
+
+basement_prompt = """Treat basement, attic, storage cell as additional_room. 
+Rate presence of additional_room based on the information provided in text delimited by three backticks (```).
+Criteria for rating:
+Return 0: There is no additional_room or it comes with an additional price or fee.
+Return 0: additional_room is publicly accessible.
+Return 1: There is a additional_room mentioned in the text without any information about the price.
+Return -9: The text does not mention if the apartment includes additional_room.
 
 Text to analyze:
 ```{basement_summary}```.
 
-Examples of summaries and desired output is listed below delimited by three dashes (-).
-
----
-Example:
-Summary: The text does not mention anything about a basement belonging to the apartment.
-Output: -9
-
-Summary: The basement is not mentioned in the text, so it is unclear if the apartment has one.
-Output: -9
-
-Summary: The apartment has a basement.
-Output: 1
-
-Summary: The apartment has a basement, which is included in the price.
-Output: 1
-
-Summary: The apartment has a basement, but it is not mentioned whether it belongs to the apartment or if there are any \
-additional fees associated with it.
-Output: 1
-
-Summary: The apartment includes a basement (with garage or not) for an additional fee.
-Output: 0
-
-Summary: The basement is for use by the Cooperative or is publicly accessible.
-Output: 0
----
-
 Return just number 0, 1 or -9. Do not provide text!"""
+
+basement_examples = """
+Examples of texts and desired output (return) is listed below delimited by three dashes (-). 
+Please take these examples in you consideration, while making rating.
+---
+The apartment has a additional_room. Return: 1
+The apartment has a additional_room, which is included in the price. Return: 1
+The apartment has a additional_room, but it is not mentioned whether it belongs to the apartment or if there are any \
+additional fees associated with it. Return: 1
+The apartment includes a additional_room (with garage or not) for an additional price or fee. Return: 0
+The apartment does include a additional_room. Return: 0
+---
+"""
 
 garage_prompt = """Please rate the occurrence of a garage or parking place based on the information provided in \
 {garage_summary}.
@@ -260,7 +261,7 @@ in {outbuilding_summary}. Take also information from ```technology_rating that i
 - If it has been mentioned that building is a tenement house, please return 1.
 - If it has been mentioned that building is located in the second line of development and technology_rating \
 is 1, please return 1.
-- If technology_rating is more than 1, please return 0.
+- If technology_rating is more than 1, please returngit config --list --show-origin 0.
 - If it is not possible to determine a rating, please return 0.
 
 Please provide a numeric response: 0, 1 or -9. Do not provide text!

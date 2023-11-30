@@ -13,11 +13,16 @@ def handle_law_status_param(offer_params: dict) -> int:
 
 
 def handle_elevator_param(offer_params: dict) -> int:
+    elevator_param = offer_params.get('elevator', -9)
     floors_number: bool = int(offer_params.get('floorsNumber', 0)) > 5
 
-    if floors_number or offer_params.get('elevator') == 'Tak':
+    if floors_number:
         return 1
-    elif not floors_number or offer_params.get('elevator') == 'Nie':
+    elif elevator_param == 'Tak':
+        return 1
+    elif not floors_number:
+        return 0
+    elif elevator_param == 'Nie':
         return 0
     else:
         return -9

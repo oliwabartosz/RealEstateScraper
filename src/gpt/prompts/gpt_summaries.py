@@ -43,7 +43,7 @@ Text to make summary from:
 """
 
 elevator_prompt = """Make two sentences summary about elevator in the building from text delimited in triple \
-backticks. Does building have an elevator? How many floors the building has?  
+backticks. Does building have an elevator?
 ```{real_estate_offer_en}```.
 """
 
@@ -61,10 +61,20 @@ Text to analyze:
 ```{real_estate_offer_en}````
 """
 
-basement_prompt = """Extract and summarize information about the basement, attic, and storage room from the text delimited in triple backticks.
+"""Using maximum 3 sentences answer the question: does text mention \
+about balcony, terrace or loggia? \
+If text says about french balcony or balcony window add this information to yours summary.\
 
+Make a summary from text delimited by triple backticks (`): 
+```{real_estate_offer_en}```"""
+
+basement_prompt = """Using maximum 3 sentences answer the following question from the text delimited in triple \
+backticks: does apartment includes used one of the following: basement, attic or storage room? Is there is an additional
+for it? Is it for public use or belongs to apartment? 
+In you answers don't provide information if text says that apartment is adaption of the attic.
+   
 Text to analyze:
-```{real_estate_offer_en}````
+```{real_estate_offer_en}```
 """
 
 basement_prompt_old_2 = """. Then your task is to perform the following actions:

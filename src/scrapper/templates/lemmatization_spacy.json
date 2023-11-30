@@ -1,29 +1,38 @@
 {
     "flats": {
-        "balcony": ["balkon", "taras", "francuski"],
-        "elevator": ["winda"],
-        "basement": ["piwnica", "komórka", "komórką", "lokatorska", "lokatorskiej", "lokatorską", "strych", "poddasze"],
-        "garage": ["postojowy", "parking", "garaż", "miejsce"],
-        "garden" : ["ogród"],
-        "modernization": ["ociepl", "odnowiony", "odnowić", "odnowionego", "odnowiyć", "elewacja", "zmodernizować", "odrestaurować", "odrestaurowanej", "modernizacja"],
-        "monitoring": ["ochrona", "dozór", "dozorować", "moniotorować", "monitoring", "portier", "strzeżony", "zamknięty", "alarm", "kamera", "kamerować"],
-        "lawStatus": ["spółdzielczy", "spółdzielnia", "KW", "księga", "wieczysty", "wspólnota", "własność", "własnościowy", "obcokrajowiec", "unia", "unii", "europejska", "europejski", "wieczysta", "wieczystej", "obywatel", "ue", "prawo", "ukrai", "wspólnościowy"],
-        "kitchen": ["kuchnia", "widny", "ciemny", "aneks", "kuchenny"],
-        "technology": ["kamienica", "blok", "wieżowiec", "prefabrykowany", "cegła", "silka", "płyta", "beton", "komórkowy", "bloczek", "monolityczny", "Hanza", "gazobeton", "ytong", "pustak"],
-        "outbuilding": ["oficyć", "oficyna", "oficyn", "kamienica", "zabudowa", "drugi"],
-        "rent": ["czynsz", "administracyjny"]
+        "balconyLemma": ["balkon", "taras", "francuski"],
+        "elevatorLemma": ["winda"],
+        "basementLemma": ["piwnica", "komórka", "komórką", "lokatorska", "lokatorskiej", "lokatorską", "strych", "poddasze"],
+        "garageLemma": ["postojowy", "parking", "garaż", "miejsce"],
+        "gardenLemma" : ["ogród"],
+        "modernizationLemma": ["ociepl", "odnowiony", "odnowić", "odnowionego", "odnowiyć", "elewacja", "zmodernizować", "odrestaurować", "odrestaurowanej", "modernizacja"],
+        "monitoringLemma": ["ochrona", "dozór", "dozorować", "moniotorować", "monitoring", "portier", "strzeżony", "zamknięty", "alarm", "kamera", "kamerować"],
+        "lawStatusLemma": ["spółdzielczy", "spółdzielnia", "KW", "księga", "wieczysty", "wspólnota", "własność", "własnościowy", "obcokrajowiec", "unia", "unii", "europejska", "europejski", "wieczysta", "wieczystej", "obywatel", "ue", "prawo", "ukrai", "wspólnościowy"],
+        "kitchenLemma": ["kuchnia", "widny", "ciemny", "aneks", "kuchenny"],
+        "technologyLemma": ["kamienica", "blok", "wieżowiec", "prefabrykowany", "cegła", "silka", "płyta", "beton", "komórkowy", "bloczek", "monolityczny", "Hanza", "gazobeton", "ytong", "pustak"],
+        "outbuildingLemma": ["oficyć", "oficyna", "oficyn", "kamienica", "zabudowa", "drugi"],
+        "rentLemma": ["czynsz", "administracyjny"],
+        "streetLemma": ["ulica, aleja"]
     },
 
-    "houses": ["postojow", "parking", "przynależn", "garaż", "możliwość", "działk", "własno", "spóldziel",
-    "wieczyst", "wspólnot", "użytkowani", "ocieplony", "moderniz", "odrestaur", "odnow", "ociepl", "remon",
-    "elewac", "dozór", "dozor", "monitoring", "monit", "ochron", "alarm", "strzeż", "portier","kuchni",
-    "aneks", "widna", "ciemna", "prześwit", "z oknem", "z jadalni", "ul.", "al.", "toalet", "ubikac", "łazienk",
-    "szerego", "jednorodzin", "wolnostoj", "wolno", "wielorodzin", "bliźnia", "zabudow"],
+    "houses": {
+        "garageLemma": ["postojowy", "parking", "garaż", "miejsce"],
+        "modernizationLemma": ["ociepl", "odnowiony", "odnowić", "odnowionego", "odnowiyć", "elewacja", "zmodernizować", "odrestaurować", "odrestaurowanej", "modernizacja"],
+        "monitoringLemma": ["ochrona", "dozór", "dozorować", "moniotorować", "monitoring", "portier", "strzeżony", "zamknięty", "alarm", "kamera", "kamerować"],
+        "lawStatusLemma": ["wieczysty", "wspólnota", "użytkowanie"],
+        "building_typeLemma": ["szeregowy", "jednorodzinny", "wolnostojący", "wielorodzinny", "bliźniak", "bliźniaczy", "zabudowa"],
+        "kitchenLemma": ["kuchnia", "widny", "ciemny", "aneks", "kuchenny", "jadalnia"],
+        "bathroomLemma": ["toaleta", "ubikacja", "łazienka"],
+        "streetLemma": ["ulica", "aleja"],
+    },
 
-    "plots": ["szerego", "jednorodzin", "wolnostoj", "wolno", "wielorodzin", "bliźnia", "komerc", "handl", "usług",
-    "magazyn", "produkc", "przemysł", "inwestycyjn", "towarzysząc", "nieuciążli", "prąd", "energia", "elektrycz", "ZK",
-    "gaz", "woda", "wody", "wodociąg","kanaliza", "uzbroj", "szambo", "gruntow","w drodze", "granicy", "działce", "dom",
-    "budynek", "rozbiór", "utwardzon", "asfalt", "brukow", "żużel", "żużlowa", "jumbo", "ażuro", "jomb", "yomb", "poln",
-    "użytkowani", "wieczyste", "służebność", "ogrodz", "siatka", "x", "prostokąt", "kwadrat", "trójkąt", "trapez",
-    "podłuż", "regularny", "kształt", "zagospodarowani", "MPZP", "przestrzenn", "studium", "warunk", "zabudow", "pozwoleni"]
+    "plots": {
+        "lawStatus": []
+    }
+//    ["szerego", "jednorodzin", "wolnostoj", "wolno", "wielorodzin", "bliźnia", "komerc", "handl", "usług",
+//    "magazyn", "produkc", "przemysł", "inwestycyjn", "towarzysząc", "nieuciążli", "prąd", "energia", "elektrycz", "ZK",
+//    "gaz", "woda", "wody", "wodociąg","kanaliza", "uzbroj", "szambo", "gruntow","w drodze", "granicy", "działce", "dom",
+//    "budynek", "rozbiór", "utwardzon", "asfalt", "brukow", "żużel", "żużlowa", "jumbo", "ażuro", "jomb", "yomb", "poln",
+//    "użytkowani", "wieczyste", "służebność", "ogrodz", "siatka", "x", "prostokąt", "kwadrat", "trójkąt", "trapez",
+//    "podłuż", "regularny", "kształt", "zagospodarowani", "MPZP", "przestrzenn", "studium", "warunk", "zabudow", "pozwoleni"]
 }

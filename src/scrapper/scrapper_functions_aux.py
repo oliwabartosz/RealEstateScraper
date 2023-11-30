@@ -109,21 +109,47 @@ def change_comma_to_dot(offer_data):
             offer_data[key_to_update] = offer_data[key_to_update].replace(',', '.')
 
 
-def make_chunks_from_description_spacy_version(offers_type, offers_data):
-    #@TODO: make this after spacy.py
+def make_chunks_from_description_spacy_version(offers_type: str, offers_data: dict) -> dict:
+    """
+    This function creates the abbreviated description for every feature. The result looks like:
+    {balconyLemma: "description only about balcony" }
+    :param offers_type: offer type specified by a user's input: flats, houses, plots
+    :param offers_data: data scraped from web in dictionary type
+    :return: a dictionary of {key: "sentences about feature from description"
+    """
     chunks = {}
 
-    # Get rid of \n in a description
-    offers_data['Opis'] = offers_data['Opis'].replace('\n', '')
+    # Load the templates for lemmatization
+    template_fields_from_json = file_handler.load_json_file(file_handler.FILE_PATH_LEMMATIZATION_TEMPLATES)
 
+    # Get rid newlines and replace by a dot for making lemmatization
+    offers_data_copy = offers_data.copy()
+    offers_data_copy['Opis'] = offers_data['Opis'].replace('\n', '.')
+
+    # Load spacy
     nlp = spacy.load("pl_core_news_sm")
-    doc = nlp(offers_data['Opis'])
+    doc = nlp(offers_data_copy['Opis'])
 
-    # Przeszukujemy analizowany tekst w poszukiwaniu informacji o różnych formach słowa "ogród"
-    for sentence in doc.sents:
-        if 'ogród' in sentence.text.lower() or 'ogrodu' in sentence.text.lower() or 'ogródka' in sentence.text.lower():
-            print(sentence.text)
+    # Create list of sentences
+    sentence_list = []
 
+    # Get the description based on the specified offer type (flats, houses, plots)
+    for property_feature_key in template_fields_from_json[offers_type]:
+        property_feature_lemmas = template_fields_from_json[offers_type].get(property_feature_key, [])
+
+        for sentence in doc.sents:
+            for lemma in property_feature_lemmas:
+                if lemma in sentence.lemma_.lower():
+                    sentence_list.append(sentence.text)
+        sentence_result = list(set(sentence_list))
+
+        # Make sure that at the end of the sentence is a period (.)
+        sentence_result = ('. '.join(sentence_result)).replace('..', '.')
+
+        # Prepare data to append offers data dictionary
+        chunks[property_feature_key] = chunks[sentence_result]
+
+    return chunks
 
 def make_chunks_from_description_regex_version(offers_type, offers_data):
     # Load prompts

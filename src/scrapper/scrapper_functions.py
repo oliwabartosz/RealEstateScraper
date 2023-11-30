@@ -18,10 +18,6 @@ import os
 from tqdm import tqdm
 import requests
 
-# @TODO: make in function: images_data_to_json?
-images_data_to_json = file_handler.load_json_file(file_handler.FILE_PATH_IMAGES) if os.path.exists(
-    file_handler.FILE_PATH_IMAGES) else []
-
 data = config_data.get_config_data()
 
 website_url, login_data, password_data, save_to_database = itemgetter('website_url',
@@ -30,6 +26,8 @@ website_url, login_data, password_data, save_to_database = itemgetter('website_u
                                                                       'save_to_database'
                                                                       )(data)
 
+images_data_to_json = file_handler.load_json_file(file_handler.FILE_PATH_IMAGES) if os.path.exists(
+    file_handler.FILE_PATH_IMAGES) else []
 
 def login() -> None:
     """Log in to website"""
@@ -188,6 +186,9 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
 
     # Create chunks of data
     offer_data = scrapper_functions_aux.make_chunks_from_description_regex_version(offers_type, offer_data)
+
+    # Create chunks of data based on lemmas (spacy)
+    offer_data = scrapper_functions_aux.make_chunks_from_description_spacy_version(offers_type, offer_data)
 
     # Translate data
     offer_data = scrapper_functions_aux.translate_keys(offers_type, offer_data)

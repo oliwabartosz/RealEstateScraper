@@ -7,4 +7,4 @@ from langchain.chat_models import ChatOpenAI
 config_data = config_data.get_config_data()
 OPENAI_API_KEY = itemgetter('OPENAI_API_KEY')(config_data)
 
-llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.0)
+llm = ChatOpenAI(openai_api_key=OPENAI_API_KEY, temperature=0.3)
