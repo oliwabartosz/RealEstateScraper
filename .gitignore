@@ -24,3 +24,6 @@ __pycache__/
 /src/gpt/test/test-data/output/test-balcony.json
 /src/gpt/test/test-data/output/test-balcony_mismatch.json
 /src/gpt/test/test-data/output/test-law-statu.json
+/src/gpt/test/test-data/output/
+tmp.py
+venv/
