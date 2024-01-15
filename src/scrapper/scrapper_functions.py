@@ -346,7 +346,12 @@ def download_images(offer_id_and_images_links_dict: dict):
                 image_files.append(image_path)
 
     for image_file in image_files:
-        convert_to_webp(image_file)
+        try:
+            convert_to_webp(image_file)
+            print(f"Converting {image_file}")
+        except:
+            print("Coś nie tak.")
+            pass
 
 
 def statuses_summary():
