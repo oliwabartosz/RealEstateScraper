@@ -33,7 +33,7 @@ if __name__ == "__main__":
     scrapper_functions.login()
 
     # Get JWT AUTH TOKEN
-    jwt_data = api_handler.get_jwt_token(f'{rer_url}/rer/auth')
+    jwt_data = api_handler.get_jwt_token(f'{rer_url}/api/auth/login')
 
     for offer_id in tqdm(offers_to_download, desc='Real Estate Data', colour='blue'):
         if scrapper_functions.input_to_searchbar(offer_id):
