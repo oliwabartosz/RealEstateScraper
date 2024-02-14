@@ -108,6 +108,21 @@ def change_comma_to_dot(offer_data):
         if key_to_update in offer_data:
             offer_data[key_to_update] = offer_data[key_to_update].replace(',', '.')
 
+def change_keys_types(offer_type, offer_data):
+    keys_as_int = ['priceOffer', 'priceSold', 'rent', 'yearBuilt', 'floorsNumber', 'floor', 'balconyQuantity', 'terracesQuantity', 'loggiasQuantity', 'frenchBalconyQuantity', 
+                   'roomsNumber', 'priceParkingUnderground', 'priceParkingGround']
+    keys_as_float = ['price', 'priceM2', 'livingArea']
+
+    for key in keys_as_int:
+        if key in offer_data:
+            offer_data[key] = int(float(offer_data[key]))
+    
+    for key in keys_as_float:
+        if key in offer_data:
+            offer_data[key] = float(offer_data[key])
+            
+    return offer_data
+
 
 def make_chunks_from_description_spacy_version(offers_type: str, offers_data: dict) -> dict:
     """

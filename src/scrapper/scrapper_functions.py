@@ -199,6 +199,9 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
     # Change commas to dots in some data - necessary for SQL Database
     scrapper_functions_aux.change_comma_to_dot(offer_data)
 
+    # Changes strings to numbers
+    offer_data = scrapper_functions_aux.change_keys_types(offers_type, offer_data)
+
     # Saving data
     if save_to_database:
         api_handler.send_offer_to_api(offer_data, access_token, offers_type, endpoint='', check_if_exists=True)
