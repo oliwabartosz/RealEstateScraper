@@ -36,12 +36,17 @@ def delete_previous_run() -> None:
             os.rmdir(directory)
 
     def _get_images_directories(directory):
-        directories = []
-        for item in os.listdir(directory):
-            item_path = os.path.join(directory, item)
-            if os.path.isdir(item_path):
-                directories.append(item_path)
-        return directories
+        try:
+            directories = []
+            for item in os.listdir(directory):
+                item_path = os.path.join(directory, item)
+                if os.path.isdir(item_path):
+                    directories.append(item_path)
+            return directories
+        except FileNotFoundError:
+            return []
+
+    
 
     if os.path.exists(file_handler.FILE_PATH_OFFERS) or \
             os.path.exists(file_handler.FILE_PATH_STATUSES) or \
