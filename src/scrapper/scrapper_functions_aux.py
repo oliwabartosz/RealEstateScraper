@@ -110,8 +110,8 @@ def change_comma_to_dot(offer_data):
 
 def change_keys_types(offer_type, offer_data):
     keys_as_int = ['priceOffer', 'priceSold', 'rent', 'yearBuilt', 'floorsNumber', 'floor', 'balconyQuantity', 'terracesQuantity', 'loggiasQuantity', 'frenchBalconyQuantity', 
-                   'roomsNumber', 'priceParkingUnderground', 'priceParkingGround']
-    keys_as_float = ['price', 'priceM2', 'livingArea']
+                   'roomsNumber', 'priceParkingUnderground', 'priceParkingGround', 'garagesNumber', 'bathsNumber']
+    keys_as_float = ['price', 'priceM2', 'livingArea', 'houseArea', 'plotArea', "plotWidth", "plotLength"]
 
     for key in keys_as_int:
         if key in offer_data:
@@ -122,8 +122,8 @@ def change_keys_types(offer_type, offer_data):
             offer_data[key] = float(offer_data[key])
             
     return offer_data
-
-
+  
+    
 def make_chunks_from_description_spacy_version(offers_type: str, offers_data: dict) -> dict:
     """
     This function creates the abbreviated description for every feature. The result looks like:
@@ -168,8 +168,8 @@ def make_chunks_from_description_spacy_version(offers_type: str, offers_data: di
         # Clear the sentences previously gathered
         sentence_list = []
         
-        offers_data.update(chunks)
-        return offers_data
+    offers_data.update(chunks)
+    return offers_data
 
 def make_chunks_from_description_regex_version(offers_type, offers_data):
     # Load prompts
