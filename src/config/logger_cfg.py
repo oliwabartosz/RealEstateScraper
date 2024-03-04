@@ -5,7 +5,7 @@ You can set options such as:
 """
 from typing import Union
 import logging
-
+import colorlog
 
 class Logger:
     """
@@ -36,7 +36,15 @@ class Logger:
         # Console output line
         console_handler = logging.StreamHandler()
         console_handler.setLevel(log_level)
-        log_formatter = logging.Formatter(log_format)
+        log_formatter = colorlog.ColoredFormatter(
+        "%(log_color)s" + log_format,
+        log_colors={
+            'DEBUG':    'cyan',
+            'INFO':     'green',
+            'WARNING':  'yellow',
+            'ERROR':    'red',
+            'CRITICAL': 'red,bg_white',
+        })
         console_handler.setFormatter(log_formatter)
         logger.addHandler(console_handler)
         logger.propagate = 0

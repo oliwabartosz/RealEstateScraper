@@ -18,7 +18,6 @@ FILE_PATH_IMAGES_DIR = './data/output/images/'
 # Templates/dictionaries
 FILE_PATH_TEMPLATES = './src/scrapper/templates/chunks_templates_regex_version.json'
 FILE_PATH_LEMMATIZATION_TEMPLATES = './src/scrapper/templates/lemmatization_spacy.json'
-FILE_PATH_LEMMATIZATION_TEMPLATES = './src/scrapper/templates/lemmatization_spacy.json'
 FILE_PATH_FLATS_DICTIONARY = './src/scrapper/templates/flats_dictionary.json'
 FILE_PATH_HOUSES_DICTIONARY = './src/scrapper/templates/houses_dictionary.json'
 FILE_PATH_PLOTS_DICTIONARY = './src/scrapper/templates/plots_dictionary.json'

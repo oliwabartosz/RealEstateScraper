@@ -9,17 +9,25 @@ rer_url, jwt_api_login, jwt_api_password = itemgetter('rer_url',
                                                       'jwt_api_login',
                                                       'jwt_api_password')(data)
 
+log_msg = {
+        202: 'Response 202. Data has been sent to the Database.',
+        500: 'Response 500. Data has NOT been sent to the Database.',
+        400: 'Response 400. Bad Request. Check your payload.',
+        401: 'Response 401. Unauthorized.',
+        403: 'Response 403. Forbidden.',
+        404: 'Response 404. Check the routers.',
+        }
 
 def get_jwt_token(url):
-    r = requests.post(url, json={"username": jwt_api_login, "password": jwt_api_password})
+    r = requests.post(url, json={"email": jwt_api_login, "password": jwt_api_password})
 
     match r.status_code:
         case 401:
             raise Exception('401 - Wrong login or password')
         case 200:
-            print('access_token', json.loads(r.content)['accessToken'], '\ncookie_jwt', r.cookies.get('jwt'))
+            print(r.cookies.get('jwt'))
             return {
-                'access_token': json.loads(r.content)['accessToken'],
+                # 'access_token': json.loads(r.content)['accessToken'],
                 'cookie_jwt': r.cookies.get('jwt')
             }
         case _:
@@ -34,15 +42,15 @@ def refresh_jwt_token(url, access_token, cookie_jwt):
     }
     r = requests.get(url, cookies=cookies, headers=headers)
     print(json.loads(r.content)['accessToken'])
-    # logger_cfg.logger1.info(f"JWT Token refreshed: \nNew token{json.loads(r.content)['accessToken']}")
 
 
-def _check_if_offer_exists_in_db(access_token: str, offer_data: dict, offers_type: str, endpoint: str) -> bool:
+def _check_if_offer_exists_in_db(url, access_token: str, offer_data: dict, offers_type: str, endpoint: str) -> bool:
     try:
-        offer_ids: list = get_offers_data_from_api(access_token, f'/rer/api/{offers_type}/{endpoint}', 'GET')
-        return True if offer_data['offerId'] in offer_ids else False
+        logger_cfg.logger_scrapper.info('Checking if offer is present in a database.')
+        offer_ids: list = get_offers_data_from_api(access_token, f'/api/{offers_type}/{endpoint}', 'GET')
+        return any(offer['offerId'] == offer_data['offerId'] for offer in offer_ids)
     except Exception as e:
-        raise Exception(f'Check if the endpoint (/rer/api/{offers_type}/{endpoint}) is correct')
+        raise Exception(f'Check if the endpoint (/api/{offers_type}/{endpoint}) is correct')
 
 
 def send_offer_to_api(offer_data: dict, access_token: str, offers_type: str, endpoint: str, check_if_exists: bool) \
@@ -59,38 +67,45 @@ def send_offer_to_api(offer_data: dict, access_token: str, offers_type: str, end
     sleep(2)
 
     headers = {'authorization': f'Bearer {access_token}',
-               'Content-Type': 'application/json; charset=utf-8'}
-
-    log_msg = {
-        202: 'Response 202. Data has been sent to the Database.',
-        500: 'Response 500. Data has NOT been sent to the Database',
-        403: 'Response 403. Forbidden.',
-        404: 'Response 404. Check the routers.',
-    }
+               'Content-Type': 'application/json; charset=utf-8',
+               'Cookie': f'jwt={access_token}'}
 
     if check_if_exists:
-        if _check_if_offer_exists_in_db(access_token, offer_data, offers_type, endpoint):
+        if _check_if_offer_exists_in_db(rer_url, access_token, offer_data, offers_type, endpoint='all'):
             logger_cfg.logger_scrapper.info('That offer already exists in the Database.')
             return
 
     logger_cfg.logger_scrapper.info('Sending data to database.')
-    r = requests.post(f'{rer_url}/rer/api/{offers_type}/{endpoint}', json=offer_data, headers=headers)
-    log_msg.get(r.status_code, "Unknown error occurred.")
+    r = requests.post(f'{rer_url}/api/{offers_type}/{endpoint}', json=offer_data, headers=headers)
+
+    # Warn abut errors    
+    message = log_msg.get(r.status_code, "Unknown error occurred.")
+    if r.status_code in log_msg.keys():
+        logger_cfg.logger_scrapper.warn(f'Error: {message}')
+    
 
 
 def get_offers_data_from_api(access_token: str, path: str, method: str = 'GET', *columns_to_get: str) -> list:
     """
     :param access_token: JWT Token.
-    :param path: route to API. Add just realestate type and endpoint eg. /flats/gpt.
+    :param path: route to API. Add just real estate type and endpoint eg. /flats/gpt.
     :param method: GET is default. Information just for better reading.
     :param columns_to_get: A column from database to get. If'' it'll return whole json.
     :return: A list of data.
     """
+
     headers = {'authorization': f'Bearer {access_token}',
-               'Content-Type': 'application/json; charset=utf-8'}
+               'Content-Type': 'application/json; charset=utf-8',
+               'Cookie': f'jwt={access_token}'}
+
 
     r = requests.get(f'{rer_url}{path}', headers=headers)
-
+    
+    # Warnings
+    message = log_msg.get(r.status_code, "Unknown error occurred.")
+    if r.status_code in log_msg.keys():
+        logger_cfg.logger_scrapper.warn(f'Error: {message}')
+    
     if not columns_to_get or columns_to_get[0] == '':
         return r.json()
     else:

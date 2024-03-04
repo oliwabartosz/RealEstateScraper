@@ -185,7 +185,7 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
     offer_data = scrapper_functions_aux.clear_data_values_from_unnecessary_things(offer_data)
 
     # Create chunks of data
-    offer_data = scrapper_functions_aux.make_chunks_from_description_regex_version(offers_type, offer_data)
+    # offer_data = scrapper_functions_aux.make_chunks_from_description_regex_version(offers_type, offer_data)
 
     # Create chunks of data based on lemmas (spacy)
     offer_data = scrapper_functions_aux.make_chunks_from_description_spacy_version(offers_type, offer_data)
@@ -198,6 +198,9 @@ def download_offers_data_from_web(offers_type: str, offer_id: str, access_token:
 
     # Change commas to dots in some data - necessary for SQL Database
     scrapper_functions_aux.change_comma_to_dot(offer_data)
+
+    # Changes strings to numbers
+    offer_data = scrapper_functions_aux.change_keys_types(offers_type, offer_data)
 
     # Saving data
     if save_to_database:

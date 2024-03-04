@@ -108,7 +108,22 @@ def change_comma_to_dot(offer_data):
         if key_to_update in offer_data:
             offer_data[key_to_update] = offer_data[key_to_update].replace(',', '.')
 
+def change_keys_types(offer_type, offer_data):
+    keys_as_int = ['priceOffer', 'priceSold', 'rent', 'yearBuilt', 'floorsNumber', 'floor', 'balconyQuantity', 'terracesQuantity', 'loggiasQuantity', 'frenchBalconyQuantity', 
+                   'roomsNumber', 'priceParkingUnderground', 'priceParkingGround', 'garagesNumber', 'bathsNumber']
+    keys_as_float = ['price', 'priceM2', 'livingArea', 'houseArea', 'plotArea', "plotWidth", "plotLength"]
 
+    for key in keys_as_int:
+        if key in offer_data:
+            offer_data[key] = int(float(offer_data[key]))
+    
+    for key in keys_as_float:
+        if key in offer_data:
+            offer_data[key] = float(offer_data[key])
+            
+    return offer_data
+  
+    
 def make_chunks_from_description_spacy_version(offers_type: str, offers_data: dict) -> dict:
     """
     This function creates the abbreviated description for every feature. The result looks like:
@@ -124,7 +139,7 @@ def make_chunks_from_description_spacy_version(offers_type: str, offers_data: di
 
     # Get rid newlines and replace by a dot for making lemmatization
     offers_data_copy = offers_data.copy()
-    offers_data_copy['Opis'] = offers_data['Opis'].replace('\n', '.')
+    offers_data_copy['Opis'] = offers_data['Opis'].replace('\n', '.').replace('-', '.')
 
     # Load spacy
     nlp = spacy.load("pl_core_news_sm")
@@ -137,19 +152,24 @@ def make_chunks_from_description_spacy_version(offers_type: str, offers_data: di
     for property_feature_key in template_fields_from_json[offers_type]:
         property_feature_lemmas = template_fields_from_json[offers_type].get(property_feature_key, [])
 
+
         for sentence in doc.sents:
             for lemma in property_feature_lemmas:
                 if lemma in sentence.lemma_.lower():
                     sentence_list.append(sentence.text)
-        sentence_result = list(set(sentence_list))
+        sentence_result  = list(set(sentence_list))
 
         # Make sure that at the end of the sentence is a period (.)
         sentence_result = ('. '.join(sentence_result)).replace('..', '.')
 
         # Prepare data to append offers data dictionary
-        chunks[property_feature_key] = chunks[sentence_result]
+        chunks[property_feature_key] = sentence_result
 
-    return chunks
+        # Clear the sentences previously gathered
+        sentence_list = []
+        
+    offers_data.update(chunks)
+    return offers_data
 
 def make_chunks_from_description_regex_version(offers_type, offers_data):
     # Load prompts
