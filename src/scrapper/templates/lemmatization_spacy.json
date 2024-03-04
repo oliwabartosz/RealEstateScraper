@@ -1,6 +1,6 @@
 {
     "flats": {
-        "balconyLemma": ["balkon", "taras", "francuski"],
+        "balconyLemma": ["balkon", "taras", "francuski", "ogród"],
         "elevatorLemma": ["winda"],
         "basementLemma": ["piwnica", "komórka", "komórką", "lokatorska", "lokatorskiej", "lokatorską", "strych", "poddasze"],
         "garageLemma": ["postojowy", "parking", "garaż", "miejsce"],
